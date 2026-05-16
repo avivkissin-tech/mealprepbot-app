@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-heebo: var(--font-heebo);
+  --font-fraunces: var(--font-fraunces);
+
+  /* ── Editorial Color System ── */
+  --color-parchment:    #F7F3EE;
+  --color-parchment-2:  #EDE7DC;
+  --color-cream:        #FFFFFF;
+  --color-forest:       #2A4F3A;
+  --color-forest-light: #3D6B50;
+  --color-forest-pale:  #EBF2ED;
+  --color-terracotta:   #C9572A;
+  --color-terra-light:  #FAE9E1;
+  --color-ink:          #1A1918;
+  --color-ink-soft:     #6B6560;
+  --color-ink-muted:    #A09893;
+  --color-border:       #E0D9CE;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Base styles ── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-heebo), Arial, sans-serif;
+  background-color: #F7F3EE;
+  color: #1A1918;
+}
+
+/* Display headings: use Fraunces in LTR (EN), Heebo in RTL (HE) */
+.font-display {
+  font-family: var(--font-fraunces), var(--font-heebo), serif;
+  font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
+}
+
+/* ── Grain texture overlay for premium feel ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ── Carousel: hide scrollbar ── */
+.carousel-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.carousel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Decorative rule ── */
+.rule-terracotta {
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: #C9572A;
+  border-radius: 9999px;
+}
+
+/* ── Print ── */
+@media print {
+  header, footer, nav, .print\:hidden { display: none !important; }
+  body { background: white !important; }
+  body::after { display: none; }
 }
