@@ -83,6 +83,7 @@ export default function OnboardingPage() {
   };
 
   const handleSubmit = () => {
+    document.cookie = 'onboarding_done=1; path=/; max-age=31536000';
     router.push('/dashboard');
   };
 
