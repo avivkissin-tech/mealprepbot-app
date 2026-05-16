@@ -206,7 +206,7 @@ export const recipes: Recipe[] = [
     dietaryTags: ['dairy-free', 'high-protein'],
     nutritionPerServing: { calories: 195, protein: 26, carbs: 7, fat: 7 },
     ingredients: [
-      { nameHe: 'טונה בשמן (סחוטה)', nameEn: 'Canned tuna in oil (drained)', quantity: 2, unit: 'can', shoppingCategory: 'protein' },
+      { nameHe: 'טונה במים (סחוטה)', nameEn: 'Canned tuna in water (drained)', quantity: 2, unit: 'can', shoppingCategory: 'protein' },
       { nameHe: 'ביצה', nameEn: 'Egg', quantity: 2, unit: 'unit', shoppingCategory: 'protein' },
       { nameHe: 'בצל לבן קצוץ דק', nameEn: 'White onion, finely diced', quantity: 1, unit: 'unit', shoppingCategory: 'vegetables' },
       { nameHe: 'פטרוזיליה קצוצה', nameEn: 'Parsley, chopped', quantity: 3, unit: 'tbsp', shoppingCategory: 'vegetables' },
@@ -217,7 +217,7 @@ export const recipes: Recipe[] = [
       { nameHe: 'מלח ופלפל שחור', nameEn: 'Salt and black pepper', quantity: 1, unit: 'to_taste', shoppingCategory: 'spices' },
     ],
     steps: [
-      { he: 'סוחטים את הטונה מהשמן היטב ומכניסים לקערה גדולה.', en: 'Drain tuna thoroughly and place in a large bowl.' },
+      { he: 'סוחטים את הטונה מהמים היטב ומכניסים לקערה גדולה.', en: 'Drain tuna thoroughly and place in a large bowl.' },
       { he: 'מוסיפים ביצים, בצל, פטרוזיליה, קמח שיבולת שועל, מיץ לימון, פפריקה, מלח ופלפל. מערבבים היטב.', en: 'Add eggs, onion, parsley, oat flour, lemon juice, paprika, salt and pepper. Mix well.' },
       { he: 'יוצרים כ-10 קציצות עגולות ומשטחות (כ-5 ס"מ).', en: 'Shape into about 10 flat round patties (about 5 cm wide).' },
       { he: 'מחממים מחבת עם שמן זית על אש בינונית.', en: 'Heat a pan with olive oil over medium heat.' },
