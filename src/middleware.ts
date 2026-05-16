@@ -1,17 +1,18 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const PUBLIC_PREFIXES = ['/onboarding', '/sign-in', '/sign-up', '/recipes', '/ingredients'];
+const isPublicRoute = createRouteMatcher([
+  '/onboarding(.*)',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/recipes(.*)',
+  '/ingredients(.*)',
+]);
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const isPublic = PUBLIC_PREFIXES.some(p => pathname.startsWith(p));
-  const done = req.cookies.has('onboarding_done');
-
-  if (!isPublic && !done) {
-    return NextResponse.redirect(new URL('/onboarding', req.url));
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
   }
-}
+});
 
 export const config = {
   matcher: ['/((?!_next|favicon.ico|.*\\..*).*)'],

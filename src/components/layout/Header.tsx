@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/ui/LanguageToggle';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 interface DropdownItem { labelKey: string; href: string; }
 interface NavItem { labelKey: string; href?: string; dropdown?: DropdownItem[]; }
@@ -30,6 +31,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Header() {
   const { t } = useLanguage();
+  const { isSignedIn } = useAuth();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -126,6 +128,21 @@ export default function Header() {
           >
             {t('nav.wizard')}
           </Link>
+          {isSignedIn ? (
+            <UserButton />
+          ) : (
+            <SignInButton mode="modal">
+              <button
+                style={{
+                  padding: '6px 14px', borderRadius: 9999,
+                  background: '#F0EBE3', border: '1px solid #E0D9CE',
+                  fontSize: 13, fontWeight: 600, color: '#1A1918', cursor: 'pointer',
+                }}
+              >
+                כניסה
+              </button>
+            </SignInButton>
+          )}
           <LanguageToggle />
           <button
             className="md:hidden p-1.5 rounded-lg"
