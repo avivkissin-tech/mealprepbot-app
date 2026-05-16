@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
@@ -24,16 +24,29 @@ export default function PlannerPage() {
   const { locale } = useLanguage();
   const isHe = locale === 'he';
 
-  // day index → array of recipe IDs (can repeat)
-  const [plan, setPlan] = useState<Record<number, string[]>>({});
-  // `${day}-${slotIndex}` → serves
-  const [serves, setServes] = useState<Record<string, number>>({});
+  const PLAN_KEY   = 'easyprep_planner';
+  const SERVES_KEY = 'easyprep_planner_serves';
+
+  const [plan, setPlan] = useState<Record<number, string[]>>(() => {
+    try { return JSON.parse(localStorage.getItem(PLAN_KEY) ?? '{}'); } catch { return {}; }
+  });
+  const [serves, setServes] = useState<Record<string, number>>(() => {
+    try { return JSON.parse(localStorage.getItem(SERVES_KEY) ?? '{}'); } catch { return {}; }
+  });
   // modal
   const [pickingDay, setPickingDay] = useState<number | null>(null);
   const [modalSearch, setModalSearch] = useState('');
   // shopping panel
   const [showShopping, setShowShopping] = useState(false);
   const [shoppingView, setShoppingView] = useState<'general' | 'byRecipe'>('general');
+
+  // שמור כל שינוי ב-localStorage
+  useEffect(() => {
+    try { localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); } catch {}
+  }, [plan]);
+  useEffect(() => {
+    try { localStorage.setItem(SERVES_KEY, JSON.stringify(serves)); } catch {}
+  }, [serves]);
 
   const addRecipe = (day: number, recipeId: string) => {
     setPlan(prev => {

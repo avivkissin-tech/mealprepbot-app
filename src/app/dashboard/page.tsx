@@ -202,7 +202,46 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, c
   </Link>
 );
 
-const SAVED_IDS = ['crispy-salmon', 'chicken-shawarma', 'overnight-oats'];
+const STORAGE_KEY_SAVED    = 'easyprep_saved_recipes';
+const STORAGE_KEY_PLANNER  = 'easyprep_planner';
+const STORAGE_KEY_HISTORY  = 'easyprep_cook_history'; // array of {date: ISO string}
+
+function loadSavedIds(): string[] {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_SAVED) ?? '[]'); }
+  catch { return []; }
+}
+
+function loadPlannerCount(): number {
+  try {
+    const plan: Record<string, string[]> = JSON.parse(localStorage.getItem(STORAGE_KEY_PLANNER) ?? '{}');
+    return Object.values(plan).reduce((sum, arr) => sum + arr.length, 0);
+  } catch { return 0; }
+}
+
+function loadStreak(): number {
+  try {
+    const history: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '[]');
+    if (!history.length) return 0;
+    const days = [...new Set(history.map(d => d.slice(0, 10)))].sort().reverse();
+    let streak = 0;
+    let cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+    for (const day of days) {
+      const d = new Date(day);
+      const diff = Math.round((cursor.getTime() - d.getTime()) / 86400000);
+      if (diff > 1) break;
+      streak++;
+      cursor = d;
+    }
+    return streak;
+  } catch { return 0; }
+}
+
+function loadTotalCooked(): number {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '[]').length;
+  } catch { return 0; }
+}
 
 const FILTERS = [
   { id: 'all',       label: 'כל המתכונים' },
@@ -224,15 +263,27 @@ export default function DashboardPage() {
   const [activeFilter, setActiveFilter] = React.useState('all');
   const [search, setSearch] = React.useState('');
 
+  const [savedIds, setSavedIds] = React.useState<string[]>([]);
+  const [totalCooked, setTotalCooked] = React.useState(0);
+  const [streak, setStreak] = React.useState(0);
+  const [plannerCount, setPlannerCount] = React.useState(0);
+
+  React.useEffect(() => {
+    setSavedIds(loadSavedIds());
+    setTotalCooked(loadTotalCooked());
+    setStreak(loadStreak());
+    setPlannerCount(loadPlannerCount());
+  }, []);
+
   const stats = [
-    { title: 'ארוחות הוכנו',    primaryValue: 64, icon: <TrendingUp className="h-5 w-5" />, delay: 0 },
-    { title: 'שבועות רצופים',   primaryValue: 7,  icon: <Flame className="h-5 w-5" />,       delay: 200 },
-    { title: 'מתכונים שמורים',  primaryValue: 3,  icon: <BookmarkCheck className="h-5 w-5" />, delay: 400 },
+    { title: 'ארוחות הוכנו',    primaryValue: totalCooked, icon: <TrendingUp className="h-5 w-5" />, delay: 0 },
+    { title: 'ימים רצופים',     primaryValue: streak,      icon: <Flame className="h-5 w-5" />,       delay: 200 },
+    { title: 'מתכונים שמורים',  primaryValue: savedIds.length, icon: <BookmarkCheck className="h-5 w-5" />, delay: 400 },
   ];
 
   const filteredRecipes = React.useMemo(() => {
     let list = recipes;
-    if (activeFilter === 'saved') list = recipes.filter(r => SAVED_IDS.includes(r.id));
+    if (activeFilter === 'saved') list = recipes.filter(r => savedIds.includes(r.id));
     else if (activeFilter !== 'all') list = recipes.filter(r => r.category === activeFilter);
     if (search.trim()) {
       const q = search.trim().toLowerCase();
@@ -282,7 +333,9 @@ export default function DashboardPage() {
             <div className="flex-1 space-y-3">
               <h2 className="text-xl font-bold" style={{ color: '#1A1918' }}>התקדמות חודשית</h2>
               <p className="text-sm" style={{ color: 'rgba(26,25,24,0.6)' }}>
-                השלמת 64 מתוך 80 ארוחות מתוכננות החודש. כל הכבוד!
+                {plannerCount > 0
+                  ? `תכננת ${plannerCount} ארוחות השבוע. כל הכבוד!`
+                  : 'עדיין לא תכננת ארוחות השבוע — עבור לפלאנר כדי להתחיל.'}
               </p>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
@@ -295,7 +348,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <DonutChart value={64} max={80} size={180} />
+            <DonutChart value={plannerCount} max={Math.max(plannerCount, 7)} size={180} />
           </div>
         </div>
 
