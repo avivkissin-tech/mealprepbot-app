@@ -271,9 +271,22 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
               </button>
             </div>
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
-            {selectedRecipes.map(r => r.nameHe).join(' · ')} · ~{formatTimerMinutes(totalMinutes)}
-          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6, alignItems: 'center' }}>
+            {selectedRecipes.map((r, i) => (
+              <span key={r.id} style={{
+                fontSize: 11, fontWeight: 600,
+                padding: '3px 10px', borderRadius: 20,
+                background: `${RECIPE_COLORS[i % RECIPE_COLORS.length]}18`,
+                color: RECIPE_COLORS[i % RECIPE_COLORS.length],
+                border: `1px solid ${RECIPE_COLORS[i % RECIPE_COLORS.length]}35`,
+              }}>
+                {r.nameHe}
+              </span>
+            ))}
+            <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', marginRight: 2 }}>
+              ~{formatTimerMinutes(totalMinutes)}
+            </span>
+          </div>
         </div>
 
         {/* Active Timers Bar */}
@@ -638,48 +651,70 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                   <button onClick={() => setShowOverview(false)} style={{ background: '#E0D9CE', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', fontSize: 14, color: '#1A1918', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
                 </div>
                 <div style={{ overflowY: 'auto', flex: 1 }}>
-                  {steps.map((s, i) => (
-                    <div
-                      key={i}
-                      onClick={() => { setCurrentIndex(i); setShowOverview(false); }}
-                      style={{
-                        display: 'flex', alignItems: 'flex-start', gap: 12,
-                        padding: '11px 20px',
-                        borderBottom: '1px solid #F0EBE3',
-                        cursor: 'pointer',
-                        background: i === currentIndex ? '#EBF2ED' : i < currentIndex ? 'rgba(0,0,0,0.02)' : 'transparent',
-                      }}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flexShrink: 0, paddingTop: 3 }}>
-                        <div style={{
-                          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                          background: i < currentIndex ? '#E0D9CE' : i === currentIndex ? recipeColorMap.get(s.recipeId) ?? '#2A4F3A' : '#fff',
-                          border: `2px solid ${i === currentIndex ? recipeColorMap.get(s.recipeId) ?? '#2A4F3A' : '#E0D9CE'}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 10, fontWeight: 700, color: i < currentIndex ? '#6B6560' : i === currentIndex ? '#fff' : '#1A1918',
-                        }}>
-                          {i < currentIndex ? '✓' : i + 1}
+                  {steps.map((s, i) => {
+                    const color = recipeColorMap.get(s.recipeId) ?? '#2A4F3A';
+                    const isCurrent = i === currentIndex;
+                    const isPast = i < currentIndex;
+                    const showHeader = i === 0 || steps[i - 1].recipeId !== s.recipeId;
+                    return (
+                      <div key={i}>
+                        {showHeader && (
+                          <div style={{
+                            padding: '9px 20px 7px',
+                            background: `${color}12`,
+                            borderBottom: `1px solid ${color}25`,
+                            borderTop: i > 0 ? `1px solid ${color}25` : undefined,
+                            display: 'flex', alignItems: 'center', gap: 8,
+                          }}>
+                            <div style={{ width: 9, height: 9, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: 0.3 }}>
+                              {s.recipeName}
+                            </span>
+                          </div>
+                        )}
+                        <div
+                          onClick={() => { setCurrentIndex(i); setShowOverview(false); }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 12,
+                            padding: '13px 20px 13px 16px',
+                            borderBottom: '1px solid #F0EBE3',
+                            cursor: 'pointer',
+                            background: isCurrent ? '#EBF2ED' : isPast ? 'rgba(0,0,0,0.015)' : 'transparent',
+                            borderRight: isCurrent ? `3px solid ${color}` : '3px solid transparent',
+                          }}
+                        >
+                          <div style={{
+                            width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                            background: isPast ? '#E0D9CE' : isCurrent ? color : '#fff',
+                            border: `2px solid ${isPast ? '#E0D9CE' : isCurrent ? color : '#D0C9BE'}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 11, fontWeight: 700,
+                            color: isPast ? '#6B6560' : isCurrent ? '#fff' : '#1A1918',
+                          }}>
+                            {isPast ? '✓' : i + 1}
+                          </div>
+                          <p style={{
+                            flex: 1, fontSize: 14, margin: 0, lineHeight: 1.45,
+                            color: isPast ? 'rgba(26,25,24,0.35)' : isCurrent ? '#1A1918' : 'rgba(26,25,24,0.75)',
+                            fontWeight: isCurrent ? 600 : 400,
+                            textDecoration: isPast ? 'line-through' : 'none',
+                          }}>
+                            {s.step.he}
+                          </p>
+                          {s.step.timerMinutes && (
+                            <span style={{
+                              fontSize: 11, fontWeight: 600, flexShrink: 0,
+                              background: isCurrent ? color : '#F0EBE3',
+                              color: isCurrent ? '#fff' : '#6B6560',
+                              padding: '3px 8px', borderRadius: 20,
+                            }}>
+                              ⏱ {formatTimerMinutes(s.step.timerMinutes)}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 11, color: recipeColorMap.get(s.recipeId) ?? '#2A4F3A', fontWeight: 600, margin: '0 0 2px' }}>
-                          {s.recipeName}
-                        </p>
-                        <p style={{
-                          fontSize: 13, color: i < currentIndex ? 'rgba(26,25,24,0.4)' : '#1A1918',
-                          margin: 0, lineHeight: 1.4,
-                          textDecoration: i < currentIndex ? 'line-through' : 'none',
-                        }}>
-                          {s.step.he}
-                        </p>
-                      </div>
-                      {s.step.timerMinutes && (
-                        <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', flexShrink: 0, paddingTop: 3 }}>
-                          {formatTimerMinutes(s.step.timerMinutes)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </motion.div>
             </>
