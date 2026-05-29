@@ -51,8 +51,9 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [skipped, setSkipped]           = useState<Set<number>>(new Set());
   const [activeTimers, setActiveTimers] = useState<Map<number, ActiveTimer>>(new Map());
-  const [minimized, setMinimized]       = useState(false);
-  const [showOverview, setShowOverview] = useState(false);
+  const [minimized, setMinimized]         = useState(false);
+  const [showOverview, setShowOverview]   = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const timerIdRef       = useRef(0);
   const lastAdvanceRef   = useRef(0);
   const touchStartYRef   = useRef(0);
@@ -201,7 +202,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
           )}
         </div>
         <button
-          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          onClick={(e) => { e.stopPropagation(); setShowExitConfirm(true); }}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(247,243,238,0.5)', padding: 2, flexShrink: 0 }}
         >
           <X size={14} />
@@ -262,7 +263,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                 −
               </button>
               <button
-                onClick={onClose}
+                onClick={() => setShowExitConfirm(true)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B6560' }}
                 title="סגור"
               >
@@ -553,6 +554,65 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
             </>
           )}
         </div>
+
+        {/* Exit confirmation dialog */}
+        <AnimatePresence>
+          {showExitConfirm && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{
+                position: 'absolute', inset: 0, zIndex: 20,
+                background: 'rgba(26,25,24,0.5)', backdropFilter: 'blur(2px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: 24,
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                dir="rtl"
+                style={{
+                  background: '#F7F3EE', borderRadius: 20,
+                  padding: '28px 24px', width: '100%', maxWidth: 320,
+                  textAlign: 'center',
+                  boxShadow: '0 12px 40px rgba(26,25,24,0.25)',
+                }}
+              >
+                <div style={{ fontSize: 36, marginBottom: 12 }}>🍳</div>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: '#1A1918', margin: '0 0 8px' }}>
+                  לצאת מהמילפרפ?
+                </h3>
+                <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.55)', margin: '0 0 24px', lineHeight: 1.5 }}>
+                  ההתקדמות והטיימרים יאבדו
+                </p>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button
+                    onClick={() => setShowExitConfirm(false)}
+                    style={{
+                      flex: 1, padding: '12px 0', borderRadius: 12,
+                      background: '#2A4F3A', color: '#F7F3EE',
+                      fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
+                    }}
+                  >
+                    המשך בישול
+                  </button>
+                  <button
+                    onClick={onClose}
+                    style={{
+                      flex: 1, padding: '12px 0', borderRadius: 12,
+                      background: '#F0EBE3', color: '#C9572A',
+                      fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
+                    }}
+                  >
+                    יציאה
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Overview panel */}
         <AnimatePresence>
