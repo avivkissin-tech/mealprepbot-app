@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, CheckCircle2, SkipForward } from 'lucide-react';
+import { X, ChevronLeft, SkipForward } from 'lucide-react';
 import { Recipe, ScheduledStep } from '@/types';
 import { scheduleMealPrep, estimateTotalMinutes, formatTimerMinutes } from '@/lib/mealPrepScheduler';
 
@@ -51,7 +51,9 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [skipped, setSkipped]           = useState<Set<number>>(new Set());
   const [activeTimers, setActiveTimers] = useState<Map<number, ActiveTimer>>(new Map());
-  const timerIdRef = useRef(0);
+  const timerIdRef       = useRef(0);
+  const lastAdvanceRef   = useRef(0);
+  const touchStartYRef   = useRef(0);
 
   // Single interval drives all timers
   useEffect(() => {
@@ -87,6 +89,20 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
     setSkipped(prev => new Set(prev).add(currentIndex));
     setCurrentIndex(i => i + 1);
   }, [currentIndex]);
+
+  const tryAdvance = useCallback(() => {
+    const now = Date.now();
+    if (now - lastAdvanceRef.current < 600) return;
+    lastAdvanceRef.current = now;
+    setCurrentIndex(i => i + 1);
+  }, []);
+
+  const tryBack = useCallback(() => {
+    const now = Date.now();
+    if (now - lastAdvanceRef.current < 600) return;
+    lastAdvanceRef.current = now;
+    setCurrentIndex(i => Math.max(0, i - 1));
+  }, []);
 
   function startTimer(step: ScheduledStep) {
     if (!step.step.timerMinutes) return;
@@ -252,7 +268,16 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
         </AnimatePresence>
 
         {/* Scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div
+          style={{ flex: 1, overflowY: isDone ? 'auto' : 'hidden', padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}
+          onWheel={isDone ? undefined : (e) => { if (e.deltaY > 30) tryAdvance(); else if (e.deltaY < -30) tryBack(); }}
+          onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY; }}
+          onTouchEnd={isDone ? undefined : (e) => {
+            const delta = touchStartYRef.current - e.changedTouches[0].clientY;
+            if (delta > 50) tryAdvance();
+            else if (delta < -50) tryBack();
+          }}
+        >
 
           {isDone ? (
             /* Completion Screen */
@@ -397,14 +422,13 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                     <button
                       onClick={advance}
                       style={{
-                        flex: 1, padding: '11px 0', borderRadius: 12,
+                        flex: 1, padding: '14px 0', borderRadius: 12,
                         background: '#2A4F3A', color: '#F7F3EE',
-                        fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
+                        fontSize: 15, fontWeight: 700, border: 'none', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       }}
                     >
-                      <CheckCircle2 size={16} />
-                      סיימתי
+                      שלב הבא ↓
                     </button>
                     <button
                       onClick={skip}
