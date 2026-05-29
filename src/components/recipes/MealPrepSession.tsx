@@ -160,7 +160,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
           width: '100%', maxWidth: 560,
           background: '#F7F3EE',
           borderRadius: '24px 24px 0 0',
-          maxHeight: '94vh',
+          height: '96dvh',
           display: 'flex', flexDirection: 'column',
           overflow: 'hidden',
         }}

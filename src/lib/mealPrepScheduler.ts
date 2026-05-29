@@ -20,36 +20,23 @@ function extractTemp(step: { en: string }): number | null {
 
 function mergeOvenPreheats(preheatSteps: ScheduledStep[]): ScheduledStep[] {
   if (preheatSteps.length === 0) return [];
+  if (preheatSteps.length === 1) return preheatSteps;
 
-  const sorted = [...preheatSteps].sort((a, b) => {
-    return (extractTemp(a.step) ?? 220) - (extractTemp(b.step) ?? 220);
-  });
-
-  const groups: ScheduledStep[][] = [];
-  for (const s of sorted) {
-    const temp = extractTemp(s.step) ?? 220;
-    const matched = groups.find(g => Math.abs((extractTemp(g[0].step) ?? 220) - temp) <= 20);
-    if (matched) matched.push(s);
-    else groups.push([s]);
-  }
-
-  return groups.map(group => {
-    if (group.length === 1) return group[0];
-    const maxTemp = Math.max(...group.map(s => extractTemp(s.step) ?? 220));
-    const names   = group.map(s => s.recipeName).join(' + ');
-    return {
-      ...group[0],
-      recipeName: names,
-      mergedRecipeIds: group.map(s => s.recipeId),
-      mergedRecipeNames: group.map(s => s.recipeName),
-      step: {
-        he: `חמם תנור ל-${maxTemp}°C עבור: ${group.map(s => s.recipeName).join(', ')}`,
-        en: `Preheat oven to ${maxTemp}°C — for: ${group.map(s => s.recipeName).join(', ')}`,
-        timerMinutes: group[0].step.timerMinutes,
-      },
-      canParallelize: true,
-    } as ScheduledStep;
-  });
+  // Always merge all preheat steps into one — user has one oven
+  const maxTemp = Math.max(...preheatSteps.map(s => extractTemp(s.step) ?? 220));
+  const names   = preheatSteps.map(s => s.recipeName).join(', ');
+  return [{
+    ...preheatSteps[0],
+    recipeName: names,
+    mergedRecipeIds: preheatSteps.map(s => s.recipeId),
+    mergedRecipeNames: preheatSteps.map(s => s.recipeName),
+    step: {
+      he: `חמם תנור ל-${maxTemp}°C עבור: ${names}`,
+      en: `Preheat oven to ${maxTemp}°C — for: ${names}`,
+      timerMinutes: preheatSteps[0].step.timerMinutes,
+    },
+    canParallelize: true,
+  } as ScheduledStep];
 }
 
 function interleaveByRecipe(steps: ScheduledStep[]): ScheduledStep[] {
