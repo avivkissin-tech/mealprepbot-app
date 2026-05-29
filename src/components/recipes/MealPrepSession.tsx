@@ -52,9 +52,17 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
   const [skipped, setSkipped]           = useState<Set<number>>(new Set());
   const [activeTimers, setActiveTimers] = useState<Map<number, ActiveTimer>>(new Map());
   const [minimized, setMinimized]       = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
   const timerIdRef       = useRef(0);
   const lastAdvanceRef   = useRef(0);
   const touchStartYRef   = useRef(0);
+
+  // Lock body scroll when session is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
 
   // Single interval drives all timers
   useEffect(() => {
@@ -238,7 +246,14 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
             <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1A1918', margin: 0 }}>
               מילפרפ פעיל
             </h2>
-            <div style={{ display: 'flex', gap: 4 }}>
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              <button
+                onClick={() => setShowOverview(true)}
+                style={{ background: '#F0EBE3', border: 'none', cursor: 'pointer', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#1A1918' }}
+                title="כל השלבים"
+              >
+                ≡ שלבים
+              </button>
               <button
                 onClick={() => setMinimized(true)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', color: '#6B6560', fontSize: 18, lineHeight: 1 }}
@@ -538,6 +553,78 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
             </>
           )}
         </div>
+
+        {/* Overview panel */}
+        <AnimatePresence>
+          {showOverview && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setShowOverview(false)}
+                style={{ position: 'absolute', inset: 0, background: 'rgba(26,25,24,0.4)', zIndex: 10 }}
+              />
+              <motion.div
+                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  maxHeight: '80%', background: '#F7F3EE',
+                  borderRadius: '20px 20px 0 0', zIndex: 11,
+                  display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                }}
+              >
+                <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #E0D9CE', flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1A1918', margin: 0 }}>כל השלבים</h3>
+                  <button onClick={() => setShowOverview(false)} style={{ background: '#E0D9CE', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', fontSize: 14, color: '#1A1918', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                </div>
+                <div style={{ overflowY: 'auto', flex: 1 }}>
+                  {steps.map((s, i) => (
+                    <div
+                      key={i}
+                      onClick={() => { setCurrentIndex(i); setShowOverview(false); }}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: 12,
+                        padding: '11px 20px',
+                        borderBottom: '1px solid #F0EBE3',
+                        cursor: 'pointer',
+                        background: i === currentIndex ? '#EBF2ED' : i < currentIndex ? 'rgba(0,0,0,0.02)' : 'transparent',
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flexShrink: 0, paddingTop: 3 }}>
+                        <div style={{
+                          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                          background: i < currentIndex ? '#E0D9CE' : i === currentIndex ? recipeColorMap.get(s.recipeId) ?? '#2A4F3A' : '#fff',
+                          border: `2px solid ${i === currentIndex ? recipeColorMap.get(s.recipeId) ?? '#2A4F3A' : '#E0D9CE'}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 10, fontWeight: 700, color: i < currentIndex ? '#6B6560' : i === currentIndex ? '#fff' : '#1A1918',
+                        }}>
+                          {i < currentIndex ? '✓' : i + 1}
+                        </div>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: 11, color: recipeColorMap.get(s.recipeId) ?? '#2A4F3A', fontWeight: 600, margin: '0 0 2px' }}>
+                          {s.recipeName}
+                        </p>
+                        <p style={{
+                          fontSize: 13, color: i < currentIndex ? 'rgba(26,25,24,0.4)' : '#1A1918',
+                          margin: 0, lineHeight: 1.4,
+                          textDecoration: i < currentIndex ? 'line-through' : 'none',
+                        }}>
+                          {s.step.he}
+                        </p>
+                      </div>
+                      {s.step.timerMinutes && (
+                        <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', flexShrink: 0, paddingTop: 3 }}>
+                          {formatTimerMinutes(s.step.timerMinutes)}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );
