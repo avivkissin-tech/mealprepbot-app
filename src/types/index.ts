@@ -90,6 +90,17 @@ export interface ChecklistItem {
   descriptionEn: string;
 }
 
+export interface ScheduledStep {
+  recipeId: string;
+  recipeName: string;
+  stepIndex: number;
+  step: PrepStep;
+  type: 'passive_start' | 'active' | 'passive_wait';
+  canParallelize: boolean;
+  mergedRecipeIds?: string[];
+  mergedRecipeNames?: string[];
+}
+
 export interface ShoppingListEntry {
   nameHe: string;
   nameEn: string;

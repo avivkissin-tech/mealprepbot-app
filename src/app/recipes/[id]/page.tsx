@@ -3,8 +3,27 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import { getRecipeById } from '@/data/recipes';
+
+const STORAGE_KEY_HISTORY = 'easyprep_cook_history';
+
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+function hasCookedToday(): boolean {
+  try {
+    const history: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '[]');
+    return history.some(d => d.slice(0, 10) === todayStr());
+  } catch { return false; }
+}
+
+function markCooked() {
+  try {
+    const history: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '[]');
+    history.push(new Date().toISOString());
+    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+  } catch { /* ignore */ }
+}
 import { useLanguage } from '@/context/LanguageContext';
 import IngredientList from '@/components/recipes/IngredientList';
 import StepByStep from '@/components/recipes/StepByStep';
@@ -35,6 +54,19 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
   const { id } = use(params);
   const { locale, t } = useLanguage();
   const recipe = getRecipeById(id);
+
+  const [cookedToday, setCookedToday] = useState(false);
+  const [justMarked, setJustMarked] = useState(false);
+
+  useEffect(() => {
+    setCookedToday(hasCookedToday());
+  }, []);
+
+  function handleMarkCooked() {
+    markCooked();
+    setCookedToday(true);
+    setJustMarked(true);
+  }
 
   if (!recipe) notFound();
 
@@ -148,6 +180,29 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
       <div>
         <h2 className="text-lg font-bold text-[#18181b] mb-4">{t('recipe.steps')}</h2>
         <StepByStep steps={recipe.steps} />
+      </div>
+
+      {/* Mark as cooked */}
+      <div className="mt-8 pt-6 border-t border-zinc-100 flex justify-center">
+        <button
+          onClick={handleMarkCooked}
+          disabled={cookedToday}
+          style={{
+            padding: '12px 28px',
+            borderRadius: 9999,
+            background: cookedToday ? '#E5E0D8' : '#2A4F3A',
+            color: cookedToday ? '#6B6560' : '#FFFFFF',
+            fontSize: 15,
+            fontWeight: 700,
+            border: 'none',
+            cursor: cookedToday ? 'default' : 'pointer',
+            transition: 'background 0.2s',
+          }}
+        >
+          {cookedToday
+            ? (justMarked ? '✓ נרשם! כל הכבוד' : '✓ הכנת היום')
+            : 'הכנתי היום'}
+        </button>
       </div>
     </div>
   );

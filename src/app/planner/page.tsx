@@ -6,7 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { recipes } from '@/data/recipes';
 import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CATEGORY_ORDER } from '@/lib/shoppingList';
-import { ShoppingCategory } from '@/types';
+import { ShoppingCategory, Recipe } from '@/types';
+import { scheduleMealPrep, estimateTotalMinutes, formatTimerMinutes } from '@/lib/mealPrepScheduler';
+import MealPrepSession from '@/components/recipes/MealPrepSession';
 
 const DAYS = ['יום 1', 'יום 2', 'יום 3', 'יום 4', 'יום 5', 'יום 6', 'יום 7'];
 
@@ -39,6 +41,10 @@ export default function PlannerPage() {
   // shopping panel
   const [showShopping, setShowShopping] = useState(false);
   const [shoppingView, setShoppingView] = useState<'general' | 'byRecipe'>('general');
+  // meal prep session
+  const [showMealPrepModal, setShowMealPrepModal]     = useState(false);
+  const [prepSelectedIds, setPrepSelectedIds]         = useState<Set<string>>(new Set());
+  const [showMealPrepSession, setShowMealPrepSession] = useState(false);
 
   // שמור כל שינוי ב-localStorage
   useEffect(() => {
@@ -122,6 +128,27 @@ export default function PlannerPage() {
 
   const totalRecipes = Object.values(plan).reduce((sum, arr) => sum + arr.length, 0);
 
+  const plannerRecipes = useMemo((): Recipe[] => {
+    const seen = new Set<string>();
+    const result: Recipe[] = [];
+    for (const ids of Object.values(plan)) {
+      for (const id of ids) {
+        if (!seen.has(id)) {
+          seen.add(id);
+          const r = recipes.find(rec => rec.id === id);
+          if (r) result.push(r);
+        }
+      }
+    }
+    return result;
+  }, [plan]);
+
+  const estimatedPrepMinutes = useMemo(() => {
+    const selected = plannerRecipes.filter(r => prepSelectedIds.has(r.id));
+    if (selected.length === 0) return 0;
+    return estimateTotalMinutes(scheduleMealPrep(selected));
+  }, [prepSelectedIds, plannerRecipes]);
+
   const filteredForModal = useMemo(() => {
     if (!modalSearch.trim()) return recipes;
     const q = modalSearch.toLowerCase();
@@ -142,6 +169,23 @@ export default function PlannerPage() {
             {totalRecipes > 0 ? `${totalRecipes} ארוחות מתוכננות השבוע` : 'לחץ + להוסיף ארוחה לכל יום'}
           </p>
         </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+        {totalRecipes > 0 && (
+          <button
+            onClick={() => {
+              setPrepSelectedIds(new Set(plannerRecipes.map(r => r.id)));
+              setShowMealPrepModal(true);
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 20px', borderRadius: 9999,
+              background: '#2A4F3A', color: '#F7F3EE',
+              fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
+            }}
+          >
+            🍳 התחל מילפרפ
+          </button>
+        )}
         <button
           onClick={() => setShowShopping(true)}
           style={{
@@ -166,6 +210,7 @@ export default function PlannerPage() {
             </span>
           )}
         </button>
+        </div>
       </div>
 
       {/* ── 7-day grid ── */}
@@ -426,6 +471,117 @@ export default function PlannerPage() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* ── Meal Prep recipe selection modal ── */}
+      <AnimatePresence>
+        {showMealPrepModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowMealPrepModal(false)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(26,25,24,0.5)', backdropFilter: 'blur(4px)', zIndex: 100 }}
+            />
+            <motion.div
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              style={{
+                position: 'fixed', bottom: 0, left: 0, right: 0,
+                maxHeight: '80vh', background: '#F7F3EE',
+                borderRadius: '20px 20px 0 0', zIndex: 101,
+                display: 'flex', flexDirection: 'column', overflow: 'hidden',
+              }}
+              dir="rtl"
+            >
+              {/* Header */}
+              <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #E0D9CE', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1918', margin: 0 }}>בחר מתכונים לבישול</h2>
+                  <button onClick={() => setShowMealPrepModal(false)}
+                    style={{ background: '#E0D9CE', border: 'none', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer', fontSize: 16, color: '#1A1918', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                </div>
+              </div>
+
+              {/* Recipe list */}
+              <div style={{ overflowY: 'auto', flex: 1 }}>
+                {plannerRecipes.map(recipe => (
+                  <div
+                    key={recipe.id}
+                    onClick={() => setPrepSelectedIds(prev => {
+                      const next = new Set(prev);
+                      next.has(recipe.id) ? next.delete(recipe.id) : next.add(recipe.id);
+                      return next;
+                    })}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '12px 20px', cursor: 'pointer',
+                      borderBottom: '1px solid #F0EBE3',
+                      background: prepSelectedIds.has(recipe.id) ? '#EBF2ED' : 'transparent',
+                      transition: 'background 0.15s',
+                    }}
+                  >
+                    {/* Checkbox */}
+                    <div style={{
+                      width: 20, height: 20, borderRadius: 6, flexShrink: 0,
+                      border: `2px solid ${prepSelectedIds.has(recipe.id) ? '#2A4F3A' : '#D4CCBf'}`,
+                      background: prepSelectedIds.has(recipe.id) ? '#2A4F3A' : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.15s',
+                    }}>
+                      {prepSelectedIds.has(recipe.id) && (
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="#F7F3EE" strokeWidth="1.8" strokeLinecap="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <div style={{ position: 'relative', width: 40, height: 40, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
+                      <Image src={recipe.image} alt="" fill sizes="40px" style={{ objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1918', margin: 0 }}>{recipe.nameHe}</p>
+                      <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)', margin: 0 }}>{recipe.prepTimeMin + recipe.cookTimeMin} דק׳</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Footer */}
+              <div style={{
+                padding: '12px 20px', borderTop: '1px solid #E0D9CE',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                flexShrink: 0, background: '#fff',
+              }}>
+                <span style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)' }}>
+                  {prepSelectedIds.size > 0 ? `~${formatTimerMinutes(estimatedPrepMinutes)} משוערות` : 'בחר לפחות מתכון אחד'}
+                </span>
+                <button
+                  disabled={prepSelectedIds.size === 0}
+                  onClick={() => { setShowMealPrepModal(false); setShowMealPrepSession(true); }}
+                  style={{
+                    padding: '10px 24px', borderRadius: 9999,
+                    background: prepSelectedIds.size === 0 ? '#E0D9CE' : '#2A4F3A',
+                    color: prepSelectedIds.size === 0 ? 'rgba(26,25,24,0.3)' : '#F7F3EE',
+                    fontSize: 13, fontWeight: 600, border: 'none',
+                    cursor: prepSelectedIds.size === 0 ? 'default' : 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  התחל בישול ←
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── Meal Prep Session ── */}
+      <AnimatePresence>
+        {showMealPrepSession && (
+          <MealPrepSession
+            selectedRecipes={plannerRecipes.filter(r => prepSelectedIds.has(r.id))}
+            onClose={() => setShowMealPrepSession(false)}
+          />
         )}
       </AnimatePresence>
 
