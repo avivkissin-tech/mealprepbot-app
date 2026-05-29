@@ -51,6 +51,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [skipped, setSkipped]           = useState<Set<number>>(new Set());
   const [activeTimers, setActiveTimers] = useState<Map<number, ActiveTimer>>(new Map());
+  const [minimized, setMinimized]       = useState(false);
   const timerIdRef       = useRef(0);
   const lastAdvanceRef   = useRef(0);
   const touchStartYRef   = useRef(0);
@@ -155,6 +156,52 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
 
   const timersArray = Array.from(activeTimers.values());
 
+  // Minimized bubble
+  if (minimized) {
+    const bubbleStep = steps[currentIndex];
+    const runningTimers = Array.from(activeTimers.values()).filter(t => t.status === 'running');
+    return (
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        dir="rtl"
+        style={{
+          position: 'fixed', bottom: 24, left: 16, zIndex: 1000,
+          background: '#1A1918', color: '#F7F3EE',
+          borderRadius: 20, padding: '10px 14px',
+          boxShadow: '0 8px 32px rgba(26,25,24,0.35)',
+          display: 'flex', alignItems: 'center', gap: 10,
+          cursor: 'pointer', maxWidth: 280,
+        }}
+        onClick={() => setMinimized(false)}
+      >
+        <span style={{ fontSize: 18 }}>🍳</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            שלב {currentIndex + 1}/{steps.length}
+            {runningTimers.length > 0 && (
+              <span style={{ color: '#C9572A', marginRight: 6 }}>
+                ⏱ {formatSeconds(runningTimers[0].remaining)}
+              </span>
+            )}
+          </p>
+          {bubbleStep && (
+            <p style={{ fontSize: 11, color: 'rgba(247,243,238,0.6)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {bubbleStep.step.he}
+            </p>
+          )}
+        </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(247,243,238,0.5)', padding: 2, flexShrink: 0 }}
+        >
+          <X size={14} />
+        </button>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -191,12 +238,22 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
             <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1A1918', margin: 0 }}>
               מילפרפ פעיל
             </h2>
-            <button
-              onClick={onClose}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B6560' }}
-            >
-              <X size={20} />
-            </button>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button
+                onClick={() => setMinimized(true)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', color: '#6B6560', fontSize: 18, lineHeight: 1 }}
+                title="מזער"
+              >
+                −
+              </button>
+              <button
+                onClick={onClose}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#6B6560' }}
+                title="סגור"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
           <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
             {selectedRecipes.map(r => r.nameHe).join(' · ')} · ~{formatTimerMinutes(totalMinutes)}
