@@ -41,10 +41,19 @@ export default function PlannerPage() {
   // shopping panel
   const [showShopping, setShowShopping] = useState(false);
   const [shoppingView, setShoppingView] = useState<'general' | 'byRecipe'>('general');
-  // meal prep session
-  const [showMealPrepModal, setShowMealPrepModal]     = useState(false);
-  const [prepSelectedIds, setPrepSelectedIds]         = useState<Set<string>>(new Set());
-  const [showMealPrepSession, setShowMealPrepSession] = useState(false);
+  // meal prep session — restore from localStorage if session was minimized
+  const [showMealPrepModal, setShowMealPrepModal] = useState(false);
+  const [prepSelectedIds, setPrepSelectedIds]     = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem('easyprep_active_session');
+      if (!raw) return new Set();
+      const { recipeIds } = JSON.parse(raw);
+      return new Set(recipeIds as string[]);
+    } catch { return new Set(); }
+  });
+  const [showMealPrepSession, setShowMealPrepSession] = useState(() => {
+    try { return !!localStorage.getItem('easyprep_active_session'); } catch { return false; }
+  });
 
   // שמור כל שינוי ב-localStorage
   useEffect(() => {

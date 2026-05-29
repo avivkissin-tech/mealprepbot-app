@@ -7,6 +7,16 @@ import { Recipe, ScheduledStep } from '@/types';
 import { scheduleMealPrep, estimateTotalMinutes, formatTimerMinutes } from '@/lib/mealPrepScheduler';
 
 const RECIPE_COLORS = ['#2A4F3A', '#C9572A', '#5B7FA6', '#8B5E3C', '#7A5EA6'];
+const SESSION_KEY   = 'easyprep_active_session';
+
+interface SavedSession {
+  recipeIds: string[];
+  currentIndex: number;
+  skipped: number[];
+  minimized: boolean;
+  timers: (ActiveTimer & { id: number })[];
+  savedAt: number;
+}
 
 interface ActiveTimer {
   id: number;
@@ -21,6 +31,28 @@ interface ActiveTimer {
 interface Props {
   selectedRecipes: Recipe[];
   onClose: () => void;
+}
+
+function readSavedSession(recipeIds: string[]): SavedSession | null {
+  try {
+    if (typeof window === 'undefined') return null;
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const p: SavedSession = JSON.parse(raw);
+    if ((p.recipeIds ?? []).join(',') !== recipeIds.join(',')) return null;
+    return p;
+  } catch { return null; }
+}
+
+function restoreTimers(saved: SavedSession | null): Map<number, ActiveTimer> {
+  if (!saved?.timers?.length) return new Map();
+  const elapsed = Math.floor((Date.now() - (saved.savedAt ?? Date.now())) / 1000);
+  const map = new Map<number, ActiveTimer>();
+  for (const t of saved.timers) {
+    const remaining = t.status === 'running' ? Math.max(0, t.remaining - elapsed) : t.remaining;
+    map.set(t.id, { ...t, remaining, status: remaining === 0 ? 'done' : t.status });
+  }
+  return map;
 }
 
 function playBeep() {
@@ -48,13 +80,16 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
     return map;
   }, [selectedRecipes]);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [skipped, setSkipped]           = useState<Set<number>>(new Set());
-  const [activeTimers, setActiveTimers] = useState<Map<number, ActiveTimer>>(new Map());
-  const [minimized, setMinimized]         = useState(false);
+  const [savedState]    = useState(() => readSavedSession(selectedRecipes.map(r => r.id)));
+  const [currentIndex, setCurrentIndex] = useState(() => savedState?.currentIndex ?? 0);
+  const [skipped, setSkipped]           = useState<Set<number>>(() => new Set(savedState?.skipped ?? []));
+  const [activeTimers, setActiveTimers] = useState<Map<number, ActiveTimer>>(() => restoreTimers(savedState));
+  const [minimized, setMinimized]         = useState(() => savedState?.minimized ?? false);
   const [showOverview, setShowOverview]   = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const timerIdRef       = useRef(0);
+  const timerIdRef = useRef(
+    savedState?.timers?.length ? Math.max(...savedState.timers.map(t => t.id), 0) : 0
+  );
   const lastAdvanceRef   = useRef(0);
   const touchStartYRef   = useRef(0);
 
@@ -64,6 +99,20 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
   }, []);
+
+  // Persist session state to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        recipeIds: selectedRecipes.map(r => r.id),
+        currentIndex,
+        skipped: Array.from(skipped),
+        minimized,
+        timers: Array.from(activeTimers.values()),
+        savedAt: Date.now(),
+      } satisfies SavedSession));
+    } catch {}
+  }, [currentIndex, skipped, minimized, activeTimers, selectedRecipes]);
 
   // Single interval drives all timers
   useEffect(() => {
@@ -113,6 +162,11 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
     lastAdvanceRef.current = now;
     setCurrentIndex(i => Math.max(0, i - 1));
   }, []);
+
+  const handleClose = useCallback(() => {
+    try { localStorage.removeItem(SESSION_KEY); } catch {}
+    onClose();
+  }, [onClose]);
 
   function startTimer(step: ScheduledStep) {
     if (!step.step.timerMinutes) return;
@@ -403,7 +457,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
               </div>
 
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 style={{
                   marginTop: 24,
                   padding: '12px 32px',
@@ -612,7 +666,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                     המשך בישול
                   </button>
                   <button
-                    onClick={onClose}
+                    onClick={handleClose}
                     style={{
                       flex: 1, padding: '12px 0', borderRadius: 12,
                       background: '#F0EBE3', color: '#C9572A',
