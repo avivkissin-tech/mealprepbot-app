@@ -165,7 +165,7 @@ export default function PlannerPage() {
   }, [modalSearch]);
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: '#F7F3EE' }}>
+    <div dir="rtl" style={{ minHeight: '100vh', background: '#faf9f7' }}>
 
       {/* ── Header bar ── */}
       <div style={{
@@ -173,7 +173,7 @@ export default function PlannerPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1A1918', margin: 0 }}>הפלאנר שלי</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>הפלאנר שלי</h1>
           <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginTop: 2 }}>
             {totalRecipes > 0 ? `${totalRecipes} ארוחות מתוכננות השבוע` : 'לחץ + להוסיף ארוחה לכל יום'}
           </p>
@@ -188,7 +188,7 @@ export default function PlannerPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '10px 20px', borderRadius: 9999,
-              background: '#2A4F3A', color: '#F7F3EE',
+              background: '#14422d', color: '#faf9f7',
               fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
             }}
           >
@@ -200,7 +200,7 @@ export default function PlannerPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', borderRadius: 9999,
-            background: '#1A1918', color: '#F7F3EE',
+            background: '#1a1c1b', color: '#faf9f7',
             fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
         >
@@ -241,7 +241,7 @@ export default function PlannerPage() {
                 style={{
                   background: '#fff',
                   borderRadius: 16,
-                  border: '1px solid #E0D9CE',
+                  border: '1px solid #c0c9c1',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
@@ -253,7 +253,7 @@ export default function PlannerPage() {
                   borderBottom: dayRecipes.length > 0 ? '1px solid #F0EBE3' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1918' }}>{dayLabel}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1c1b' }}>{dayLabel}</span>
                   {dayRecipes.length > 0 && (
                     <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)' }}>{dayRecipes.length} ארוחות</span>
                   )}
@@ -312,7 +312,7 @@ export default function PlannerPage() {
                           {/* Name + serves */}
                           <div style={{ padding: '8px 10px' }}>
                             <p style={{
-                              fontSize: 11, fontWeight: 600, color: '#1A1918',
+                              fontSize: 11, fontWeight: 600, color: '#1a1c1b',
                               lineHeight: 1.3, marginBottom: 6,
                               display: '-webkit-box', WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -326,7 +326,7 @@ export default function PlannerPage() {
                                   onClick={() => adjustServes(dayIdx, slotIdx, -1)}
                                   style={{ ...serveBtnStyle }}
                                 >−</button>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: '#1A1918', minWidth: 14, textAlign: 'center' }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: '#1a1c1b', minWidth: 14, textAlign: 'center' }}>
                                   {currentServes}
                                 </span>
                                 <button
@@ -357,7 +357,7 @@ export default function PlannerPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#2A4F3A'; e.currentTarget.style.color = '#2A4F3A'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#14422d'; e.currentTarget.style.color = '#14422d'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = '#D4CCBf'; e.currentTarget.style.color = 'rgba(26,25,24,0.4)'; }}
                 >
                   +
@@ -392,7 +392,7 @@ export default function PlannerPage() {
               style={{
                 position: 'fixed', bottom: 0, left: 0, right: 0,
                 maxHeight: '80vh',
-                background: '#F7F3EE',
+                background: '#faf9f7',
                 borderRadius: '20px 20px 0 0',
                 zIndex: 101,
                 display: 'flex', flexDirection: 'column',
@@ -402,7 +402,7 @@ export default function PlannerPage() {
               {/* Modal header */}
               <div style={{
                 padding: '16px 20px 12px',
-                borderBottom: '1px solid #E0D9CE',
+                borderBottom: '1px solid #c0c9c1',
                 display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0,
               }}>
                 <div style={{ position: 'relative', flex: 1 }}>
@@ -418,8 +418,8 @@ export default function PlannerPage() {
                     autoFocus
                     style={{
                       width: '100%', padding: '9px 36px 9px 14px',
-                      borderRadius: 9999, border: '1px solid #E0D9CE',
-                      background: '#fff', fontSize: 14, color: '#1A1918',
+                      borderRadius: 9999, border: '1px solid #c0c9c1',
+                      background: '#fff', fontSize: 14, color: '#1a1c1b',
                       outline: 'none', direction: 'rtl',
                     }}
                   />
@@ -428,8 +428,8 @@ export default function PlannerPage() {
                   onClick={() => { setPickingDay(null); setModalSearch(''); }}
                   style={{
                     width: 32, height: 32, borderRadius: '50%',
-                    background: '#E0D9CE', border: 'none',
-                    fontSize: 16, cursor: 'pointer', color: '#1A1918',
+                    background: '#c0c9c1', border: 'none',
+                    fontSize: 16, cursor: 'pointer', color: '#1a1c1b',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
                 >×</button>
@@ -454,7 +454,7 @@ export default function PlannerPage() {
                         whileTap={{ scale: 0.97 }}
                         onClick={() => addRecipe(pickingDay, recipe.id)}
                         style={{
-                          background: '#fff', border: '1px solid #E0D9CE',
+                          background: '#fff', border: '1px solid #c0c9c1',
                           borderRadius: 12, overflow: 'hidden',
                           cursor: 'pointer', textAlign: 'right', padding: 0,
                         }}
@@ -464,7 +464,7 @@ export default function PlannerPage() {
                         </div>
                         <div style={{ padding: '8px 10px' }}>
                           <p style={{
-                            fontSize: 11, fontWeight: 600, color: '#1A1918',
+                            fontSize: 11, fontWeight: 600, color: '#1a1c1b',
                             lineHeight: 1.3, margin: 0,
                             display: '-webkit-box', WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -497,18 +497,18 @@ export default function PlannerPage() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               style={{
                 position: 'fixed', bottom: 0, left: 0, right: 0,
-                maxHeight: '80vh', background: '#F7F3EE',
+                maxHeight: '80vh', background: '#faf9f7',
                 borderRadius: '20px 20px 0 0', zIndex: 101,
                 display: 'flex', flexDirection: 'column', overflow: 'hidden',
               }}
               dir="rtl"
             >
               {/* Header */}
-              <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #E0D9CE', flexShrink: 0 }}>
+              <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #c0c9c1', flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1918', margin: 0 }}>בחר מתכונים לבישול</h2>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>בחר מתכונים לבישול</h2>
                   <button onClick={() => setShowMealPrepModal(false)}
-                    style={{ background: '#E0D9CE', border: 'none', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer', fontSize: 16, color: '#1A1918', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                    style={{ background: '#c0c9c1', border: 'none', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer', fontSize: 16, color: '#1a1c1b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
                 </div>
               </div>
 
@@ -533,14 +533,14 @@ export default function PlannerPage() {
                     {/* Checkbox */}
                     <div style={{
                       width: 20, height: 20, borderRadius: 6, flexShrink: 0,
-                      border: `2px solid ${prepSelectedIds.has(recipe.id) ? '#2A4F3A' : '#D4CCBf'}`,
-                      background: prepSelectedIds.has(recipe.id) ? '#2A4F3A' : 'transparent',
+                      border: `2px solid ${prepSelectedIds.has(recipe.id) ? '#14422d' : '#D4CCBf'}`,
+                      background: prepSelectedIds.has(recipe.id) ? '#14422d' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.15s',
                     }}>
                       {prepSelectedIds.has(recipe.id) && (
                         <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                          <path d="M1 4L3.5 6.5L9 1" stroke="#F7F3EE" strokeWidth="1.8" strokeLinecap="round"/>
+                          <path d="M1 4L3.5 6.5L9 1" stroke="#faf9f7" strokeWidth="1.8" strokeLinecap="round"/>
                         </svg>
                       )}
                     </div>
@@ -548,7 +548,7 @@ export default function PlannerPage() {
                       <Image src={recipe.image} alt="" fill sizes="40px" style={{ objectFit: 'cover' }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1918', margin: 0 }}>{recipe.nameHe}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', margin: 0 }}>{recipe.nameHe}</p>
                       <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)', margin: 0 }}>{recipe.prepTimeMin + recipe.cookTimeMin} דק׳</p>
                     </div>
                   </div>
@@ -557,7 +557,7 @@ export default function PlannerPage() {
 
               {/* Footer */}
               <div style={{
-                padding: '12px 20px', borderTop: '1px solid #E0D9CE',
+                padding: '12px 20px', borderTop: '1px solid #c0c9c1',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 flexShrink: 0, background: '#fff',
               }}>
@@ -569,8 +569,8 @@ export default function PlannerPage() {
                   onClick={() => { setShowMealPrepModal(false); setShowMealPrepSession(true); }}
                   style={{
                     padding: '10px 24px', borderRadius: 9999,
-                    background: prepSelectedIds.size === 0 ? '#E0D9CE' : '#2A4F3A',
-                    color: prepSelectedIds.size === 0 ? 'rgba(26,25,24,0.3)' : '#F7F3EE',
+                    background: prepSelectedIds.size === 0 ? '#c0c9c1' : '#14422d',
+                    color: prepSelectedIds.size === 0 ? 'rgba(26,25,24,0.3)' : '#faf9f7',
                     fontSize: 13, fontWeight: 600, border: 'none',
                     cursor: prepSelectedIds.size === 0 ? 'default' : 'pointer',
                     transition: 'all 0.15s',
@@ -619,11 +619,11 @@ export default function PlannerPage() {
             >
               <div style={{
                 padding: '20px 20px 14px',
-                borderBottom: '1px solid #E0D9CE',
+                borderBottom: '1px solid #c0c9c1',
                 flexShrink: 0,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1A1918', margin: 0 }}>
+                  <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>
                     רשימת קניות
                   </h2>
                   <button
@@ -631,7 +631,7 @@ export default function PlannerPage() {
                     style={{
                       width: 30, height: 30, borderRadius: '50%',
                       background: '#F0EBE3', border: 'none',
-                      fontSize: 16, cursor: 'pointer', color: '#1A1918',
+                      fontSize: 16, cursor: 'pointer', color: '#1a1c1b',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}
                   >×</button>
@@ -658,7 +658,7 @@ export default function PlannerPage() {
                         cursor: 'pointer',
                         transition: 'all 0.18s',
                         background: shoppingView === view ? '#fff' : 'transparent',
-                        color: shoppingView === view ? '#1A1918' : 'rgba(26,25,24,0.45)',
+                        color: shoppingView === view ? '#1a1c1b' : 'rgba(26,25,24,0.45)',
                         boxShadow: shoppingView === view ? '0 1px 4px rgba(26,25,24,0.10)' : 'none',
                       }}
                     >
@@ -679,7 +679,7 @@ export default function PlannerPage() {
                     <div key={cat} style={{ marginBottom: 24 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                         <span style={{ fontSize: 16 }}>{SHOPPING_ICON[cat]}</span>
-                        <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1A1918', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                           {SHOPPING_LABEL_HE[cat]}
                         </h3>
                       </div>
@@ -688,11 +688,11 @@ export default function PlannerPage() {
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '8px 0', borderBottom: '1px solid #F0EBE3',
                         }}>
-                          <span style={{ fontSize: 13, color: '#1A1918' }}>
+                          <span style={{ fontSize: 13, color: '#1a1c1b' }}>
                             {isHe ? item.nameHe : item.nameEn}
                             {item.optional && <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', marginRight: 4 }}>(אופציונלי)</span>}
                           </span>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#2A4F3A', flexShrink: 0 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
                             {item.quantity > 0 ? `${item.quantity} ${item.unit}` : item.unit}
                           </span>
                         </div>
@@ -703,7 +703,7 @@ export default function PlannerPage() {
                   perRecipeLists.map(({ key, recipe, servings, items }) => (
                     <div key={key} style={{
                       marginBottom: 20,
-                      border: '1px solid #E0D9CE',
+                      border: '1px solid #c0c9c1',
                       borderRadius: 12,
                       overflow: 'hidden',
                     }}>
@@ -711,14 +711,14 @@ export default function PlannerPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', gap: 10,
                         padding: '10px 12px',
-                        background: '#F7F3EE',
-                        borderBottom: '1px solid #E0D9CE',
+                        background: '#faf9f7',
+                        borderBottom: '1px solid #c0c9c1',
                       }}>
                         <div style={{ position: 'relative', width: 36, height: 36, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
                           <Image src={recipe.image} alt="" fill sizes="36px" style={{ objectFit: 'cover' }} />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: '#1A1918', margin: 0,
+                          <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b', margin: 0,
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {isHe ? recipe.nameHe : recipe.nameEn}
                           </p>
@@ -732,11 +732,11 @@ export default function PlannerPage() {
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             padding: '6px 0', borderBottom: i < items.length - 1 ? '1px solid #F0EBE3' : 'none',
                           }}>
-                            <span style={{ fontSize: 12, color: '#1A1918' }}>
+                            <span style={{ fontSize: 12, color: '#1a1c1b' }}>
                               {isHe ? item.nameHe : item.nameEn}
                               {item.optional && <span style={{ fontSize: 10, color: 'rgba(26,25,24,0.4)', marginRight: 4 }}>(אופציונלי)</span>}
                             </span>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#2A4F3A', flexShrink: 0 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
                               {item.quantity > 0 ? `${item.quantity} ${item.unit}` : item.unit}
                             </span>
                           </div>
@@ -757,7 +757,7 @@ export default function PlannerPage() {
 const serveBtnStyle: React.CSSProperties = {
   width: 20, height: 20, borderRadius: '50%',
   background: '#F0EBE3', border: 'none',
-  fontSize: 13, cursor: 'pointer', color: '#1A1918',
+  fontSize: 13, cursor: 'pointer', color: '#1a1c1b',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   fontWeight: 700, lineHeight: 1, padding: 0,
 };

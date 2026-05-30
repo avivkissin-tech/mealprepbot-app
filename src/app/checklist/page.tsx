@@ -24,95 +24,127 @@ export default function ChecklistPage() {
   const allDone = done === total;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('checklist.title')}</h1>
-        <p className="text-gray-500">{t('checklist.subtitle')}</p>
-      </div>
+    <div dir="rtl" style={{ background: '#faf9f7', minHeight: '100vh' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px 80px' }}>
 
-      {/* Progress bar */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-          <span>
-            {t('checklist.progress')}: {done} {t('checklist.of')} {total} {t('checklist.steps')}
-          </span>
-          {done > 0 && (
-            <button
-              onClick={reset}
-              className="text-xs text-gray-400 hover:text-red-400 transition-colors"
-            >
-              {t('checklist.reset')}
-            </button>
-          )}
+        {/* Header */}
+        <div style={{ marginBottom: 32 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#14422d', margin: '0 0 6px' }}>
+            {t('checklist.title')}
+          </h1>
+          <p style={{ fontSize: 14, color: '#717973', margin: 0 }}>
+            {t('checklist.subtitle')}
+          </p>
         </div>
-        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-            style={{ width: `${(done / total) * 100}%` }}
-          />
-        </div>
-      </div>
 
-      {/* All done banner */}
-      {allDone && (
-        <div className="mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center text-emerald-700 font-semibold text-lg">
-          {t('checklist.done')}
-        </div>
-      )}
-
-      {/* Checklist items */}
-      <div className="space-y-3">
-        {checklistItems.map((item, i) => {
-          const isDone = checked.has(item.id);
-          const title = locale === 'he' ? item.titleHe : item.titleEn;
-          const description = locale === 'he' ? item.descriptionHe : item.descriptionEn;
-
-          return (
-            <div
-              key={item.id}
-              onClick={() => toggle(item.id)}
-              className={`group flex gap-4 rounded-2xl border p-4 cursor-pointer transition-all select-none ${
-                isDone
-                  ? 'bg-emerald-50 border-emerald-200 opacity-70'
-                  : 'bg-white border-gray-100 hover:border-emerald-200 hover:shadow-sm'
-              }`}
-            >
-              {/* Checkbox */}
-              <div
-                className={`flex-shrink-0 w-10 h-10 rounded-full border-2 flex items-center justify-center text-lg transition-colors ${
-                  isDone
-                    ? 'bg-emerald-500 border-emerald-500 text-white'
-                    : 'border-gray-200 group-hover:border-emerald-300'
-                }`}
+        {/* Progress bar */}
+        <div style={{
+          background: '#ffffff', borderRadius: 20, padding: '20px 24px',
+          boxShadow: '0 8px 32px rgba(45,90,67,0.05)', marginBottom: 28,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <span style={{ fontSize: 13, color: '#414943', fontWeight: 600 }}>
+              {done} / {total} {t('checklist.steps')}
+            </span>
+            {done > 0 && (
+              <button
+                onClick={reset}
+                style={{
+                  fontSize: 12, color: '#717973', background: 'none', border: 'none',
+                  cursor: 'pointer', padding: 0, fontWeight: 500,
+                }}
               >
-                {isDone ? '✓' : STEP_ICONS[i] ?? String(i + 1)}
-              </div>
+                {t('checklist.reset')}
+              </button>
+            )}
+          </div>
+          <div style={{ height: 6, background: '#efeeec', borderRadius: 9999, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', background: '#14422d', borderRadius: 9999,
+              width: `${(done / total) * 100}%`, transition: 'width 0.4s ease',
+            }} />
+          </div>
+          <div style={{ marginTop: 8, fontSize: 12, color: '#717973' }}>
+            {Math.round((done / total) * 100)}% הושלם
+          </div>
+        </div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <p
-                  className={`font-semibold text-sm transition-all ${
-                    isDone ? 'line-through text-gray-400' : 'text-gray-900'
-                  }`}
-                >
-                  {title}
-                </p>
-                <p
-                  className={`text-sm mt-0.5 transition-all ${
-                    isDone ? 'text-gray-300' : 'text-gray-500'
-                  }`}
-                >
-                  {description}
-                </p>
+        {/* All done banner */}
+        {allDone && (
+          <div style={{
+            marginBottom: 24, background: 'rgba(20,66,45,0.07)',
+            border: '1px solid rgba(20,66,45,0.15)', borderRadius: 16,
+            padding: '16px 20px', textAlign: 'center',
+            fontSize: 15, fontWeight: 700, color: '#14422d',
+          }}>
+            🎉 {t('checklist.done')}
+          </div>
+        )}
+
+        {/* Checklist items */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {checklistItems.map((item, i) => {
+            const isDone = checked.has(item.id);
+            const title = locale === 'he' ? item.titleHe : item.titleEn;
+            const description = locale === 'he' ? item.descriptionHe : item.descriptionEn;
+
+            return (
+              <div
+                key={item.id}
+                onClick={() => toggle(item.id)}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 16,
+                  background: isDone ? 'rgba(20,66,45,0.04)' : '#ffffff',
+                  borderRadius: 16, padding: '16px 20px',
+                  cursor: 'pointer', userSelect: 'none',
+                  border: isDone ? '1px solid rgba(20,66,45,0.12)' : '1px solid #efeeec',
+                  boxShadow: isDone ? 'none' : '0 2px 8px rgba(45,90,67,0.04)',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {/* Checkbox */}
+                <div style={{
+                  flexShrink: 0, width: 40, height: 40, borderRadius: 12,
+                  border: `2px solid ${isDone ? '#14422d' : '#c0c9c1'}`,
+                  background: isDone ? '#14422d' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: isDone ? 16 : 18, color: isDone ? '#ffffff' : 'inherit',
+                  transition: 'all 0.15s',
+                }}>
+                  {isDone ? '✓' : STEP_ICONS[i] ?? String(i + 1)}
+                </div>
+
+                {/* Content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{
+                    fontSize: 14, fontWeight: 600, margin: '0 0 4px',
+                    color: isDone ? '#717973' : '#1a1c1b',
+                    textDecoration: isDone ? 'line-through' : 'none',
+                    transition: 'all 0.15s',
+                  }}>
+                    {title}
+                  </p>
+                  <p style={{
+                    fontSize: 13, margin: 0, lineHeight: 1.5,
+                    color: isDone ? '#c0c9c1' : '#414943',
+                    transition: 'all 0.15s',
+                  }}>
+                    {description}
+                  </p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        {/* Tip */}
+        <p style={{
+          marginTop: 32, textAlign: 'center', fontSize: 12,
+          color: '#c0c9c1', fontStyle: 'italic',
+        }}>
+          {t('checklist.tip')}
+        </p>
       </div>
-
-      {/* Tip */}
-      <p className="mt-8 text-center text-sm text-gray-400 italic">{t('checklist.tip')}</p>
     </div>
   );
 }

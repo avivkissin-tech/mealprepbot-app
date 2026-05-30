@@ -6,29 +6,13 @@ import { Recipe, DietaryTag } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMealPlan } from '@/context/MealPlanContext';
 
-const CATEGORY_GRADIENT: Record<string, string> = {
-  fish:      'from-sky-200 to-blue-300',
-  chicken:   'from-amber-200 to-orange-300',
-  turkey:    'from-orange-200 to-red-300',
-  tofu:      'from-lime-200 to-emerald-300',
-  breakfast: 'from-yellow-200 to-amber-300',
-  beef:      'from-red-200 to-rose-300',
-  salad:     'from-green-200 to-teal-300',
-  side:      'from-stone-200 to-zinc-300',
-};
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  fish: '🐟', chicken: '🍗', turkey: '🦃', tofu: '🌿',
-  breakfast: '🌅', beef: '🥩', salad: '🥗', side: '🍚',
-};
-
-export const DIETARY_BADGE: Record<DietaryTag, { he: string; en: string; color: string }> = {
-  'vegan':        { he: 'טבעוני',      en: 'Vegan',        color: 'bg-[#EBF2ED] text-[#2A4F3A]' },
-  'vegetarian':   { he: 'צמחוני',      en: 'Veggie',       color: 'bg-[#EBF2ED] text-[#2A4F3A]' },
-  'gluten-free':  { he: 'ללא גלוטן',   en: 'Gluten-Free',  color: 'bg-amber-50 text-amber-800' },
-  'dairy-free':   { he: 'ללא חלב',     en: 'Dairy-Free',   color: 'bg-sky-50 text-sky-800' },
-  'high-protein': { he: 'עשיר בחלבון', en: 'High-Protein', color: 'bg-[#FAE9E1] text-[#C9572A]' },
-  'low-carb':     { he: 'דל פחמימות',  en: 'Low-Carb',     color: 'bg-violet-50 text-violet-700' },
+export const DIETARY_BADGE: Record<DietaryTag, { he: string; en: string; bg: string; color: string }> = {
+  'vegan':        { he: 'טבעוני',      en: 'Vegan',        bg: 'rgba(20,66,45,0.12)',  color: '#14422d' },
+  'vegetarian':   { he: 'צמחוני',      en: 'Veggie',       bg: 'rgba(20,66,45,0.12)',  color: '#14422d' },
+  'gluten-free':  { he: 'ללא גלוטן',   en: 'Gluten-Free',  bg: 'rgba(201,87,42,0.10)', color: '#c9572a' },
+  'dairy-free':   { he: 'ללא חלב',     en: 'Dairy-Free',   bg: 'rgba(91,127,166,0.12)', color: '#3d6b8a' },
+  'high-protein': { he: 'עשיר בחלבון', en: 'High-Protein', bg: 'rgba(201,87,42,0.10)', color: '#c9572a' },
+  'low-carb':     { he: 'דל פחמימות',  en: 'Low-Carb',     bg: 'rgba(113,121,115,0.12)', color: '#414943' },
 };
 
 interface Props {
@@ -43,79 +27,129 @@ export default function RecipeCard({ recipe }: Props) {
   const totalMin = recipe.prepTimeMin + recipe.cookTimeMin;
   const primaryTag = recipe.dietaryTags?.[0];
   const badge = primaryTag ? DIETARY_BADGE[primaryTag] : null;
-  const gradient = CATEGORY_GRADIENT[recipe.category] ?? 'from-stone-200 to-zinc-300';
+  const nutrition = recipe.nutritionPerServing;
 
   return (
     <Link
       href={`/recipes/${recipe.id}`}
-      className="group block w-60 flex-shrink-0 snap-start"
+      className="group block flex-shrink-0 snap-start"
+      style={{ width: 240 }}
     >
-      {/* Image */}
       <div
-        className={`relative aspect-square w-full rounded-2xl overflow-hidden bg-gradient-to-br ${gradient} mb-3`}
-        style={{ boxShadow: '0 4px 20px rgba(26,25,24,0.10)' }}
+        style={{
+          background: '#ffffff',
+          borderRadius: 24,
+          overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
+          (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 40px rgba(45,90,67,0.10)';
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
+          (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(45,90,67,0.05)';
+        }}
       >
-        <Image
-          src={recipe.image}
-          alt={name}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          sizes="240px"
-        />
-        {/* Soft vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1918]/25 via-transparent to-transparent" />
-        {/* Emoji fallback */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-5xl opacity-25">{CATEGORY_EMOJI[recipe.category] ?? '🍽️'}</span>
-        </div>
-        {/* Add to plan button */}
-        <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleRecipe(recipe.id); }}
-          aria-label={selected ? 'Remove from plan' : 'Add to plan'}
-          className={`absolute top-2.5 end-2.5 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all shadow-md z-10 ${
-            selected
-              ? 'bg-[#2A4F3A] text-white scale-110'
-              : 'bg-white/90 text-[#2A4F3A] hover:bg-[#2A4F3A] hover:text-white'
-          }`}
-        >
-          {selected ? '✓' : '+'}
-        </button>
-      </div>
-
-      {/* Badges */}
-      <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-        {badge && (
-          <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${badge.color}`}>
-            {locale === 'he' ? badge.he : badge.en}
-          </span>
-        )}
-        <span className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-[#EDE7DC] text-[#6B6560]">
-          {totalMin} {t('recipe.minutes')}
-        </span>
-      </div>
-
-      {/* Name */}
-      <h3
-        className="font-bold text-[#1A1918] text-sm leading-snug line-clamp-2 mb-1 group-hover:text-[#2A4F3A] transition-colors"
-        style={{ fontFamily: 'var(--font-heebo), serif' }}
-      >
-        {name}
-      </h3>
-
-      {/* Chef + storage */}
-      <div className="flex items-center gap-1.5">
-        {recipe.chefName && (
-          <>
-            <span className="w-4 h-4 rounded-full bg-[#2A4F3A] text-white text-[8px] font-bold flex items-center justify-center flex-shrink-0">
-              {recipe.chefName.charAt(0)}
+        {/* Image */}
+        <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
+          <Image
+            src={recipe.image}
+            alt={name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            sizes="240px"
+          />
+          {/* Bottom gradient overlay */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to top, rgba(20,66,45,0.35) 0%, transparent 55%)',
+          }} />
+          {/* Dietary badge on image */}
+          {badge && (
+            <span style={{
+              position: 'absolute', top: 10, right: 10,
+              fontSize: 11, fontWeight: 600,
+              padding: '3px 10px', borderRadius: 9999,
+              background: badge.bg, color: badge.color,
+              backdropFilter: 'blur(8px)',
+              border: `1px solid ${badge.bg}`,
+            }}>
+              {locale === 'he' ? badge.he : badge.en}
             </span>
-            <span className="text-[11px] text-[#A09893] truncate">{recipe.chefName}</span>
-            <span className="text-[#E0D9CE] text-[10px]">·</span>
-          </>
-        )}
-        <span className="text-[11px] text-[#A09893]">
-          {recipe.storageDays} {t('recipe.days')} {locale === 'he' ? 'במקרר' : 'fridge'}
-        </span>
+          )}
+          {/* Add to plan button */}
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleRecipe(recipe.id); }}
+            aria-label={selected ? 'Remove from plan' : 'Add to plan'}
+            style={{
+              position: 'absolute', bottom: 10, left: 10,
+              width: 32, height: 32, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer',
+              transition: 'all 0.15s',
+              background: selected ? '#14422d' : 'rgba(255,255,255,0.92)',
+              color: selected ? '#ffffff' : '#14422d',
+              boxShadow: '0 2px 8px rgba(20,66,45,0.15)',
+            }}
+          >
+            {selected ? '✓' : '+'}
+          </button>
+        </div>
+
+        {/* Content */}
+        <div style={{ padding: '14px 16px 16px' }}>
+          {/* Time badge */}
+          <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              fontSize: 11, fontWeight: 600, color: '#717973',
+              background: '#efeeec', padding: '2px 8px', borderRadius: 9999,
+            }}>
+              {totalMin} {t('recipe.minutes')}
+            </span>
+            {recipe.storageDays && (
+              <span style={{
+                fontSize: 11, fontWeight: 600, color: '#717973',
+                background: '#efeeec', padding: '2px 8px', borderRadius: 9999,
+              }}>
+                {recipe.storageDays}d {locale === 'he' ? 'מקרר' : 'fridge'}
+              </span>
+            )}
+          </div>
+
+          {/* Name */}
+          <h3 style={{
+            fontSize: 14, fontWeight: 700, color: '#1a1c1b',
+            lineHeight: 1.4, marginBottom: nutrition ? 10 : 0,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          } as React.CSSProperties}>
+            {name}
+          </h3>
+
+          {/* Nutrition row */}
+          {nutrition && (
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 4, marginTop: 10,
+              paddingTop: 10, borderTop: '1px solid #efeeec',
+            }}>
+              {[
+                { label: locale === 'he' ? 'קל׳' : 'kcal', value: nutrition.calories },
+                { label: locale === 'he' ? 'חלב׳' : 'prot', value: `${nutrition.protein}g` },
+                { label: locale === 'he' ? 'פחמ׳' : 'carb', value: `${nutrition.carbs}g` },
+              ].map(item => (
+                <div key={item.label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#14422d' }}>{item.value}</div>
+                  <div style={{ fontSize: 10, color: '#717973', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Link>
   );

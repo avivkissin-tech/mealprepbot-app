@@ -37,16 +37,16 @@ export default function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 print:hidden border-b"
-      style={{ background: '#F7F3EE', borderColor: '#E0D9CE' }}
+      className="sticky top-0 z-50 print:hidden"
+      style={{ background: '#ffffff', boxShadow: '0 1px 0 #e0d9ce, 0 4px 16px rgba(45,90,67,0.04)' }}
     >
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect width="20" height="20" rx="5" fill="#2A4F3A" />
-            <path d="M5 14 L10 6 L15 14" stroke="#F7F3EE" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <rect width="20" height="20" rx="5" fill="#14422d" />
+            <path d="M5 14 L10 6 L15 14" stroke="#faf9f7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             <path d="M7.5 11 L12.5 11" stroke="#C9572A" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
           <span
@@ -122,9 +122,9 @@ export default function Header() {
           <Link
             href="/mealprep"
             className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold rounded-full transition-colors"
-            style={{ background: '#2A4F3A', color: '#FFFFFF' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#3D6B50')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#2A4F3A')}
+            style={{ background: '#14422d', color: '#FFFFFF' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#2d5a43')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#14422d')}
           >
             {t('nav.wizard')}
           </Link>
@@ -164,7 +164,7 @@ export default function Header() {
       {mobileOpen && (
         <div
           className="md:hidden border-t px-4 py-3 space-y-1"
-          style={{ background: '#F7F3EE', borderColor: '#E0D9CE' }}
+          style={{ background: '#ffffff', borderColor: '#e0d9ce' }}
         >
           <Link href="/" className="block py-2 text-sm font-medium" style={{ color: '#1A1918' }} onClick={() => setMobileOpen(false)}>
             {t('home.filter.all')}

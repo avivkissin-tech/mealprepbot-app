@@ -4,26 +4,30 @@
   --font-heebo: var(--font-heebo);
   --font-fraunces: var(--font-fraunces);
 
-  /* ── Editorial Color System ── */
-  --color-parchment:    #F7F3EE;
-  --color-parchment-2:  #EDE7DC;
+  /* ── Editorial Color System (Vitality Flow) ── */
+  --color-parchment:    #faf9f7;
+  --color-parchment-2:  #e8e2d6;
   --color-cream:        #FFFFFF;
-  --color-forest:       #2A4F3A;
-  --color-forest-light: #3D6B50;
-  --color-forest-pale:  #EBF2ED;
+  --color-forest:       #14422d;
+  --color-forest-light: #2d5a43;
+  --color-forest-pale:  #edf7f1;
+  --color-forest-tint:  rgba(20,66,45,0.06);
   --color-terracotta:   #C9572A;
   --color-terra-light:  #FAE9E1;
-  --color-ink:          #1A1918;
-  --color-ink-soft:     #6B6560;
-  --color-ink-muted:    #A09893;
-  --color-border:       #E0D9CE;
+  --color-ink:          #1a1c1b;
+  --color-ink-soft:     #414943;
+  --color-ink-muted:    #717973;
+  --color-border:       #c0c9c1;
+  --color-surface:      #efeeec;
+  --shadow-card:        0 8px 32px rgba(45,90,67,0.05);
+  --shadow-card-hover:  0 12px 40px rgba(45,90,67,0.10);
 }
 
 /* ── Base styles ── */
 body {
-  font-family: var(--font-heebo), Arial, sans-serif;
-  background-color: #F7F3EE;
-  color: #1A1918;
+  font-family: var(--font-heebo), 'Inter', Arial, sans-serif;
+  background-color: #faf9f7;
+  color: #1a1c1b;
 }
 
 /* Display headings: use Fraunces in LTR (EN), Heebo in RTL (HE) */

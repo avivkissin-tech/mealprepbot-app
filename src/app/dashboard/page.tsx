@@ -36,7 +36,7 @@ const AnimatedStatsCard = React.forwardRef<HTMLDivElement, AnimatedStatsCardProp
         transition={{ duration: 0.6, delay: delay / 1000 }}
         className={cn(
           'relative flex flex-col overflow-hidden rounded-2xl p-6 shadow-lg',
-          'bg-white border border-[#2A4F3A]/10',
+          'bg-white border border-[#14422d]/10',
           'hover:shadow-xl transition-all duration-300',
           className
         )}
@@ -45,7 +45,7 @@ const AnimatedStatsCard = React.forwardRef<HTMLDivElement, AnimatedStatsCardProp
           <h3 className="text-sm font-medium" style={{ color: 'rgba(26,25,24,0.7)' }}>
             {title}
           </h3>
-          <div className="rounded-full p-2" style={{ background: 'rgba(42,79,58,0.1)', color: '#2A4F3A' }}>
+          <div className="rounded-full p-2" style={{ background: 'rgba(20,66,45,0.08)', color: '#14422d' }}>
             {icon}
           </div>
         </div>
@@ -95,7 +95,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ value, max, size = 200 }) => {
       <svg width={size} height={size} className="transform -rotate-90">
         <defs>
           <linearGradient id="donutGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2A4F3A" />
+            <stop offset="0%" stopColor="#14422d" />
             <stop offset="100%" stopColor="#C9572A" />
           </linearGradient>
         </defs>
@@ -188,7 +188,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, c
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <div style={{
                 width: 22, height: 22, borderRadius: '50%',
-                background: '#2A4F3A', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: '#14422d', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 10, fontWeight: 700, color: '#fff',
               }}>
                 {chef.charAt(0)}
@@ -295,7 +295,7 @@ export default function DashboardPage() {
   }, [activeFilter, search]);
 
   return (
-    <div dir="rtl" className="min-h-screen p-4 md:p-8" style={{ background: '#F7F3EE' }}>
+    <div dir="rtl" className="min-h-screen p-4 md:p-8" style={{ background: '#faf9f7' }}>
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
@@ -328,7 +328,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Monthly Progress */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#2A4F3A]/10">
+        <div className="bg-white rounded-2xl p-6 border border-[#14422d]/08" style={{ boxShadow: '0 8px 32px rgba(45,90,67,0.05)' }}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex-1 space-y-3">
               <h2 className="text-xl font-bold" style={{ color: '#1A1918' }}>התקדמות חודשית</h2>
@@ -339,7 +339,7 @@ export default function DashboardPage() {
               </p>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ background: '#2A4F3A' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ background: '#14422d' }} />
                   <span className="text-xs" style={{ color: 'rgba(26,25,24,0.7)' }}>הושלם</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -354,11 +354,11 @@ export default function DashboardPage() {
 
         {/* Community Stats */}
         <div className="flex flex-wrap gap-3">
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-[#2A4F3A]/10">
-            <Users className="h-4 w-4" style={{ color: '#2A4F3A' }} />
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-[#14422d]/10">
+            <Users className="h-4 w-4" style={{ color: '#14422d' }} />
             <span className="text-xs font-medium" style={{ color: '#1A1918' }}>4,821 משתמשים פעילים</span>
           </div>
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-[#2A4F3A]/10">
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-[#14422d]/10">
             <TrendingUp className="h-4 w-4" style={{ color: '#C9572A' }} />
             <span className="text-xs font-medium" style={{ color: '#1A1918' }}>1,203 ארוחות הוכנו היום</span>
           </div>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
                   outline: 'none',
                   direction: 'rtl',
                 }}
-                onFocus={e => (e.target.style.borderColor = '#2A4F3A')}
+                onFocus={e => (e.target.style.borderColor = '#14422d')}
                 onBlur={e => (e.target.style.borderColor = '#E0D9CE')}
               />
             </div>
@@ -407,12 +407,12 @@ export default function DashboardPage() {
                 onClick={() => setActiveFilter(f.id)}
                 style={{
                   flexShrink: 0,
-                  padding: '6px 14px',
+                  padding: '7px 16px',
                   borderRadius: 9999,
-                  border: activeFilter === f.id ? 'none' : '1px solid #E0D9CE',
-                  background: activeFilter === f.id ? '#1A1918' : '#fff',
-                  color: activeFilter === f.id ? '#F7F3EE' : '#1A1918',
-                  fontSize: 13, fontWeight: 500,
+                  border: 'none',
+                  background: activeFilter === f.id ? '#14422d' : '#e8e2d6',
+                  color: activeFilter === f.id ? '#ffffff' : '#414943',
+                  fontSize: 13, fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                   whiteSpace: 'nowrap',
