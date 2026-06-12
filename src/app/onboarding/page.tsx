@@ -3,353 +3,422 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Leaf, Target, Heart, Calendar, Utensils, TrendingUp, Mail, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useUser } from '@clerk/nextjs';
 
-interface Goal {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
+/* ─── Types ─────────────────────────────────────────────── */
+type GoalType = 'save-money' | 'eat-healthy' | 'save-time' | 'all';
+type HouseholdSize = 1 | 2 | 4 | 5;
+type MonthlyBudget = 'under-500' | '500-1000' | '1000-1500' | 'over-1500';
+type PrepFrequency = 'never' | '1-2' | '3-5' | 'always';
+
+export interface UserProfile {
+  goal: GoalType;
+  householdSize: HouseholdSize;
+  monthlyBudget: MonthlyBudget;
+  prepFrequency: PrepFrequency;
+  dietaryPrefs: string[];
+  estimatedSavings: number;
+  completedAt: string;
 }
 
-interface Habit {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
+/* ─── Constants ─────────────────────────────────────────── */
+const SAVINGS_MAP: Record<MonthlyBudget, number> = {
+  'under-500':  80,
+  '500-1000':   200,
+  '1000-1500':  320,
+  'over-1500':  450,
+};
+
+const RECIPES_MAP: Record<HouseholdSize, number> = { 1: 12, 2: 18, 4: 24, 5: 30 };
+const HOURS_MAP: Record<PrepFrequency, number> = { 'never': 2, '1-2': 1.5, '3-5': 1, 'always': 0.5 };
+
+const TOTAL_STEPS = 5;
+
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 30 };
+
+/* ─── Option Button ─────────────────────────────────────── */
+function OptionButton({
+  selected, onClick, children,
+}: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%',
+        padding: '16px 20px',
+        borderRadius: 16,
+        border: `2px solid ${selected ? '#14422d' : '#e0d9ce'}`,
+        background: selected ? '#14422d' : '#ffffff',
+        color: selected ? '#ffffff' : '#1a1c1b',
+        fontSize: 15,
+        fontWeight: 600,
+        textAlign: 'right',
+        cursor: 'pointer',
+        transition: 'all 0.15s',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+      }}
+    >
+      {children}
+    </button>
+  );
 }
 
-const goals: Goal[] = [
-  { id: 'weight-loss',   label: 'ירידה במשקל',        icon: <TrendingUp className="w-5 h-5" /> },
-  { id: 'muscle-gain',   label: 'עלייה במסת שריר',    icon: <Target className="w-5 h-5" /> },
-  { id: 'healthy-eating',label: 'תזונה בריאה',         icon: <Leaf className="w-5 h-5" /> },
-  { id: 'meal-prep',     label: 'הכנת ארוחות מראש',   icon: <Utensils className="w-5 h-5" /> },
-  { id: 'save-time',     label: 'חיסכון בזמן',         icon: <Calendar className="w-5 h-5" /> },
-  { id: 'family-meals',  label: 'ארוחות משפחתיות',    icon: <Heart className="w-5 h-5" /> },
-];
+/* ─── Progress Dots ─────────────────────────────────────── */
+function ProgressDots({ current, total }: { current: number; total: number }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 40 }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div
+          key={i}
+          style={{
+            height: 8,
+            borderRadius: 9999,
+            background: i === current ? '#14422d' : '#e0d9ce',
+            width: i === current ? 24 : 8,
+            transition: 'all 0.3s ease',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
-const habits: Habit[] = [
-  {
-    id: 'beginner',
-    title: 'מתחיל/ה',
-    description: 'אני חדש/ה בהכנת ארוחות מראש',
-    icon: <Leaf className="w-6 h-6" />,
-  },
-  {
-    id: 'intermediate',
-    title: 'בינוני/ת',
-    description: 'אני מכין/ה ארוחות מדי פעם',
-    icon: <Utensils className="w-6 h-6" />,
-  },
-  {
-    id: 'advanced',
-    title: 'מתקדם/ת',
-    description: 'אני מכין/ה ארוחות באופן קבוע',
-    icon: <Target className="w-6 h-6" />,
-  },
-];
-
+/* ─── Page ──────────────────────────────────────────────── */
 export default function OnboardingPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [selectedHabit, setSelectedHabit] = useState<string>('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { user } = useUser();
 
-  const totalSteps = 6;
-  const progress = ((currentStep + 1) / totalSteps) * 100;
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
 
-  const handleGoalToggle = (goalId: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(goalId) ? prev.filter((id) => id !== goalId) : [...prev, goalId]
+  const [goal, setGoal] = useState<GoalType | null>(null);
+  const [householdSize, setHouseholdSize] = useState<HouseholdSize | null>(null);
+  const [monthlyBudget, setMonthlyBudget] = useState<MonthlyBudget | null>(null);
+  const [prepFrequency, setPrepFrequency] = useState<PrepFrequency | null>(null);
+  const [dietaryPrefs, setDietaryPrefs] = useState<string[]>([]);
+
+  function goNext() {
+    setDirection(1);
+    setStep(s => s + 1);
+  }
+
+  function goBack() {
+    setDirection(-1);
+    setStep(s => s - 1);
+  }
+
+  function toggleDiet(val: string) {
+    setDietaryPrefs(prev =>
+      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
     );
-  };
+  }
 
-  const handleNext = () => {
-    if (currentStep < totalSteps - 1) setCurrentStep(currentStep + 1);
-  };
+  const canProceed = [
+    !!goal,
+    !!householdSize,
+    !!monthlyBudget,
+    !!prepFrequency,
+    true, // dietary prefs optional
+  ][step];
 
-  const handleBack = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
-  };
+  async function handleFinish() {
+    const profile: UserProfile = {
+      goal: goal!,
+      householdSize: householdSize!,
+      monthlyBudget: monthlyBudget!,
+      prepFrequency: prepFrequency!,
+      dietaryPrefs,
+      estimatedSavings: SAVINGS_MAP[monthlyBudget!],
+      completedAt: new Date().toISOString(),
+    };
 
-  const canProceed = () => {
-    if (currentStep === 1) return selectedGoals.length > 0;
-    if (currentStep === 3) return selectedHabit !== '';
-    if (currentStep === 5) return email !== '' && password !== '';
-    return true;
-  };
+    // 1. Save to localStorage (always)
+    try {
+      localStorage.setItem('easyprep_profile', JSON.stringify(profile));
+    } catch { /* ignore */ }
 
-  const handleSubmit = () => {
+    // 2. Save to Clerk unsafeMetadata (if signed in)
+    try {
+      await user?.update({ unsafeMetadata: { profile } });
+    } catch { /* ignore */ }
+
+    // 3. Set cookie + redirect
     document.cookie = 'onboarding_done=1; path=/; max-age=31536000';
     router.push('/dashboard');
-  };
+  }
 
   const slideVariants = {
-    enter: (direction: number) => ({ x: direction > 0 ? 1000 : -1000, opacity: 0 }),
+    enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (direction: number) => ({ x: direction < 0 ? 1000 : -1000, opacity: 0 }),
+    exit: (dir: number) => ({ x: dir < 0 ? 60 : -60, opacity: 0 }),
   };
 
-  const springTransition = { type: 'spring' as const, stiffness: 300, damping: 30 };
+  /* ── Wow moment screen (after step 4) ── */
+  const isWow = step === TOTAL_STEPS;
+  const savings = SAVINGS_MAP[monthlyBudget ?? 'under-500'];
+  const matchedRecipes = RECIPES_MAP[householdSize ?? 1];
+  const prepHours = HOURS_MAP[prepFrequency ?? 'never'];
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F7F3EE', direction: 'rtl' }}>
-      {/* Progress bar */}
-      <div className="w-full px-4 py-6">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5, ease: 'easeInOut' }}
-          className="h-2 rounded-full"
-          style={{ backgroundColor: '#2A4F3A' }}
-        />
-      </div>
+    <div dir="rtl" style={{ minHeight: '100vh', background: '#faf9f7', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ maxWidth: 560, margin: '0 auto', padding: '48px 24px 80px', width: '100%', flex: 1 }}>
 
-      <div className="flex-1 flex items-center justify-center px-4 pb-8">
-        <div className="w-full max-w-2xl">
-          <AnimatePresence mode="wait" custom={currentStep}>
-            <motion.div
-              key={currentStep}
-              custom={currentStep}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={springTransition}
-              className="w-full"
+        {/* Skip button */}
+        {!isWow && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 32 }}>
+            <button
+              onClick={() => {
+                document.cookie = 'onboarding_done=1; path=/; max-age=31536000';
+                router.push('/dashboard');
+              }}
+              style={{
+                fontSize: 13, color: '#717973', background: 'none', border: 'none',
+                cursor: 'pointer', padding: 0, fontWeight: 500,
+              }}
             >
-              {/* ══ Step 0: Welcome ══ */}
-              {currentStep === 0 && (
-                <div className="text-center space-y-8">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: 'spring' as const, stiffness: 200 }}
-                    className="inline-flex items-center justify-center w-24 h-24 rounded-full mx-auto"
-                    style={{ backgroundColor: '#2A4F3A' }}
-                  >
-                    <Leaf className="w-12 h-12 text-white" />
-                  </motion.div>
-                  <div className="space-y-4">
-                    <h1 className="text-4xl font-bold" style={{ color: '#2A4F3A' }}>
-                      ברוכים הבאים
-                    </h1>
-                    <p className="text-xl text-gray-600">הכינו ארוחות בריאות ומזינות בקלות</p>
-                  </div>
-                </div>
-              )}
+              דלג ←
+            </button>
+          </div>
+        )}
 
-              {/* ══ Step 1: Goals ══ */}
-              {currentStep === 1 && (
-                <div className="space-y-8">
-                  <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold" style={{ color: '#2A4F3A' }}>מה המטרות שלך?</h2>
-                    <p className="text-gray-600">בחרו אחת או יותר</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    {goals.map((goal) => (
-                      <motion.button
-                        key={goal.id}
-                        onClick={() => handleGoalToggle(goal.id)}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        animate={{ scale: selectedGoals.includes(goal.id) ? 1.02 : 1 }}
-                        transition={springTransition}
-                        className="p-6 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all"
-                        style={{
-                          backgroundColor: selectedGoals.includes(goal.id) ? '#2A4F3A' : 'white',
-                          borderColor: selectedGoals.includes(goal.id) ? '#2A4F3A' : '#e5e7eb',
-                          color: selectedGoals.includes(goal.id) ? 'white' : '#2A4F3A',
-                        }}
-                      >
-                        {goal.icon}
-                        <span className="font-medium text-center">{goal.label}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              )}
+        {/* Progress dots */}
+        {!isWow && <ProgressDots current={step} total={TOTAL_STEPS} />}
 
-              {/* ══ Step 2: Motivation 1 ══ */}
-              {currentStep === 2 && (
-                <div className="text-center space-y-8">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: 'spring' as const, stiffness: 200 }}
-                    className="inline-flex items-center justify-center w-24 h-24 rounded-full mx-auto"
-                    style={{ backgroundColor: '#C9572A' }}
-                  >
-                    <Heart className="w-12 h-12 text-white" />
-                  </motion.div>
-                  <div className="space-y-4">
-                    <h2 className="text-3xl font-bold" style={{ color: '#2A4F3A' }}>מצוין!</h2>
-                    <p className="text-xl text-gray-600">
-                      נעזור לכם להשיג את המטרות שלכם עם תוכניות ארוחות מותאמות אישית
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* ══ Step 3: Habits ══ */}
-              {currentStep === 3 && (
-                <div className="space-y-8">
-                  <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold" style={{ color: '#2A4F3A' }}>מה רמת הניסיון שלך?</h2>
-                    <p className="text-gray-600">בחרו אפשרות אחת</p>
-                  </div>
-                  <div className="space-y-4">
-                    {habits.map((habit) => (
-                      <motion.button
-                        key={habit.id}
-                        onClick={() => setSelectedHabit(habit.id)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={springTransition}
-                        className="w-full p-6 rounded-2xl border-2 flex items-center gap-4 text-right transition-all"
-                        style={{
-                          backgroundColor: selectedHabit === habit.id ? '#2A4F3A' : 'white',
-                          borderColor: selectedHabit === habit.id ? '#2A4F3A' : '#e5e7eb',
-                          color: selectedHabit === habit.id ? 'white' : '#2A4F3A',
-                        }}
-                      >
-                        <div
-                          className="p-3 rounded-xl"
-                          style={{
-                            backgroundColor: selectedHabit === habit.id ? 'rgba(255,255,255,0.2)' : '#F7F3EE',
-                          }}
-                        >
-                          {habit.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold mb-1">{habit.title}</h3>
-                          <p
-                            className="text-sm"
-                            style={{ color: selectedHabit === habit.id ? 'rgba(255,255,255,0.8)' : '#6b7280' }}
-                          >
-                            {habit.description}
-                          </p>
-                        </div>
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* ══ Step 4: Motivation 2 ══ */}
-              {currentStep === 4 && (
-                <div className="text-center space-y-8">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: 'spring' as const, stiffness: 200 }}
-                    className="inline-flex items-center justify-center w-24 h-24 rounded-full mx-auto"
-                    style={{ backgroundColor: '#C9572A' }}
-                  >
-                    <Target className="w-12 h-12 text-white" />
-                  </motion.div>
-                  <div className="space-y-4">
-                    <h2 className="text-3xl font-bold" style={{ color: '#2A4F3A' }}>כמעט סיימנו!</h2>
-                    <p className="text-xl text-gray-600">
-                      צעד אחרון ותוכלו להתחיל ליהנות מארוחות בריאות ומזינות
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* ══ Step 5: Signup ══ */}
-              {currentStep === 5 && (
-                <div className="space-y-8">
-                  <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold" style={{ color: '#2A4F3A' }}>צרו חשבון</h2>
-                    <p className="text-gray-600">הצטרפו אלינו והתחילו את המסע</p>
-                  </div>
-                  <div className="space-y-4">
-                    <Button
-                      onClick={() => {}}
-                      className="w-full h-14 text-lg font-medium bg-white hover:bg-gray-50 border-2"
-                      style={{ color: '#2A4F3A', borderColor: '#e5e7eb' }}
-                    >
-                      <svg className="w-6 h-6 ml-2" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                      </svg>
-                      המשיכו עם Google
-                    </Button>
-
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300" />
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-4 text-gray-500" style={{ backgroundColor: '#F7F3EE' }}>או</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="relative">
-                        <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <Input
-                          type="email"
-                          placeholder="אימייל"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="h-14 pr-12 text-lg border-2"
-                          style={{ borderColor: '#e5e7eb' }}
-                        />
-                      </div>
-                      <div className="relative">
-                        <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <Input
-                          type="password"
-                          placeholder="סיסמה"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="h-14 pr-12 text-lg border-2"
-                          style={{ borderColor: '#e5e7eb' }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Navigation buttons */}
-      <div className="px-4 pb-8">
-        <div className="max-w-2xl mx-auto flex gap-4">
-          {currentStep > 0 && (
-            <Button
-              onClick={handleBack}
-              variant="outline"
-              className="h-14 px-8 text-lg font-medium border-2"
-              style={{ borderColor: '#2A4F3A', color: '#2A4F3A' }}
-            >
-              <ChevronRight className="w-5 h-5 ml-2" />
-              חזרה
-            </Button>
-          )}
-          <Button
-            onClick={currentStep === totalSteps - 1 ? handleSubmit : handleNext}
-            disabled={!canProceed()}
-            className="flex-1 h-14 text-lg font-medium"
-            style={{
-              backgroundColor: canProceed() ? '#2A4F3A' : '#d1d5db',
-              color: 'white',
-            }}
+        {/* Animated step content */}
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={springTransition}
           >
-            {currentStep === totalSteps - 1 ? 'התחילו' : 'המשיכו'}
-            <ChevronLeft className="w-5 h-5 mr-2" />
-          </Button>
-        </div>
+
+            {/* ── Step 0: Goal ── */}
+            {step === 0 && (
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                  מה המטרה שלך?
+                </h2>
+                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>בחר את מה שהכי חשוב לך</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {([
+                    { id: 'save-money',   icon: '💰', label: 'לחסוך כסף' },
+                    { id: 'eat-healthy',  icon: '🥗', label: 'לאכול בריא' },
+                    { id: 'save-time',    icon: '⏱', label: 'לחסוך זמן' },
+                    { id: 'all',          icon: '✨', label: 'הכל יחד' },
+                  ] as { id: GoalType; icon: string; label: string }[]).map(opt => (
+                    <OptionButton key={opt.id} selected={goal === opt.id} onClick={() => setGoal(opt.id)}>
+                      <span style={{ fontSize: 20 }}>{opt.icon}</span>
+                      {opt.label}
+                    </OptionButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 1: Household size ── */}
+            {step === 1 && (
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                  בשביל כמה אנשים אתה מבשל?
+                </h2>
+                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>נתאים את הכמויות בהתאם</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {([
+                    { id: 1,  icon: '👤', label: 'רק אני' },
+                    { id: 2,  icon: '👫', label: '2 אנשים' },
+                    { id: 4,  icon: '👨‍👩‍👧', label: '3-4 אנשים' },
+                    { id: 5,  icon: '👨‍👩‍👧‍👦', label: '5 ומעלה' },
+                  ] as { id: HouseholdSize; icon: string; label: string }[]).map(opt => (
+                    <OptionButton key={opt.id} selected={householdSize === opt.id} onClick={() => setHouseholdSize(opt.id)}>
+                      <span style={{ fontSize: 20 }}>{opt.icon}</span>
+                      {opt.label}
+                    </OptionButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 2: Monthly budget ── */}
+            {step === 2 && (
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                  כמה אתה מוציא על קניות בחודש?
+                </h2>
+                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>נחשב כמה תחסוך</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {([
+                    { id: 'under-500',  label: 'עד ₪500' },
+                    { id: '500-1000',   label: '₪500 – ₪1,000' },
+                    { id: '1000-1500',  label: '₪1,000 – ₪1,500' },
+                    { id: 'over-1500',  label: 'מעל ₪1,500' },
+                  ] as { id: MonthlyBudget; label: string }[]).map(opt => (
+                    <OptionButton key={opt.id} selected={monthlyBudget === opt.id} onClick={() => setMonthlyBudget(opt.id)}>
+                      <span style={{ fontSize: 20 }}>💳</span>
+                      {opt.label}
+                    </OptionButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 3: Prep frequency ── */}
+            {step === 3 && (
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                  כמה ארוחות אתה מכין מראש בשבוע?
+                </h2>
+                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>כנה איתנו :)</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {([
+                    { id: 'never',  label: '0 — מאלתר כל יום' },
+                    { id: '1-2',    label: '1-2 ארוחות' },
+                    { id: '3-5',    label: '3-5 ארוחות' },
+                    { id: 'always', label: 'כמעט הכל מראש' },
+                  ] as { id: PrepFrequency; label: string }[]).map(opt => (
+                    <OptionButton key={opt.id} selected={prepFrequency === opt.id} onClick={() => setPrepFrequency(opt.id)}>
+                      <span style={{ fontSize: 20 }}>🍱</span>
+                      {opt.label}
+                    </OptionButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 4: Dietary prefs ── */}
+            {step === 4 && (
+              <div>
+                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                  העדפות תזונה
+                </h2>
+                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>בחר הכל שרלוונטי (אופציונלי)</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {([
+                    { id: 'none',        label: 'ללא מגבלות' },
+                    { id: 'vegetarian',  label: 'צמחוני / טבעוני' },
+                    { id: 'gluten-free', label: 'ללא גלוטן' },
+                    { id: 'dairy-free',  label: 'ללא חלב' },
+                  ]).map(opt => (
+                    <OptionButton
+                      key={opt.id}
+                      selected={dietaryPrefs.includes(opt.id)}
+                      onClick={() => toggleDiet(opt.id)}
+                    >
+                      <span style={{ fontSize: 20 }}>🌿</span>
+                      {opt.label}
+                    </OptionButton>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Wow moment ── */}
+            {isWow && (
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
+                <h2 style={{ fontSize: 28, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                  Easy PREP בנוי בשבילך
+                </h2>
+                <p style={{ fontSize: 15, color: '#717973', marginBottom: 36 }}>
+                  על סמך הנתונים שלך, הנה מה שמחכה לך:
+                </p>
+
+                {/* Value cards */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 40 }}>
+                  {[
+                    { icon: '💰', label: 'חיסכון משוער',   value: `₪${savings}`,            sub: 'לחודש' },
+                    { icon: '📖', label: 'מתכונים מתאימים', value: `${matchedRecipes}`,        sub: 'מתכונים' },
+                    { icon: '⏱', label: 'זמן בישול',       value: `~${prepHours} שעות`,      sub: 'בשבוע' },
+                  ].map(card => (
+                    <div
+                      key={card.label}
+                      style={{
+                        background: '#ffffff',
+                        borderRadius: 20,
+                        padding: '20px 24px',
+                        boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                        textAlign: 'right',
+                      }}
+                    >
+                      <div style={{
+                        width: 48, height: 48, borderRadius: 14,
+                        background: 'rgba(20,66,45,0.08)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 22, flexShrink: 0,
+                      }}>
+                        {card.icon}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 12, color: '#717973', marginBottom: 2 }}>{card.label}</div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: '#14422d', lineHeight: 1 }}>
+                          {card.value}
+                          <span style={{ fontSize: 13, fontWeight: 500, color: '#717973', marginRight: 6 }}>
+                            {card.sub}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleFinish}
+                  style={{
+                    width: '100%', padding: '16px 0', borderRadius: 16,
+                    background: '#14422d', color: '#ffffff',
+                    fontSize: 16, fontWeight: 700, border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  בואו נתחיל ←
+                </button>
+              </div>
+            )}
+
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation */}
+        {!isWow && (
+          <div style={{ display: 'flex', gap: 12, marginTop: 40 }}>
+            {step > 0 && (
+              <button
+                onClick={goBack}
+                style={{
+                  padding: '14px 24px', borderRadius: 16,
+                  border: '2px solid #14422d', background: 'transparent',
+                  color: '#14422d', fontSize: 15, fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                ← חזרה
+              </button>
+            )}
+            <button
+              onClick={canProceed ? goNext : undefined}
+              disabled={!canProceed}
+              style={{
+                flex: 1, padding: '14px 0', borderRadius: 16,
+                background: canProceed ? '#14422d' : '#e0d9ce',
+                color: canProceed ? '#ffffff' : '#b0b8b2',
+                fontSize: 15, fontWeight: 700, border: 'none',
+                cursor: canProceed ? 'pointer' : 'default',
+                transition: 'all 0.15s',
+              }}
+            >
+              {step === TOTAL_STEPS - 1 ? 'סיים וראה את התוצאות' : 'המשך →'}
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, Flame, BookmarkCheck, Users } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { recipes } from '@/data/recipes';
+import { useUser } from '@clerk/nextjs';
 
 /* ─── Animated Stats Card ────────────────────────────────── */
 interface AnimatedStatsCardProps {
@@ -206,6 +207,23 @@ const STORAGE_KEY_SAVED    = 'easyprep_saved_recipes';
 const STORAGE_KEY_PLANNER  = 'easyprep_planner';
 const STORAGE_KEY_HISTORY  = 'easyprep_cook_history'; // array of {date: ISO string}
 
+interface UserProfile {
+  goal: 'save-money' | 'eat-healthy' | 'save-time' | 'all';
+  estimatedSavings: number;
+}
+
+function loadProfile(): UserProfile | null {
+  try { return JSON.parse(localStorage.getItem('easyprep_profile') ?? 'null'); }
+  catch { return null; }
+}
+
+const GOAL_GREETING: Record<UserProfile['goal'], string> = {
+  'save-money':   'בוא נחסוך כסף החודש 💰',
+  'eat-healthy':  'היום מכינים ארוחה בריאה 🥗',
+  'save-time':    'נחסוך לך זמן יקר ⏱',
+  'all':          'בוא נתחיל להכין ✨',
+};
+
 function loadSavedIds(): string[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY_SAVED) ?? '[]'); }
   catch { return []; }
@@ -259,6 +277,8 @@ const FILTERS = [
 /* ─── Page ───────────────────────────────────────────────── */
 export default function DashboardPage() {
   const { locale } = useLanguage();
+  const { user } = useUser();
+  const firstName = user?.firstName ?? null;
   const isHe = locale === 'he';
   const [activeFilter, setActiveFilter] = React.useState('all');
   const [search, setSearch] = React.useState('');
@@ -267,12 +287,14 @@ export default function DashboardPage() {
   const [totalCooked, setTotalCooked] = React.useState(0);
   const [streak, setStreak] = React.useState(0);
   const [plannerCount, setPlannerCount] = React.useState(0);
+  const [profile, setProfile] = React.useState<UserProfile | null>(null);
 
   React.useEffect(() => {
     setSavedIds(loadSavedIds());
     setTotalCooked(loadTotalCooked());
     setStreak(loadStreak());
     setPlannerCount(loadPlannerCount());
+    setProfile(loadProfile());
   }, []);
 
   const stats = [
@@ -307,7 +329,7 @@ export default function DashboardPage() {
             className="text-3xl font-bold"
             style={{ color: '#1A1918' }}
           >
-            שלום, אביב
+            {firstName ? `שלום, ${firstName}` : 'שלום'}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -316,9 +338,41 @@ export default function DashboardPage() {
             className="text-sm"
             style={{ color: 'rgba(26,25,24,0.5)' }}
           >
-            עקוב אחר ההתקדמות שלך וגלה מתכונים חדשים
+            {profile
+              ? (firstName
+                  ? `${firstName}, ${GOAL_GREETING[profile.goal]}`
+                  : GOAL_GREETING[profile.goal])
+              : 'עקוב אחר ההתקדמות שלך וגלה מתכונים חדשים'}
           </motion.p>
         </div>
+
+        {/* Savings card — shown only when profile exists */}
+        {profile && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            style={{
+              background: 'linear-gradient(135deg, #14422d 0%, #2d5a43 100%)',
+              borderRadius: 20, padding: '20px 24px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              color: '#ffffff',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 4 }}>חיסכון משוער בחודש</div>
+              <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1 }}>₪{profile.estimatedSavings}</div>
+            </div>
+            <div style={{
+              width: 56, height: 56, borderRadius: 16,
+              background: 'rgba(255,255,255,0.15)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 28,
+            }}>
+              💰
+            </div>
+          </motion.div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
