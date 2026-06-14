@@ -46,6 +46,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
 
   const [cookedToday, setCookedToday] = useState(false);
   const [justMarked, setJustMarked] = useState(false);
+  const [portions, setPortions] = useState(recipe!.baseServings);
 
   useEffect(() => {
     setCookedToday(hasCookedToday());
@@ -262,12 +263,12 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
             }}>
               <IngredientList
                 ingredients={recipe.ingredients}
-                portions={recipe.baseServings}
+                portions={portions}
                 baseServings={recipe.baseServings}
               />
             </div>
             <div style={{ marginTop: 20 }}>
-              <PortionSelector recipeId={recipe.id} baseServings={recipe.baseServings} />
+              <PortionSelector recipeId={recipe.id} baseServings={recipe.baseServings} onPortionsChange={setPortions} />
             </div>
           </div>
 

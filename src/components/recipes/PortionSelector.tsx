@@ -7,12 +7,18 @@ import { useLanguage } from '@/context/LanguageContext';
 interface Props {
   recipeId: string;
   baseServings: number;
+  onPortionsChange?: (portions: number) => void;
 }
 
-export default function PortionSelector({ recipeId, baseServings }: Props) {
+export default function PortionSelector({ recipeId, baseServings, onPortionsChange }: Props) {
   const { t } = useLanguage();
   const router = useRouter();
   const [portions, setPortions] = useState(baseServings);
+
+  function updatePortions(val: number) {
+    setPortions(val);
+    onPortionsChange?.(val);
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +35,7 @@ export default function PortionSelector({ recipeId, baseServings }: Props) {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setPortions((p) => Math.max(1, p - 1))}
+            onClick={() => updatePortions(Math.max(1, portions - 1))}
             className="w-9 h-9 rounded-full border-2 border-emerald-300 text-emerald-700 font-bold text-lg flex items-center justify-center hover:bg-emerald-100 transition-colors"
           >
             −
@@ -39,12 +45,12 @@ export default function PortionSelector({ recipeId, baseServings }: Props) {
             min={1}
             max={50}
             value={portions}
-            onChange={(e) => setPortions(Math.max(1, Math.min(50, Number(e.target.value))))}
+            onChange={(e) => updatePortions(Math.max(1, Math.min(50, Number(e.target.value))))}
             className="w-16 text-center text-xl font-bold text-gray-900 border-2 border-emerald-300 rounded-xl py-1 focus:outline-none focus:border-emerald-500"
           />
           <button
             type="button"
-            onClick={() => setPortions((p) => Math.min(50, p + 1))}
+            onClick={() => updatePortions(Math.min(50, portions + 1))}
             className="w-9 h-9 rounded-full border-2 border-emerald-300 text-emerald-700 font-bold text-lg flex items-center justify-center hover:bg-emerald-100 transition-colors"
           >
             +
