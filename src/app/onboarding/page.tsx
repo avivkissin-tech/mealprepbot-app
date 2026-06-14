@@ -93,7 +93,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
 
-  const [goal, setGoal] = useState<GoalType | null>(null);
+  const [goals, setGoals] = useState<GoalType[]>([]);
   const [householdSize, setHouseholdSize] = useState<HouseholdSize | null>(null);
   const [monthlyBudget, setMonthlyBudget] = useState<MonthlyBudget | null>(null);
   const [prepFrequency, setPrepFrequency] = useState<PrepFrequency | null>(null);
@@ -109,6 +109,12 @@ export default function OnboardingPage() {
     setStep(s => s - 1);
   }
 
+  function toggleGoal(val: GoalType) {
+    setGoals(prev =>
+      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
+    );
+  }
+
   function toggleDiet(val: string) {
     setDietaryPrefs(prev =>
       prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
@@ -116,7 +122,7 @@ export default function OnboardingPage() {
   }
 
   const canProceed = [
-    !!goal,
+    goals.length > 0,
     !!householdSize,
     !!monthlyBudget,
     !!prepFrequency,
@@ -125,7 +131,7 @@ export default function OnboardingPage() {
 
   async function handleFinish() {
     const profile: UserProfile = {
-      goal: goal!,
+      goal: goals[0] ?? 'all',
       householdSize: householdSize!,
       monthlyBudget: monthlyBudget!,
       prepFrequency: prepFrequency!,
@@ -212,7 +218,7 @@ export default function OnboardingPage() {
                     { id: 'save-time',    icon: '⏱', label: 'לחסוך זמן' },
                     { id: 'all',          icon: '✨', label: 'הכל יחד' },
                   ] as { id: GoalType; icon: string; label: string }[]).map(opt => (
-                    <OptionButton key={opt.id} selected={goal === opt.id} onClick={() => setGoal(opt.id)}>
+                    <OptionButton key={opt.id} selected={goals.includes(opt.id)} onClick={() => toggleGoal(opt.id)}>
                       <span style={{ fontSize: 20 }}>{opt.icon}</span>
                       {opt.label}
                     </OptionButton>
@@ -399,7 +405,7 @@ export default function OnboardingPage() {
                   cursor: 'pointer',
                 }}
               >
-                ← חזרה
+                → חזרה
               </button>
             )}
             <button
@@ -414,7 +420,7 @@ export default function OnboardingPage() {
                 transition: 'all 0.15s',
               }}
             >
-              {step === TOTAL_STEPS - 1 ? 'סיים וראה את התוצאות' : 'המשך →'}
+              {step === TOTAL_STEPS - 1 ? 'סיים וראה את התוצאות' : '← המשך'}
             </button>
           </div>
         )}
