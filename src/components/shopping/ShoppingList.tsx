@@ -51,38 +51,39 @@ export default function ShoppingList({ entries, recipeName, portions }: Props) {
 
       <p style={{ fontSize: 12, color: '#b0b8b2', marginBottom: 24 }}>{t('shopping.tip')}</p>
 
-      {/* Grouped by category */}
-      {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
-        <div key={cat} style={{ marginBottom: 24 }}>
-          {/* Category header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <span style={{ fontSize: 15 }}>{CATEGORY_ICON[cat]}</span>
-            <span style={{
-              fontSize: 11, fontWeight: 700, color: '#717973',
-              textTransform: 'uppercase', letterSpacing: '0.08em',
-            }}>
-              {CATEGORY_LABEL[cat]}
-            </span>
-          </div>
-          {/* Items */}
-          {grouped[cat].map((item, i) => (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '9px 0', borderBottom: '1px solid #f0ebe3',
-            }}>
-              <span style={{ fontSize: 14, color: '#1a1c1b' }}>
-                {isHe ? item.nameHe : item.nameEn}
-                {item.optional && (
-                  <span style={{ fontSize: 11, color: '#b0b8b2', marginRight: 4 }}>(אופציונלי)</span>
-                )}
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
-                {item.quantity > 0 ? `${item.quantity} ${item.unit}` : item.unit}
+      {/* 2-column category card grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
+          <div key={cat} style={{
+            background: '#ffffff',
+            borderRadius: 16,
+            padding: '16px',
+            boxShadow: '0 2px 12px rgba(45,90,67,0.06)',
+            border: '1px solid #efeeec',
+          }}>
+            {/* Card header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 16 }}>{CATEGORY_ICON[cat]}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b' }}>
+                  {CATEGORY_LABEL[cat]}
+                </span>
+              </div>
+              <span style={{
+                fontSize: 11, fontWeight: 700, color: '#14422d',
+                background: 'rgba(20,66,45,0.08)',
+                borderRadius: 9999, padding: '2px 8px',
+              }}>
+                {grouped[cat].length}
               </span>
             </div>
-          ))}
-        </div>
-      ))}
+            {/* Items */}
+            {grouped[cat].map((item, i) => (
+              <ShoppingItem key={i} entry={item} />
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -25,11 +25,12 @@ export default function ShoppingItem({ entry }: Props) {
       onClick={() => setChecked((v) => !v)}
     >
       <span
-        className={`w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-          checked
-            ? 'bg-emerald-500 border-emerald-500 text-white'
-            : 'border-gray-300 group-hover:border-emerald-400'
-        }`}
+        className="w-5 h-5 rounded flex-shrink-0 flex items-center justify-center transition-colors"
+        style={{
+          border: `2px solid ${checked ? '#14422d' : '#c0c9c1'}`,
+          background: checked ? '#14422d' : 'transparent',
+          color: '#ffffff',
+        }}
       >
         {checked && (
           <svg className="w-3 h-3" fill="none" viewBox="0 0 12 12">
@@ -38,14 +39,14 @@ export default function ShoppingItem({ entry }: Props) {
         )}
       </span>
 
-      <span className={`flex-1 text-sm transition-all ${checked ? 'line-through text-gray-400' : 'text-gray-800'}`}>
+      <span className="flex-1 text-sm transition-all" style={{ textDecoration: checked ? 'line-through' : 'none', color: checked ? '#b0b8b2' : '#1a1c1b' }}>
         {name}
         {entry.optional && (
           <span className="ms-1 text-xs text-gray-400">({t('shopping.optional')})</span>
         )}
       </span>
 
-      <span className={`text-sm font-medium whitespace-nowrap transition-all ${checked ? 'text-gray-300' : 'text-gray-600'}`}>
+      <span className="text-sm font-medium whitespace-nowrap transition-all" style={{ color: checked ? '#c0c9c1' : '#14422d' }}>
         {qty}
       </span>
     </li>

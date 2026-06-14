@@ -41,6 +41,15 @@ export default function PlannerPage() {
   // shopping panel
   const [showShopping, setShowShopping] = useState(false);
   const [shoppingView, setShoppingView] = useState<'general' | 'byRecipe'>('general');
+  const [checkedShoppingItems, setCheckedShoppingItems] = useState<Set<string>>(new Set());
+
+  function toggleShoppingItem(key: string) {
+    setCheckedShoppingItems(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
   // meal prep session — restore from localStorage if session was minimized
   const [showMealPrepModal, setShowMealPrepModal] = useState(false);
   const [prepSelectedIds, setPrepSelectedIds]     = useState<Set<string>>(() => {
@@ -675,30 +684,54 @@ export default function PlannerPage() {
                     הוסף ארוחות לפלאנר כדי לראות את רשימת הקניות
                   </div>
                 ) : shoppingView === 'general' ? (
-                  SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
-                    <div key={cat} style={{ marginBottom: 24 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                        <span style={{ fontSize: 16 }}>{SHOPPING_ICON[cat]}</span>
-                        <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                          {SHOPPING_LABEL_HE[cat]}
-                        </h3>
-                      </div>
-                      {grouped[cat].map((item, i) => (
-                        <div key={i} style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          padding: '8px 0', borderBottom: '1px solid #F0EBE3',
-                        }}>
-                          <span style={{ fontSize: 13, color: '#1a1c1b' }}>
-                            {isHe ? item.nameHe : item.nameEn}
-                            {item.optional && <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', marginRight: 4 }}>(אופציונלי)</span>}
-                          </span>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
-                            {item.quantity > 0 ? `${item.quantity} ${item.unit}` : item.unit}
-                          </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
+                      <div key={cat} style={{
+                        background: '#ffffff', borderRadius: 14,
+                        padding: '12px', border: '1px solid #efeeec',
+                        boxShadow: '0 2px 8px rgba(45,90,67,0.05)',
+                      }}>
+                        {/* Card header */}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: 14 }}>{SHOPPING_ICON[cat]}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1c1b' }}>{SHOPPING_LABEL_HE[cat]}</span>
+                          </div>
+                          <span style={{
+                            fontSize: 10, fontWeight: 700, color: '#14422d',
+                            background: 'rgba(20,66,45,0.08)', borderRadius: 9999, padding: '1px 6px',
+                          }}>{grouped[cat].length}</span>
                         </div>
-                      ))}
-                    </div>
-                  ))
+                        {/* Items */}
+                        {grouped[cat].map((item, i) => {
+                          const itemKey = `${cat}-${item.nameHe}-${i}`;
+                          const isDone = checkedShoppingItems.has(itemKey);
+                          return (
+                            <div key={i} onClick={() => toggleShoppingItem(itemKey)} style={{
+                              display: 'flex', alignItems: 'center', gap: 6,
+                              padding: '5px 0', borderBottom: '1px solid #f0ebe3',
+                              cursor: 'pointer',
+                            }}>
+                              <span style={{
+                                width: 14, height: 14, flexShrink: 0, borderRadius: 4,
+                                border: `1.5px solid ${isDone ? '#14422d' : '#c0c9c1'}`,
+                                background: isDone ? '#14422d' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}>
+                                {isDone && <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                              </span>
+                              <span style={{ flex: 1, fontSize: 11, color: isDone ? '#b0b8b2' : '#1a1c1b', textDecoration: isDone ? 'line-through' : 'none' }}>
+                                {isHe ? item.nameHe : item.nameEn}
+                              </span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: isDone ? '#c0c9c1' : '#14422d', flexShrink: 0 }}>
+                                {item.quantity > 0 ? `${item.quantity}` : ''} {item.unit}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   perRecipeLists.map(({ key, recipe, servings, items }) => (
                     <div key={key} style={{
