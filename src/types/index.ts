@@ -8,7 +8,8 @@ export type RecipeCategory =
   | 'breakfast'
   | 'beef'
   | 'salad'
-  | 'side';
+  | 'side'
+  | 'dessert';
 
 export type DietaryTag =
   | 'vegan'

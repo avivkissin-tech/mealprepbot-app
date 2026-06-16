@@ -5,7 +5,7 @@ import { Recipe, RecipeCategory } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import RecipeCard from './RecipeCard';
 
-const FILTER_KEYS = ['all', 'fish', 'chicken', 'turkey', 'tofu', 'breakfast'] as const;
+const FILTER_KEYS = ['all', 'fish', 'chicken', 'turkey', 'beef', 'tofu', 'breakfast', 'salad', 'side', 'dessert'] as const;
 
 interface Props {
   recipes: Recipe[];

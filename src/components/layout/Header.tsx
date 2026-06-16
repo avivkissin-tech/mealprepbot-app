@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
       { labelKey: 'home.filter.breakfast', href: '/?cat=breakfast' },
       { labelKey: 'home.filter.salad',     href: '/?cat=salad' },
       { labelKey: 'home.filter.side',      href: '/?cat=side' },
+      { labelKey: 'home.filter.dessert',   href: '/?cat=dessert' },
     ],
   },
   { labelKey: 'nav.ingredients', href: '/ingredients' },

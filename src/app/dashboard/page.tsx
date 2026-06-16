@@ -272,6 +272,7 @@ const FILTERS = [
   { id: 'salad',     label: 'סלטים' },
   { id: 'side',      label: 'תוספות' },
   { id: 'tofu',      label: 'טבעוני' },
+  { id: 'dessert',   label: 'מתוקים' },
 ];
 
 /* ─── Page ───────────────────────────────────────────────── */

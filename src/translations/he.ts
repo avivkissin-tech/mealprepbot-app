@@ -19,6 +19,7 @@ export const he: Record<string, string> = {
   'home.filter.breakfast': 'ארוחת בוקר',
   'home.filter.salad': 'סלטים',
   'home.filter.side': 'תוספות',
+  'home.filter.dessert': 'מתוקים',
 
   // Homepage carousel sections
   'home.section.all': 'כל המתכונים',

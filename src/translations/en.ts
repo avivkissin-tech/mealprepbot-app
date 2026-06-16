@@ -19,6 +19,7 @@ export const en: Record<string, string> = {
   'home.filter.breakfast': 'Breakfast',
   'home.filter.salad': 'Salads',
   'home.filter.side': 'Sides',
+  'home.filter.dessert': 'Desserts',
 
   // Homepage carousel sections
   'home.section.all': 'All Recipes',
