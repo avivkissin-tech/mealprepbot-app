@@ -79,7 +79,15 @@ export default function ShoppingList({ entries, recipeName, portions }: Props) {
             </div>
             {/* Items */}
             {grouped[cat].map((item, i) => (
-              <ShoppingItem key={i} entry={item} />
+              <div key={i} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '4px 0', borderBottom: i < grouped[cat].length - 1 ? '1px solid #f0ede9' : 'none' }}>
+                <span style={{ fontSize: 13, color: '#1a1c1b' }}>
+                  {isHe ? item.nameHe : item.nameEn}
+                  {item.optional && <span style={{ fontSize: 11, color: '#b0b8b2', marginRight: 4 }}>(אופציונלי)</span>}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#414943', whiteSpace: 'nowrap', marginRight: 8 }}>
+                  {item.quantity} {item.unit !== 'unit' ? t(`unit.${item.unit}`) : ''}
+                </span>
+              </div>
             ))}
           </div>
         ))}
