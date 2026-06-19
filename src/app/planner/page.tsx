@@ -324,15 +324,19 @@ export default function PlannerPage() {
                           <Image src={recipe.image} alt={name} fill sizes="80px" style={{ objectFit: 'cover' }} />
                           <button
                             onClick={() => removeRecipe(dayIdx, slotIdx)}
+                            aria-label="הסר מתכון"
                             style={{
-                              position: 'absolute', top: 4, right: 4,
-                              width: 22, height: 22, borderRadius: '50%',
-                              background: 'rgba(26,25,24,0.75)', border: 'none',
-                              color: '#fff', fontSize: 13, cursor: 'pointer',
+                              position: 'absolute', top: 5, right: 5,
+                              width: 28, height: 28, borderRadius: '50%',
+                              background: 'rgba(201,87,42,0.92)', border: 'none',
+                              color: '#fff', cursor: 'pointer',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              fontWeight: 700,
                             }}
-                          >×</button>
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+                            </svg>
+                          </button>
                         </div>
                         <div style={{ padding: '10px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                           <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', lineHeight: 1.35, marginBottom: 8 }}>
@@ -443,16 +447,18 @@ export default function PlannerPage() {
                             {/* Remove button */}
                             <button
                               onClick={() => removeRecipe(dayIdx, slotIdx)}
+                              aria-label="הסר מתכון"
                               style={{
                                 position: 'absolute', top: 6, right: 6,
-                                width: 22, height: 22, borderRadius: '50%',
-                                background: 'rgba(26,25,24,0.7)', border: 'none',
-                                color: '#fff', fontSize: 12, cursor: 'pointer',
+                                width: 28, height: 28, borderRadius: '50%',
+                                background: 'rgba(201,87,42,0.92)', border: 'none',
+                                color: '#fff', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontWeight: 700, lineHeight: 1,
                               }}
                             >
-                              ×
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+                              </svg>
                             </button>
                           </div>
 
@@ -573,13 +579,18 @@ export default function PlannerPage() {
                 </div>
                 <button
                   onClick={() => { setPickingDay(null); setModalSearch(''); }}
+                  aria-label="סגור"
                   style={{
                     width: 32, height: 32, borderRadius: '50%',
                     background: '#c0c9c1', border: 'none',
-                    fontSize: 16, cursor: 'pointer', color: '#1a1c1b',
+                    cursor: 'pointer', color: '#1a1c1b',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
-                >×</button>
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
               <p style={{ padding: '8px 20px', fontSize: 12, color: 'rgba(26,25,24,0.5)', flexShrink: 0 }}>
                 בחר מתכון ל{DAYS[pickingDay]}
@@ -775,13 +786,18 @@ export default function PlannerPage() {
                   </h2>
                   <button
                     onClick={() => setShowShopping(false)}
+                    aria-label="סגור"
                     style={{
                       width: 30, height: 30, borderRadius: '50%',
                       background: '#F0EBE3', border: 'none',
-                      fontSize: 16, cursor: 'pointer', color: '#1a1c1b',
+                      cursor: 'pointer', color: '#1a1c1b',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}
-                  >×</button>
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                  </button>
                 </div>
                 {/* View toggle */}
                 <div style={{
