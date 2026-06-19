@@ -173,6 +173,8 @@ export default function PlannerPage() {
     return recipes.filter(r => r.nameHe.includes(q) || r.nameEn.toLowerCase().includes(q));
   }, [modalSearch]);
 
+  const [activeMobileDay, setActiveMobileDay] = useState(0);
+
   return (
     <div dir="rtl" style={{ minHeight: '100vh', background: '#faf9f7' }}>
 
@@ -231,8 +233,144 @@ export default function PlannerPage() {
         </div>
       </div>
 
-      {/* ── 7-day grid ── */}
-      <div style={{
+      {/* ── Mobile: day tabs + single-day view ── */}
+      <div className="md:hidden" style={{ maxWidth: 600, margin: '0 auto', padding: '16px 16px 80px' }}>
+        {/* Day tab strip */}
+        <div style={{
+          display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12,
+          scrollbarWidth: 'none', scrollSnapType: 'x mandatory',
+        }}>
+          {DAYS.map((dayLabel, dayIdx) => {
+            const count = (plan[dayIdx] ?? []).length;
+            const isActive = activeMobileDay === dayIdx;
+            return (
+              <button
+                key={dayIdx}
+                onClick={() => setActiveMobileDay(dayIdx)}
+                style={{
+                  flexShrink: 0,
+                  scrollSnapAlign: 'start',
+                  minWidth: 64, minHeight: 44,
+                  padding: '6px 14px',
+                  borderRadius: 9999,
+                  border: 'none',
+                  background: isActive ? '#14422d' : '#e8e2d6',
+                  color: isActive ? '#fff' : '#414943',
+                  fontSize: 13, fontWeight: 600,
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {dayLabel}
+                {count > 0 && (
+                  <span style={{
+                    position: 'absolute', top: 4, right: 4,
+                    width: 14, height: 14, borderRadius: '50%',
+                    background: isActive ? '#C9572A' : '#14422d',
+                    color: '#fff', fontSize: 9, fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Single day view */}
+        {(() => {
+          const dayIdx = activeMobileDay;
+          const dayRecipes = plan[dayIdx] ?? [];
+          return (
+            <div style={{
+              background: '#fff', borderRadius: 16,
+              border: '1px solid #c0c9c1', overflow: 'hidden',
+            }}>
+              <div style={{
+                padding: '12px 16px 10px',
+                borderBottom: dayRecipes.length > 0 ? '1px solid #F0EBE3' : 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b' }}>{DAYS[dayIdx]}</span>
+                {dayRecipes.length > 0 && (
+                  <span style={{ fontSize: 12, color: 'rgba(26,25,24,0.4)' }}>{dayRecipes.length} ארוחות</span>
+                )}
+              </div>
+
+              <div style={{ padding: dayRecipes.length > 0 ? '12px 12px 4px' : 0 }}>
+                <AnimatePresence>
+                  {dayRecipes.map((recipeId, slotIdx) => {
+                    const recipe = recipes.find(r => r.id === recipeId);
+                    if (!recipe) return null;
+                    const name = isHe ? recipe.nameHe : recipe.nameEn;
+                    const slotKey = `${dayIdx}-${slotIdx}`;
+                    const currentServes = serves[slotKey] ?? recipe.baseServings;
+                    return (
+                      <motion.div
+                        key={`${recipeId}-${slotIdx}`}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        style={{
+                          marginBottom: 10, borderRadius: 12,
+                          overflow: 'hidden', border: '1px solid #F0EBE3',
+                          background: '#FAFAF8', display: 'flex',
+                        }}
+                      >
+                        <div style={{ position: 'relative', width: 80, flexShrink: 0 }}>
+                          <Image src={recipe.image} alt={name} fill sizes="80px" style={{ objectFit: 'cover' }} />
+                          <button
+                            onClick={() => removeRecipe(dayIdx, slotIdx)}
+                            style={{
+                              position: 'absolute', top: 4, right: 4,
+                              width: 22, height: 22, borderRadius: '50%',
+                              background: 'rgba(26,25,24,0.75)', border: 'none',
+                              color: '#fff', fontSize: 13, cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontWeight: 700,
+                            }}
+                          >×</button>
+                        </div>
+                        <div style={{ padding: '10px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', lineHeight: 1.35, marginBottom: 8 }}>
+                            {name}
+                          </p>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)' }}>מנות</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <button onClick={() => adjustServes(dayIdx, slotIdx, -1)} style={{ ...serveBtnStyle, minWidth: 28, minHeight: 28 }}>−</button>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', minWidth: 16, textAlign: 'center' }}>{currentServes}</span>
+                              <button onClick={() => adjustServes(dayIdx, slotIdx, 1)} style={{ ...serveBtnStyle, minWidth: 28, minHeight: 28 }}>+</button>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+
+              <button
+                onClick={() => setPickingDay(dayIdx)}
+                style={{
+                  width: 'calc(100% - 24px)', margin: '0 12px 12px',
+                  padding: '14px', borderRadius: 12,
+                  border: '1.5px dashed #D4CCBf', background: 'transparent',
+                  color: 'rgba(26,25,24,0.4)', fontSize: 22, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s',
+                }}
+              >+</button>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* ── Desktop: 7-day grid ── */}
+      <div className="hidden md:block" style={{
         maxWidth: 1400, margin: '0 auto', padding: '20px 24px 80px',
         overflowX: 'auto',
       }}>

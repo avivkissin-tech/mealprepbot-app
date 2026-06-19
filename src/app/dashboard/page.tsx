@@ -376,7 +376,7 @@ export default function DashboardPage() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {stats.map((stat) => (
             <AnimatedStatsCard key={stat.title} {...stat} />
           ))}
@@ -439,7 +439,7 @@ export default function DashboardPage() {
                 onChange={e => setSearch(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px 36px 8px 14px',
+                  padding: '11px 36px 11px 14px',
                   borderRadius: 9999,
                   border: '1px solid #E0D9CE',
                   background: '#fff',
@@ -462,7 +462,7 @@ export default function DashboardPage() {
                 onClick={() => setActiveFilter(f.id)}
                 style={{
                   flexShrink: 0,
-                  padding: '7px 16px',
+                  padding: '10px 16px',
                   borderRadius: 9999,
                   border: 'none',
                   background: activeFilter === f.id ? '#14422d' : '#e8e2d6',

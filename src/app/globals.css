@@ -47,10 +47,22 @@ body::after {
   z-index: 9998;
 }
 
+/* ── Touch: eliminate 300ms tap delay + ensure pointer cursor ── */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* ── Minimum touch target (44×44px per Apple HIG) ── */
+.min-touch {
+  min-height: 44px;
+  min-width: 44px;
+}
+
 /* ── Carousel: hide scrollbar ── */
 .carousel-scroll {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overscroll-behavior: contain;
 }
 .carousel-scroll::-webkit-scrollbar {
   display: none;

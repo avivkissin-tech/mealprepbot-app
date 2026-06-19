@@ -146,7 +146,7 @@ export default function Header() {
           )}
           <LanguageToggle />
           <button
-            className="md:hidden p-1.5 rounded-lg"
+            className="md:hidden p-2.5 rounded-lg min-touch"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
             style={{ color: '#6B6560' }}
@@ -164,19 +164,22 @@ export default function Header() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div
-          className="md:hidden border-t px-4 py-3 space-y-1"
+          className="md:hidden border-t px-4 pb-3"
           style={{ background: '#ffffff', borderColor: '#e0d9ce' }}
         >
-          <Link href="/" className="block py-2 text-sm font-medium" style={{ color: '#1A1918' }} onClick={() => setMobileOpen(false)}>
+          <Link href="/" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
             {t('home.filter.all')}
           </Link>
-          <Link href="/ingredients" className="block py-2 text-sm font-medium" style={{ color: '#1A1918' }} onClick={() => setMobileOpen(false)}>
+          <Link href="/planner" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
+            {t('nav.planner')}
+          </Link>
+          <Link href="/ingredients" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
             {t('nav.ingredients')}
           </Link>
-          <Link href="/checklist" className="block py-2 text-sm font-medium" style={{ color: '#1A1918' }} onClick={() => setMobileOpen(false)}>
+          <Link href="/checklist" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
             {t('nav.checklist')}
           </Link>
-          <Link href="/mealprep" className="block py-2 text-sm font-bold" style={{ color: '#2A4F3A' }} onClick={() => setMobileOpen(false)}>
+          <Link href="/mealprep" className="flex items-center min-touch text-sm font-bold" style={{ color: '#14422d' }} onClick={() => setMobileOpen(false)}>
             {t('nav.wizard')}
           </Link>
         </div>
