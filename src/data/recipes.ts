@@ -76,7 +76,7 @@ export const recipes: Recipe[] = [
     descriptionHe: "תבשיל עשיר ומחמם של בשר הודו טחון עם שעועית אדומה ועגבניות — מנת מילפרפ קלאסית.",
     descriptionEn: 'Rich and warming ground turkey stew with red kidney beans and tomatoes — a classic meal prep dish.',
     category: 'turkey',
-    image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=600&q=80',
+    image: '/images/recipes/turkey-chili.png',
     chefName: 'אביב קיסין',
     baseServings: 4,
     prepTimeMin: 10,
