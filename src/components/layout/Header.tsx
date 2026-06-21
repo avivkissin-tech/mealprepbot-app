@@ -16,7 +16,6 @@ const NAV_ITEMS: NavItem[] = [
       { labelKey: 'home.filter.all',       href: '/' },
       { labelKey: 'home.filter.fish',      href: '/?cat=fish' },
       { labelKey: 'home.filter.chicken',   href: '/?cat=chicken' },
-      { labelKey: 'home.filter.turkey',    href: '/?cat=turkey' },
       { labelKey: 'home.filter.beef',      href: '/?cat=beef' },
       { labelKey: 'home.filter.tofu',      href: '/?cat=tofu' },
       { labelKey: 'home.filter.breakfast', href: '/?cat=breakfast' },

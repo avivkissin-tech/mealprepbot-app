@@ -267,7 +267,6 @@ const FILTERS = [
   { id: 'chicken',   label: 'עוף' },
   { id: 'fish',      label: 'דגים' },
   { id: 'beef',      label: 'בשר' },
-  { id: 'turkey',    label: 'הודו' },
   { id: 'breakfast', label: 'ארוחת בוקר' },
   { id: 'salad',     label: 'סלטים' },
   { id: 'side',      label: 'תוספות' },

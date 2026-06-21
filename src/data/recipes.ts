@@ -75,7 +75,7 @@ export const recipes: Recipe[] = [
     nameEn: 'Turkey Chili',
     descriptionHe: "תבשיל עשיר ומחמם של בשר הודו טחון עם שעועית אדומה ועגבניות — מנת מילפרפ קלאסית.",
     descriptionEn: 'Rich and warming ground turkey stew with red kidney beans and tomatoes — a classic meal prep dish.',
-    category: 'turkey',
+    category: 'chicken',
     image: '/images/recipes/turkey-chili.png',
     chefName: 'אביב קיסין',
     baseServings: 4,

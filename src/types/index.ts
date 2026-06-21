@@ -3,7 +3,6 @@ export type Locale = 'he' | 'en';
 export type RecipeCategory =
   | 'fish'
   | 'chicken'
-  | 'turkey'
   | 'tofu'
   | 'breakfast'
   | 'beef'

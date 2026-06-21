@@ -8,7 +8,7 @@ import { Recipe, PrepStep, ShoppingCategory } from '@/types';
 import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CATEGORY_ORDER } from '@/lib/shoppingList';
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  fish: '🐟', chicken: '🍗', turkey: '🦃', tofu: '🟡',
+  fish: '🐟', chicken: '🍗', tofu: '🟡',
   breakfast: '🌅', beef: '🥩', salad: '🥗', side: '🍚',
 };
 

@@ -13,7 +13,6 @@ export const he: Record<string, string> = {
   'home.filter.all': 'הכל',
   'home.filter.fish': 'דגים',
   'home.filter.chicken': 'עוף',
-  'home.filter.turkey': 'הודו',
   'home.filter.beef': 'בקר',
   'home.filter.tofu': 'טופו',
   'home.filter.breakfast': 'ארוחת בוקר',
