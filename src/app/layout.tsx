@@ -4,6 +4,7 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { MealPlanProvider } from '@/context/MealPlanContext';
+import { SavedProvider } from '@/context/SavedContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import MealPlanPanel from '@/components/ui/MealPlanPanel';
@@ -33,10 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClerkProvider>
         <LanguageProvider>
           <MealPlanProvider>
+          <SavedProvider>
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
             <MealPlanPanel />
+          </SavedProvider>
           </MealPlanProvider>
         </LanguageProvider>
         </ClerkProvider>

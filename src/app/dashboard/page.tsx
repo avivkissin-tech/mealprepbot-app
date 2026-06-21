@@ -8,6 +8,7 @@ import { TrendingUp, Flame, BookmarkCheck, Users } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { recipes } from '@/data/recipes';
 import { useUser } from '@clerk/nextjs';
+import { useSaved } from '@/context/SavedContext';
 
 /* ─── Animated Stats Card ────────────────────────────────── */
 interface AnimatedStatsCardProps {
@@ -283,14 +284,13 @@ export default function DashboardPage() {
   const [activeFilter, setActiveFilter] = React.useState('all');
   const [search, setSearch] = React.useState('');
 
-  const [savedIds, setSavedIds] = React.useState<string[]>([]);
+  const { savedIds } = useSaved();
   const [totalCooked, setTotalCooked] = React.useState(0);
   const [streak, setStreak] = React.useState(0);
   const [plannerCount, setPlannerCount] = React.useState(0);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
 
   React.useEffect(() => {
-    setSavedIds(loadSavedIds());
     setTotalCooked(loadTotalCooked());
     setStreak(loadStreak());
     setPlannerCount(loadPlannerCount());

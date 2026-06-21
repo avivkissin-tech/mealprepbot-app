@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Recipe, DietaryTag } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMealPlan } from '@/context/MealPlanContext';
+import { useSaved } from '@/context/SavedContext';
 
 export const DIETARY_BADGE: Record<DietaryTag, { he: string; en: string; bg: string; color: string }> = {
   'vegan':        { he: 'טבעוני',      en: 'Vegan',        bg: 'rgba(20,66,45,0.12)',  color: '#14422d' },
@@ -22,7 +23,9 @@ interface Props {
 export default function RecipeCard({ recipe }: Props) {
   const { locale, t } = useLanguage();
   const { isSelected, toggleRecipe } = useMealPlan();
+  const { isSaved, toggleSaved } = useSaved();
   const selected = isSelected(recipe.id);
+  const saved = isSaved(recipe.id);
   const name = locale === 'he' ? recipe.nameHe : recipe.nameEn;
   const totalMin = recipe.prepTimeMin + recipe.cookTimeMin;
   const primaryTag = recipe.dietaryTags?.[0];
@@ -95,6 +98,24 @@ export default function RecipeCard({ recipe }: Props) {
             }}
           >
             {selected ? '✓' : '+'}
+          </button>
+          {/* Save / heart button */}
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSaved(recipe.id); }}
+            aria-label={saved ? 'הסר משמורים' : 'שמור מתכון'}
+            style={{
+              position: 'absolute', bottom: 10, right: 10,
+              width: 32, height: 32, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: 'none', cursor: 'pointer',
+              transition: 'all 0.15s',
+              background: saved ? 'rgba(201,87,42,0.92)' : 'rgba(255,255,255,0.92)',
+              boxShadow: '0 2px 8px rgba(20,66,45,0.15)',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={saved ? '#fff' : 'none'} stroke={saved ? '#fff' : '#C9572A'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
           </button>
         </div>
 
