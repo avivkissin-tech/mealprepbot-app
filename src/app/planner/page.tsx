@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
@@ -174,6 +174,17 @@ export default function PlannerPage() {
   }, [modalSearch]);
 
   const [activeMobileDay, setActiveMobileDay] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus search input without causing scroll jump
+  useEffect(() => {
+    if (pickingDay !== null) {
+      const t = setTimeout(() => {
+        searchInputRef.current?.focus({ preventScroll: true });
+      }, 120);
+      return () => clearTimeout(t);
+    }
+  }, [pickingDay]);
 
   return (
     <div dir="rtl" style={{ minHeight: '100vh', background: '#faf9f7' }}>
@@ -559,9 +570,9 @@ export default function PlannerPage() {
                   <input
                     type="text"
                     placeholder="חפש מתכון..."
+                    ref={searchInputRef}
                     value={modalSearch}
                     onChange={e => setModalSearch(e.target.value)}
-                    autoFocus
                     style={{
                       width: '100%', padding: '9px 36px 9px 14px',
                       borderRadius: 9999, border: '1px solid #c0c9c1',
