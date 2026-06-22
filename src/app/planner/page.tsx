@@ -149,20 +149,28 @@ export default function PlannerPage() {
 
   const grouped = groupByCategory(shoppingList);
 
-  // Per-recipe breakdown for "by recipe" view
+  // Per-recipe breakdown for "by recipe" view — aggregated across all days
   const perRecipeLists = useMemo(() => {
-    const result: { key: string; recipe: typeof recipes[0]; servings: number; items: ReturnType<typeof calculateShoppingList> }[] = [];
+    const totals = new Map<string, { recipe: typeof recipes[0]; totalServings: number }>();
     for (const [dayStr, recipeIds] of Object.entries(plan)) {
       const day = Number(dayStr);
       for (let i = 0; i < recipeIds.length; i++) {
         const recipe = recipes.find(r => r.id === recipeIds[i]);
-        if (recipe) {
-          const s = serves[`${day}-${i}`] ?? recipe.baseServings;
-          result.push({ key: `${day}-${i}`, recipe, servings: s, items: calculateShoppingList(recipe, s) });
+        if (!recipe) continue;
+        const s = serves[`${day}-${i}`] ?? recipe.baseServings;
+        const existing = totals.get(recipe.id);
+        if (existing) {
+          existing.totalServings += s;
+        } else {
+          totals.set(recipe.id, { recipe, totalServings: s });
         }
       }
     }
-    return result;
+    return Array.from(totals.values()).map(({ recipe, totalServings }) => ({
+      recipe,
+      servings: totalServings,
+      items: calculateShoppingList(recipe, totalServings),
+    }));
   }, [plan, serves]);
 
   const totalRecipes = Object.values(plan).reduce((sum, arr) => sum + arr.length, 0);
@@ -908,8 +916,8 @@ export default function PlannerPage() {
                     ))}
                   </div>
                 ) : (
-                  perRecipeLists.map(({ key, recipe, servings, items }) => (
-                    <div key={key} style={{
+                  perRecipeLists.map(({ recipe, servings, items }) => (
+                    <div key={recipe.id} style={{
                       marginBottom: 20,
                       border: '1px solid #c0c9c1',
                       borderRadius: 12,
