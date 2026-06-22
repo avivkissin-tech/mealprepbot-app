@@ -30,10 +30,10 @@ export default function PlannerPage() {
   const { isSignedIn, isLoaded } = useAuth();
 
   const PLAN_KEY   = 'easyprep_planner';
-  const SERVES_KEY = 'easyprep_planner_serves';
+  const PEOPLE_KEY = 'easyprep_planner_people';
 
   const [plan, setPlan] = useState<Record<number, string[]>>({});
-  const [serves, setServes] = useState<Record<string, number>>({});
+  const [globalPeople, setGlobalPeople] = useState<number>(2);
   // modal
   const [pickingDay, setPickingDay] = useState<number | null>(null);
   const [modalSearch, setModalSearch] = useState('');
@@ -67,21 +67,23 @@ export default function PlannerPage() {
   useEffect(() => {
     try {
       setPlan(JSON.parse(localStorage.getItem(PLAN_KEY) ?? '{}'));
-      setServes(JSON.parse(localStorage.getItem(SERVES_KEY) ?? '{}'));
+      const p = parseInt(localStorage.getItem(PEOPLE_KEY) ?? '2', 10);
+      setGlobalPeople(isNaN(p) ? 2 : p);
     } catch {}
   }, []);
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
     fetchPlanner().then(({ plan: p, serves: s }) => {
-      // Only override if Supabase has data
-      if (Object.keys(p).length > 0 || Object.keys(s).length > 0) {
+      if (Object.keys(p).length > 0) {
         setPlan(p as Record<number, string[]>);
-        setServes(s as Record<string, number>);
-        try {
-          localStorage.setItem(PLAN_KEY, JSON.stringify(p));
-          localStorage.setItem(SERVES_KEY, JSON.stringify(s));
-        } catch {}
+        try { localStorage.setItem(PLAN_KEY, JSON.stringify(p)); } catch {}
+      }
+      // serves stored as { global: N }
+      const globalVal = (s as Record<string, number>)?.global;
+      if (globalVal) {
+        setGlobalPeople(globalVal);
+        try { localStorage.setItem(PEOPLE_KEY, String(globalVal)); } catch {}
       }
     }).catch(() => {});
   }, [isSignedIn, isLoaded]);
@@ -89,20 +91,13 @@ export default function PlannerPage() {
   // Persist every change
   useEffect(() => {
     try { localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); } catch {}
-    if (isSignedIn) pushPlanner(plan as Record<string, string[]>, serves).catch(() => {});
-  }, [plan, serves, isSignedIn]);
+    try { localStorage.setItem(PEOPLE_KEY, String(globalPeople)); } catch {}
+    if (isSignedIn) pushPlanner(plan as Record<string, string[]>, { global: globalPeople }).catch(() => {});
+  }, [plan, globalPeople, isSignedIn]);
   // serves changes handled by plan effect above (pushed together)
 
   const addRecipe = (day: number, recipeId: string) => {
-    setPlan(prev => {
-      const current = prev[day] ?? [];
-      const newList = [...current, recipeId];
-      // default serves = baseServings of recipe
-      const recipe = recipes.find(r => r.id === recipeId);
-      const slotKey = `${day}-${current.length}`;
-      setServes(s => ({ ...s, [slotKey]: recipe?.baseServings ?? 2 }));
-      return { ...prev, [day]: newList };
-    });
+    setPlan(prev => ({ ...prev, [day]: [...(prev[day] ?? []), recipeId] }));
     setPickingDay(null);
     setModalSearch('');
   };
@@ -111,67 +106,43 @@ export default function PlannerPage() {
     setPlan(prev => {
       const current = [...(prev[day] ?? [])];
       current.splice(slotIdx, 1);
-      // re-key serves for remaining slots
-      setServes(s => {
-        const next = { ...s };
-        delete next[`${day}-${slotIdx}`];
-        // shift down keys after removed slot
-        for (let i = slotIdx; i < current.length; i++) {
-          next[`${day}-${i}`] = next[`${day}-${i + 1}`] ?? 2;
-          delete next[`${day}-${i + 1}`];
-        }
-        return next;
-      });
       return { ...prev, [day]: current };
     });
   };
 
-  const adjustServes = (day: number, slotIdx: number, delta: number) => {
-    const key = `${day}-${slotIdx}`;
-    setServes(prev => ({ ...prev, [key]: Math.max(1, Math.min(20, (prev[key] ?? 2) + delta)) }));
-  };
-
-  // Aggregate shopping list from all plan slots
+  // Aggregate shopping list from all plan slots using global people count
   const shoppingList = useMemo(() => {
     const lists = [];
-    for (const [dayStr, recipeIds] of Object.entries(plan)) {
-      const day = Number(dayStr);
-      for (let i = 0; i < recipeIds.length; i++) {
-        const recipe = recipes.find(r => r.id === recipeIds[i]);
-        if (recipe) {
-          const s = serves[`${day}-${i}`] ?? recipe.baseServings;
-          lists.push(calculateShoppingList(recipe, s));
-        }
+    for (const recipeIds of Object.values(plan)) {
+      for (const recipeId of recipeIds) {
+        const recipe = recipes.find(r => r.id === recipeId);
+        if (recipe) lists.push(calculateShoppingList(recipe, globalPeople));
       }
     }
     return mergeShoppingLists(lists);
-  }, [plan, serves]);
+  }, [plan, globalPeople]);
 
   const grouped = groupByCategory(shoppingList);
 
   // Per-recipe breakdown for "by recipe" view — aggregated across all days
   const perRecipeLists = useMemo(() => {
-    const totals = new Map<string, { recipe: typeof recipes[0]; totalServings: number }>();
-    for (const [dayStr, recipeIds] of Object.entries(plan)) {
-      const day = Number(dayStr);
-      for (let i = 0; i < recipeIds.length; i++) {
-        const recipe = recipes.find(r => r.id === recipeIds[i]);
+    const counts = new Map<string, { recipe: typeof recipes[0]; appearances: number }>();
+    for (const recipeIds of Object.values(plan)) {
+      for (const recipeId of recipeIds) {
+        const recipe = recipes.find(r => r.id === recipeId);
         if (!recipe) continue;
-        const s = serves[`${day}-${i}`] ?? recipe.baseServings;
-        const existing = totals.get(recipe.id);
-        if (existing) {
-          existing.totalServings += s;
-        } else {
-          totals.set(recipe.id, { recipe, totalServings: s });
-        }
+        const existing = counts.get(recipe.id);
+        if (existing) existing.appearances += 1;
+        else counts.set(recipe.id, { recipe, appearances: 1 });
       }
     }
-    return Array.from(totals.values()).map(({ recipe, totalServings }) => ({
+    return Array.from(counts.values()).map(({ recipe, appearances }) => ({
       recipe,
-      servings: totalServings,
-      items: calculateShoppingList(recipe, totalServings),
+      servings: globalPeople * appearances,
+      appearances,
+      items: calculateShoppingList(recipe, globalPeople * appearances),
     }));
-  }, [plan, serves]);
+  }, [plan, globalPeople]);
 
   const totalRecipes = Object.values(plan).reduce((sum, arr) => sum + arr.length, 0);
 
@@ -218,7 +189,28 @@ export default function PlannerPage() {
             {totalRecipes > 0 ? `${totalRecipes} ארוחות מתוכננות השבוע` : 'לחץ + להוסיף ארוחה לכל יום'}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Global people selector */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: '#fff', border: '1px solid #c0c9c1',
+            borderRadius: 9999, padding: '8px 16px',
+          }}>
+            <span style={{ fontSize: 13, color: 'rgba(26,25,24,0.6)', whiteSpace: 'nowrap' }}>מכין עבור</span>
+            <button
+              onClick={() => setGlobalPeople(p => Math.max(1, p - 1))}
+              style={{ ...serveBtnStyle, width: 24, height: 24 }}
+            >−</button>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b', minWidth: 16, textAlign: 'center' }}>
+              {globalPeople}
+            </span>
+            <button
+              onClick={() => setGlobalPeople(p => Math.min(20, p + 1))}
+              style={{ ...serveBtnStyle, width: 24, height: 24 }}
+            >+</button>
+            <span style={{ fontSize: 13, color: 'rgba(26,25,24,0.6)' }}>אנשים</span>
+          </div>
+
         {totalRecipes > 0 && (
           <button
             onClick={() => {
@@ -334,8 +326,6 @@ export default function PlannerPage() {
                     const recipe = recipes.find(r => r.id === recipeId);
                     if (!recipe) return null;
                     const name = isHe ? recipe.nameHe : recipe.nameEn;
-                    const slotKey = `${dayIdx}-${slotIdx}`;
-                    const currentServes = serves[slotKey] ?? recipe.baseServings;
                     return (
                       <motion.div
                         key={`${recipeId}-${slotIdx}`}
@@ -367,18 +357,10 @@ export default function PlannerPage() {
                             </svg>
                           </button>
                         </div>
-                        <div style={{ padding: '10px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', lineHeight: 1.35, marginBottom: 8 }}>
+                        <div style={{ padding: '10px 12px', flex: 1, display: 'flex', alignItems: 'center' }}>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', lineHeight: 1.35, margin: 0 }}>
                             {name}
                           </p>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)' }}>מנות</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <button onClick={() => adjustServes(dayIdx, slotIdx, -1)} style={{ ...serveBtnStyle, minWidth: 28, minHeight: 28 }}>−</button>
-                              <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', minWidth: 16, textAlign: 'center' }}>{currentServes}</span>
-                              <button onClick={() => adjustServes(dayIdx, slotIdx, 1)} style={{ ...serveBtnStyle, minWidth: 28, minHeight: 28 }}>+</button>
-                            </div>
-                          </div>
                         </div>
                       </motion.div>
                     );
@@ -446,8 +428,6 @@ export default function PlannerPage() {
                       const recipe = recipes.find(r => r.id === recipeId);
                       if (!recipe) return null;
                       const name = isHe ? recipe.nameHe : recipe.nameEn;
-                      const slotKey = `${dayIdx}-${slotIdx}`;
-                      const currentServes = serves[slotKey] ?? recipe.baseServings;
 
                       return (
                         <motion.div
@@ -491,32 +471,16 @@ export default function PlannerPage() {
                             </button>
                           </div>
 
-                          {/* Name + serves */}
+                          {/* Name */}
                           <div style={{ padding: '8px 10px' }}>
                             <p style={{
                               fontSize: 11, fontWeight: 600, color: '#1a1c1b',
-                              lineHeight: 1.3, marginBottom: 6,
+                              lineHeight: 1.3, margin: 0,
                               display: '-webkit-box', WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical', overflow: 'hidden',
                             }}>
                               {name}
                             </p>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <span style={{ fontSize: 10, color: 'rgba(26,25,24,0.45)' }}>מנות</span>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <button
-                                  onClick={() => adjustServes(dayIdx, slotIdx, -1)}
-                                  style={{ ...serveBtnStyle }}
-                                >−</button>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: '#1a1c1b', minWidth: 14, textAlign: 'center' }}>
-                                  {currentServes}
-                                </span>
-                                <button
-                                  onClick={() => adjustServes(dayIdx, slotIdx, 1)}
-                                  style={{ ...serveBtnStyle }}
-                                >+</button>
-                              </div>
-                            </div>
                           </div>
                         </motion.div>
                       );
