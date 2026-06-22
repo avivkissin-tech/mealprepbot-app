@@ -25,7 +25,7 @@ const SHOPPING_LABEL_HE: Record<ShoppingCategory, string> = {
 };
 
 export default function PlannerPage() {
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const isHe = locale === 'he';
   const { isSignedIn, isLoaded } = useAuth();
 
@@ -871,7 +871,7 @@ export default function PlannerPage() {
                                 {isHe ? item.nameHe : item.nameEn}
                               </span>
                               <span style={{ fontSize: 11, fontWeight: 600, color: isDone ? '#c0c9c1' : '#14422d', flexShrink: 0 }}>
-                                {item.quantity > 0 ? `${item.quantity}` : ''} {item.unit}
+                                {item.quantity > 0 ? `${item.quantity}` : ''} {t(`unit.${item.unit}`)}
                               </span>
                             </div>
                           );
@@ -917,7 +917,7 @@ export default function PlannerPage() {
                               {item.optional && <span style={{ fontSize: 10, color: 'rgba(26,25,24,0.4)', marginRight: 4 }}>(אופציונלי)</span>}
                             </span>
                             <span style={{ fontSize: 12, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
-                              {item.quantity > 0 ? `${item.quantity} ${item.unit}` : item.unit}
+                              {item.quantity > 0 ? `${item.quantity} ${t(`unit.${item.unit}`)}` : t(`unit.${item.unit}`)}
                             </span>
                           </div>
                         ))}

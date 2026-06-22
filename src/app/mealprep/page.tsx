@@ -232,42 +232,58 @@ const PHASE_CONFIG: Record<GuidePhase, { label: string; color: string; bg: strin
 // ─── Timer component ───────────────────────────────────────────────────────────
 
 function StepTimer({ minutes, stepId }: { minutes: number; stepId: number }) {
-  const [state, setState] = useState<TimerState>({ status: 'idle', remaining: minutes * 60 });
+  const totalSecs = minutes * 60;
+  const [status, setStatus] = useState<TimerStatus>('idle');
+  const [remaining, setRemaining] = useState(totalSecs);
+  // Store the wall-clock end time so the timer survives tab switches
+  const endTimeRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const clear = () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  const clearTick = () => { if (intervalRef.current) clearInterval(intervalRef.current); };
 
-  const start = useCallback(() => {
-    clear();
-    setState(prev => ({ ...prev, status: 'running' }));
-    intervalRef.current = setInterval(() => {
-      setState(prev => {
-        if (prev.remaining <= 1) {
-          clear();
-          return { status: 'done', remaining: 0 };
-        }
-        return { ...prev, remaining: prev.remaining - 1 };
-      });
-    }, 1000);
+  const tick = useCallback(() => {
+    const r = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
+    setRemaining(r);
+    if (r <= 0) { clearTick(); setStatus('done'); }
   }, []);
 
+  const start = useCallback(() => {
+    clearTick();
+    // If resuming from pause, keep current remaining; else start fresh
+    setRemaining(prev => {
+      endTimeRef.current = Date.now() + prev * 1000;
+      return prev;
+    });
+    setStatus('running');
+    intervalRef.current = setInterval(tick, 500);
+  }, [tick]);
+
   const pause = useCallback(() => {
-    clear();
-    setState(prev => ({ ...prev, status: 'paused' }));
+    clearTick();
+    setRemaining(Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000)));
+    setStatus('paused');
   }, []);
 
   const reset = useCallback(() => {
-    clear();
-    setState({ status: 'idle', remaining: minutes * 60 });
-  }, [minutes]);
+    clearTick();
+    setRemaining(totalSecs);
+    setStatus('idle');
+  }, [totalSecs]);
 
-  useEffect(() => () => clear(), []);
+  // Recalculate when tab becomes visible again
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && status === 'running') tick();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [status, tick]);
 
-  const { status, remaining } = state;
+  useEffect(() => () => clearTick(), []);
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;
   const display = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  const progress = 1 - remaining / (minutes * 60);
+  const progress = 1 - remaining / totalSecs;
 
   if (status === 'done') {
     return (

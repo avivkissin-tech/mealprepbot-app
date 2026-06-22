@@ -15,11 +15,22 @@ export default function IngredientList({ ingredients, portions, baseServings }: 
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const multiplier = portions / baseServings;
 
+  const PLURAL_UNITS = new Set(['cup', 'tbsp', 'tsp', 'can', 'pinch']);
+
   function formatQuantity(qty: number): string {
     const scaled = qty * multiplier;
     if (scaled === 0) return '';
     const rounded = scaled >= 10 ? Math.round(scaled) : Math.round(scaled * 2) / 2;
     return String(rounded);
+  }
+
+  function unitLabel(unit: string, qty: number): string {
+    const scaled = qty * multiplier;
+    if (PLURAL_UNITS.has(unit) && scaled > 1) {
+      const plural = t(`unit.${unit}_plural`);
+      if (plural) return plural;
+    }
+    return t(`unit.${unit}`);
   }
 
   function toggle(i: number) {
@@ -35,7 +46,7 @@ export default function IngredientList({ ingredients, portions, baseServings }: 
       {ingredients.map((ing, i) => {
         const name = locale === 'he' ? ing.nameHe : ing.nameEn;
         const qty = ing.unit === 'to_taste' ? '' : formatQuantity(ing.quantity);
-        const unit = t(`unit.${ing.unit}`);
+        const unit = ing.unit === 'to_taste' ? t('unit.to_taste') : unitLabel(ing.unit, ing.quantity);
         const isDone = checked.has(i);
 
         return (

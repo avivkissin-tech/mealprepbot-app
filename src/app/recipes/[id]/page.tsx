@@ -12,21 +12,21 @@ import PortionSelector from '@/components/recipes/PortionSelector';
 import { DietaryTag } from '@/types';
 import { pushCookEntry } from '@/lib/userDataApi';
 
-const STORAGE_KEY_HISTORY = 'easyprep_cook_history';
+const STORAGE_KEY_HISTORY = 'easyprep_cook_history_v2';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 
-function hasCookedToday(): boolean {
+function hasCookedToday(recipeId: string): boolean {
   try {
-    const history: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '[]');
-    return history.some(d => d.slice(0, 10) === todayStr());
+    const history: Record<string, string[]> = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '{}');
+    return (history[recipeId] ?? []).some(d => d.slice(0, 10) === todayStr());
   } catch { return false; }
 }
 
-function markCooked() {
+function markCooked(recipeId: string) {
   try {
-    const history: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '[]');
-    history.push(new Date().toISOString());
+    const history: Record<string, string[]> = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) ?? '{}');
+    history[recipeId] = [...(history[recipeId] ?? []), new Date().toISOString()];
     localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
   } catch { /* ignore */ }
 }
@@ -50,11 +50,11 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
   const [portions, setPortions] = useState(recipe!.baseServings);
 
   useEffect(() => {
-    setCookedToday(hasCookedToday());
-  }, []);
+    setCookedToday(hasCookedToday(id));
+  }, [id]);
 
   function handleMarkCooked() {
-    markCooked();
+    markCooked(id);
     setCookedToday(true);
     setJustMarked(true);
     pushCookEntry().catch(() => {});

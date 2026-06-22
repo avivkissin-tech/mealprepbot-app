@@ -72,7 +72,7 @@ export const he: Record<string, string> = {
   'checklist.done': 'כל הכבוד! המילפרפ הושלם 🎉',
   'checklist.tip': 'גם הכנה ליומיים בלבד היא התחלה מעולה. לא חייבים לבשל לשבוע שלם מההתחלה.',
 
-  // Units
+  // Units (singular)
   'unit.g': 'גר׳',
   'unit.kg': 'ק"ג',
   'unit.ml': 'מ"ל',
@@ -83,6 +83,12 @@ export const he: Record<string, string> = {
   'unit.can': 'פחית',
   'unit.pinch': 'קורט',
   'unit.to_taste': 'לפי הטעם',
+  // Units (plural)
+  'unit.cup_plural': 'כוסות',
+  'unit.tbsp_plural': 'כפות',
+  'unit.tsp_plural': 'כפיות',
+  'unit.can_plural': 'פחיות',
+  'unit.pinch_plural': 'קורטות',
 
   // Timer
   'timer.start': 'התחל',

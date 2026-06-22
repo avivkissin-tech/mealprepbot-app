@@ -72,7 +72,7 @@ export const en: Record<string, string> = {
   'checklist.done': 'Excellent! Meal prep complete 🎉',
   'checklist.tip': 'Prepping for just 2 days is a great start. You don\'t have to cook for the whole week right away.',
 
-  // Units
+  // Units (singular)
   'unit.g': 'g',
   'unit.kg': 'kg',
   'unit.ml': 'ml',
@@ -83,6 +83,12 @@ export const en: Record<string, string> = {
   'unit.can': 'can',
   'unit.pinch': 'pinch',
   'unit.to_taste': 'to taste',
+  // Units (plural)
+  'unit.cup_plural': 'cups',
+  'unit.tbsp_plural': 'tbsp',
+  'unit.tsp_plural': 'tsp',
+  'unit.can_plural': 'cans',
+  'unit.pinch_plural': 'pinches',
 
   // Timer
   'timer.start': 'Start',
