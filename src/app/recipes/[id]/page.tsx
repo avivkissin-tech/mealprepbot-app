@@ -10,6 +10,7 @@ import IngredientList from '@/components/recipes/IngredientList';
 import StepByStep from '@/components/recipes/StepByStep';
 import PortionSelector from '@/components/recipes/PortionSelector';
 import { DietaryTag } from '@/types';
+import { pushCookEntry } from '@/lib/userDataApi';
 
 const STORAGE_KEY_HISTORY = 'easyprep_cook_history';
 
@@ -56,6 +57,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
     markCooked();
     setCookedToday(true);
     setJustMarked(true);
+    pushCookEntry().catch(() => {});
   }
 
   if (!recipe) notFound();

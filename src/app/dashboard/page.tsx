@@ -7,8 +7,9 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, Flame, BookmarkCheck, Users } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { recipes } from '@/data/recipes';
-import { useUser } from '@clerk/nextjs';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { useSaved } from '@/context/SavedContext';
+import { fetchCookHistory, fetchPlanner, fetchProfile } from '@/lib/userDataApi';
 
 /* ─── Animated Stats Card ────────────────────────────────── */
 interface AnimatedStatsCardProps {
@@ -285,17 +286,38 @@ export default function DashboardPage() {
   const [search, setSearch] = React.useState('');
 
   const { savedIds } = useSaved();
+  const { isSignedIn, isLoaded } = useAuth();
   const [totalCooked, setTotalCooked] = React.useState(0);
   const [streak, setStreak] = React.useState(0);
   const [plannerCount, setPlannerCount] = React.useState(0);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
 
   React.useEffect(() => {
+    // localStorage first — instant
     setTotalCooked(loadTotalCooked());
     setStreak(loadStreak());
     setPlannerCount(loadPlannerCount());
     setProfile(loadProfile());
   }, []);
+
+  React.useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    // Supabase override — authoritative data
+    fetchCookHistory().then(history => {
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+      setTotalCooked(history.length);
+      setStreak(loadStreak());
+    }).catch(() => {});
+    fetchPlanner().then(({ plan }) => {
+      setPlannerCount(Object.values(plan as Record<string, string[]>).reduce((s, a) => s + a.length, 0));
+    }).catch(() => {});
+    fetchProfile().then(p => {
+      if (p) {
+        localStorage.setItem('easyprep_profile', JSON.stringify(p));
+        setProfile(p as unknown as UserProfile);
+      }
+    }).catch(() => {});
+  }, [isSignedIn, isLoaded]);
 
   const stats = [
     { title: 'ארוחות הוכנו',    primaryValue: totalCooked, icon: <TrendingUp className="h-5 w-5" />, delay: 0 },

@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@clerk/nextjs';
+import { fetchPlanner, pushPlanner } from '@/lib/userDataApi';
 import { recipes } from '@/data/recipes';
 import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CATEGORY_ORDER } from '@/lib/shoppingList';
 import { ShoppingCategory, Recipe } from '@/types';
@@ -25,16 +27,13 @@ const SHOPPING_LABEL_HE: Record<ShoppingCategory, string> = {
 export default function PlannerPage() {
   const { locale } = useLanguage();
   const isHe = locale === 'he';
+  const { isSignedIn, isLoaded } = useAuth();
 
   const PLAN_KEY   = 'easyprep_planner';
   const SERVES_KEY = 'easyprep_planner_serves';
 
-  const [plan, setPlan] = useState<Record<number, string[]>>(() => {
-    try { return JSON.parse(localStorage.getItem(PLAN_KEY) ?? '{}'); } catch { return {}; }
-  });
-  const [serves, setServes] = useState<Record<string, number>>(() => {
-    try { return JSON.parse(localStorage.getItem(SERVES_KEY) ?? '{}'); } catch { return {}; }
-  });
+  const [plan, setPlan] = useState<Record<number, string[]>>({});
+  const [serves, setServes] = useState<Record<string, number>>({});
   // modal
   const [pickingDay, setPickingDay] = useState<number | null>(null);
   const [modalSearch, setModalSearch] = useState('');
@@ -64,13 +63,35 @@ export default function PlannerPage() {
     try { return !!localStorage.getItem('easyprep_active_session'); } catch { return false; }
   });
 
-  // שמור כל שינוי ב-localStorage
+  // Load on mount: localStorage first, then Supabase
+  useEffect(() => {
+    try {
+      setPlan(JSON.parse(localStorage.getItem(PLAN_KEY) ?? '{}'));
+      setServes(JSON.parse(localStorage.getItem(SERVES_KEY) ?? '{}'));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    fetchPlanner().then(({ plan: p, serves: s }) => {
+      // Only override if Supabase has data
+      if (Object.keys(p).length > 0 || Object.keys(s).length > 0) {
+        setPlan(p as Record<number, string[]>);
+        setServes(s as Record<string, number>);
+        try {
+          localStorage.setItem(PLAN_KEY, JSON.stringify(p));
+          localStorage.setItem(SERVES_KEY, JSON.stringify(s));
+        } catch {}
+      }
+    }).catch(() => {});
+  }, [isSignedIn, isLoaded]);
+
+  // Persist every change
   useEffect(() => {
     try { localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); } catch {}
-  }, [plan]);
-  useEffect(() => {
-    try { localStorage.setItem(SERVES_KEY, JSON.stringify(serves)); } catch {}
-  }, [serves]);
+    if (isSignedIn) pushPlanner(plan as Record<string, string[]>, serves).catch(() => {});
+  }, [plan, serves, isSignedIn]);
+  // serves changes handled by plan effect above (pushed together)
 
   const addRecipe = (day: number, recipeId: string) => {
     setPlan(prev => {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@clerk/nextjs';
+import { pushProfile } from '@/lib/userDataApi';
 
 /* ─── Types ─────────────────────────────────────────────── */
 type GoalType = 'save-money' | 'eat-healthy' | 'save-time' | 'all';
@@ -150,7 +151,10 @@ export default function OnboardingPage() {
       await user?.update({ unsafeMetadata: { profile } });
     } catch { /* ignore */ }
 
-    // 3. Set cookie + redirect
+    // 3. Save to Supabase
+    try { await pushProfile(profile as unknown as Record<string, unknown>); } catch { /* ignore */ }
+
+    // 4. Set cookie + redirect
     document.cookie = 'onboarding_done=1; path=/; max-age=31536000';
     router.push('/dashboard');
   }
