@@ -1,13 +1,15 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
+// Public: home + recipes browsing + auth pages
 const isPublicRoute = createRouteMatcher([
-  '/onboarding(.*)',
+  '/',
+  '/recipes(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/recipes(.*)',
-  '/ingredients(.*)',
+  '/onboarding(.*)',
 ]);
 
+// Protected: personal / interactive features require login
 export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
