@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e9e8e6",
+                        "on-secondary-fixed": "#1e1c14",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#002112",
+                        "on-primary-fixed-variant": "#224f39",
+                        "surface-variant": "#e3e2e0",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#1a1c1b",
+                        "tertiary-container": "#375941",
+                        "inverse-primary": "#a1d1b4",
+                        "surface-container": "#efeeec",
+                        "on-secondary-fixed-variant": "#4a473e",
+                        "secondary-fixed": "#e8e2d6",
+                        "inverse-on-surface": "#f1f1ef",
+                        "surface-container-low": "#f4f3f1",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#20412b",
+                        "error": "#ba1a1a",
+                        "outline": "#717973",
+                        "on-tertiary-fixed-variant": "#2c4e36",
+                        "surface-bright": "#faf9f7",
+                        "on-tertiary-fixed": "#00210e",
+                        "secondary-container": "#e8e2d6",
+                        "on-secondary-container": "#68645b",
+                        "primary": "#14422d",
+                        "on-background": "#1a1c1b",
+                        "outline-variant": "#c0c9c1",
+                        "surface-dim": "#dadad8",
+                        "on-error-container": "#93000a",
+                        "secondary": "#625e55",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#414943",
+                        "secondary-fixed-dim": "#cbc6ba",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#3a674f",
+                        "on-tertiary-container": "#a8ceaf",
+                        "primary-fixed": "#bceecf",
+                        "tertiary-fixed": "#c5eccc",
+                        "inverse-surface": "#2f3130",
+                        "primary-fixed-dim": "#a1d1b4",
+                        "tertiary-fixed-dim": "#aad0b1",
+                        "on-primary-container": "#9fcfb2",
+                        "primary-container": "#2d5a43",
+                        "surface-container-highest": "#e3e2e0",
+                        "surface": "#faf9f7",
+                        "background": "#faf9f7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "48px",
+                        "container-max": "1200px",
+                        "gutter": "24px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .checkbox-custom:checked + label {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest shadow-[0_8px_32px_rgba(45,90,67,0.05)] docked full-width top-0 z-50 sticky">
+<div class="flex justify-between items-center w-full px-xl py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Easy PREP</span>
+</div>
+<nav class="hidden md:flex gap-lg items-center flex-row">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">דשבורד</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">מתכונים</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">מתכנן שבועי</a>
+<a class="font-body-md text-body-md text-primary dark:text-inverse-primary font-bold border-b-2 border-primary pb-1" href="#">רשימת קניות</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">settings</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="פרופיל משתמש" data-alt="A professional headshot of a health-conscious individual in a high-end, minimalist kitchen environment. The person is smiling warmly, conveying a sense of organized well-being and expertise in nutrition. The background is softly blurred with clean white surfaces and hints of fresh green herbs, maintaining the brand's premium minimalist aesthetic with soft, natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXK8Pu2BgKfzkU3qZIrU_8of-LRsvVM6L2-oECax2VYtfPzW7gM1PPwjeXAaXDpUpCQHxISoWsr-STxqKyzq6mVEkvKq5nKySNKB1IAV6gxNEEbizlsD0YFMbTGWztH9zBebDKImxinB898l0Z3VqaunHKE7F36HCk6gUhQOObOj6H-2zGoh6YNA-Jknl_olMUOgjVUUk0pFZRUaTxneR0XsG0wbuzSbg_wgt7JD0ehK1PyerJiWl_9zbQlXbv1-IDuhzj9JpXtug"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-md py-xl lg:flex lg:gap-xl lg:flex-row">
+<!-- Sidebar Navigation (Desktop) -->
+<aside class="hidden lg:flex w-64 gap-sm flex-col">
+<div class="flex flex-row-reverse items-center gap-base text-on-surface-variant px-md py-sm hover:bg-secondary-container transition-colors duration-200 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">דשבורד</span>
+</div>
+<div class="flex flex-row-reverse items-center gap-base text-on-surface-variant px-md py-sm hover:bg-secondary-container transition-colors duration-200 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">restaurant_menu</span>
+<span class="font-label-md text-label-md">מתכונים</span>
+</div>
+<div class="flex flex-row-reverse items-center gap-base text-on-surface-variant px-md py-sm hover:bg-secondary-container transition-colors duration-200 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-md text-label-md">מתכנן שבועי</span>
+</div>
+<div class="flex flex-row-reverse items-center gap-base bg-primary-container text-on-primary-container rounded-lg px-md py-sm cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-label-md text-label-md">רשימת קניות</span>
+</div>
+<hr class="my-md border-outline-variant opacity-30"/>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-md rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-base shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<span class="material-symbols-outlined">add</span>
+<span>הוסף מתכון חדש</span>
+</button>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1">
+<!-- Header & Actions -->
+<div class="flex flex-col justify-between items-start md:items-center mb-xl gap-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-xs">רשימת קניות שבועית</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">מרכז עבורך את כל הרכיבים עבור 5 מתכונים מתוכננים.</p>
+</div>
+<div class="flex gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-base px-md py-sm border border-outline-variant rounded-xl text-primary font-label-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">ios_share</span>
+<span>שתף</span>
+</button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-base px-md py-sm border border-outline-variant rounded-xl text-primary font-label-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+<span>ייצא ל-PDF</span>
+</button>
+</div>
+</div>
+<!-- Shopping List Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-md">
+<!-- Category: Produce -->
+<div class="bg-surface-container-lowest p-md rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="flex flex-row-reverse items-center justify-between mb-md">
+<div class="flex flex-row-reverse items-center gap-sm">
+<span class="material-symbols-outlined text-primary">eco</span>
+<h3 class="font-headline-md text-headline-md text-primary">ירקות ופירות</h3>
+</div>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-sm py-xs rounded-full text-[12px] font-bold">7 פריטים</span>
+</div>
+<ul class="space-y-sm">
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-1" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-1">3 חבילות תרד טרי</label>
+<span class="text-xs text-outline opacity-0 group-hover:opacity-100 transition-opacity">מתוך: שייק ירוק, פסטה פסטו</span>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-2" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-2">2 יח' בצל סגול</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-3" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-3">1 ק"ג בטטה</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-4" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-4">חבילת פטרוזיליה</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-5" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-5">500 גרם עגבניות שרי</label>
+</li>
+</ul>
+</div>
+<!-- Category: Pantry -->
+<div class="bg-surface-container-lowest p-md rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="flex flex-row-reverse items-center justify-between mb-md">
+<div class="flex flex-row-reverse items-center gap-sm">
+<span class="material-symbols-outlined text-primary">shelves</span>
+<h3 class="font-headline-md text-headline-md text-primary">מזווה</h3>
+</div>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-sm py-xs rounded-full text-[12px] font-bold">4 פריטים</span>
+</div>
+<ul class="space-y-sm">
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-6" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-6">500 גרם אורז בסמטי</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-7" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-7">שמן זית כתית מעולה</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-8" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-8">2 קופסאות חומוס</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-9" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-9">קינואה לבנה</label>
+</li>
+</ul>
+</div>
+<!-- Category: Dairy & Alternatives -->
+<div class="bg-surface-container-lowest p-md rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="flex flex-row-reverse items-center justify-between mb-md">
+<div class="flex flex-row-reverse items-center gap-sm">
+<span class="material-symbols-outlined text-primary">egg</span>
+<h3 class="font-headline-md text-headline-md text-primary">חלב וביצים</h3>
+</div>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-sm py-xs rounded-full text-[12px] font-bold">3 פריטים</span>
+</div>
+<ul class="space-y-sm">
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-10" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-10">תבנית 12 ביצים L</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-11" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-11">יוגורט יווני 5%</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-12" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-12">חלב שקדים ללא סוכר</label>
+</li>
+</ul>
+</div>
+<!-- Category: Protein -->
+<div class="bg-surface-container-lowest p-md rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="flex flex-row-reverse items-center justify-between mb-md">
+<div class="flex flex-row-reverse items-center gap-sm">
+<span class="material-symbols-outlined text-primary">lunch_dining</span>
+<h3 class="font-headline-md text-headline-md text-primary">חלבון וקצביה</h3>
+</div>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-sm py-xs rounded-full text-[12px] font-bold">2 פריטים</span>
+</div>
+<ul class="space-y-sm">
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-13" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-13">800 גרם חזה עוף</label>
+</li>
+<li class="flex flex-row-reverse items-center gap-sm group">
+<input class="checkbox-custom w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="item-14" type="checkbox"/>
+<label class="flex-1 text-right font-body-md text-on-surface-variant cursor-pointer select-none" for="item-14">2 פילה סלמון טרי</label>
+</li>
+</ul>
+</div>
+<!-- Promotional / Tool Card -->
+<div class="md:col-span-2 bg-primary-container text-on-primary-container p-lg rounded-2xl relative overflow-hidden flex flex-col items-center gap-lg">
+<div class="z-10 text-right space-y-md flex-1">
+<h2 class="font-headline-lg text-headline-lg">הקניות שלך בדרך אליך?</h2>
+<p class="font-body-lg text-body-lg opacity-90 max-w-xl">התחבר לשותפים שלנו לקבלת הנחה של 10% על כל רשימת הקניות של Easy PREP השבוע.</p>
+<button class="bg-surface-container-lowest text-primary font-label-md px-lg py-md rounded-xl hover:scale-105 transition-transform duration-200">
+                            הזמן עכשיו דרך האפליקציה
+                        </button>
+</div>
+<div class="w-full md:w-1/3 h-48 md:h-full relative overflow-hidden rounded-xl">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A lush and vibrant assortment of fresh organic vegetables and artisanal pantry staples arranged artistically on a clean, white surface. The lighting is bright and natural, casting soft shadows that emphasize the premium quality of the ingredients. Deep greens, earthy browns, and pops of citrus orange create a cohesive and health-focused aesthetic that perfectly complements the minimalist nutrition brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRVWV7B7tY3bl0eUnSakzGbksO82DULe3j_v9sBBT0M9Wi8f51VN37mfLPU_YMzw5FXQPpTwOTm8QeTMvdGM8TUgOkKfCZvBwOgnA1eGESkLM7GJSPmtfEnVFObtv8FRB9d4bkrH9anVKqn_wVhxqfKEqAj3W22-OaeFn0nb5D6olevksi0qxpF4bbHvNAYzqILLEibtfW1xlqs2toKqieu5A_tIYpcwQIHPAC5pNGdTKrm4iIdvLbCcq5giPuUoWAPxjBfuB78aw"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-container-highest border-t border-outline-variant full-width bottom-0 mt-xl">
+<div class="w-full py-lg px-xl flex justify-between items-center max-w-container-max mx-auto flex-row">
+<span class="font-headline-md text-headline-md text-primary font-bold">Easy PREP</span>
+<div class="flex gap-md font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">פרטיות</a>
+<a class="hover:text-primary transition-colors" href="#">תנאי שימוש</a>
+<a class="hover:text-primary transition-colors" href="#">צור קשר</a>
+</div>
+<p class="font-label-md text-label-md text-on-secondary-fixed-variant">© 2024 Easy PREP Nutrition. כל הזכויות שמורות.</p>
+</div>
+</footer>
+<!-- Bottom Navigation (Mobile Only) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest shadow-[0_-8px_32px_rgba(45,90,67,0.05)] px-md py-sm flex justify-around items-center z-50">
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">דשבורד</span>
+</button>
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">restaurant_menu</span>
+<span class="text-[10px] font-bold">מתכונים</span>
+</button>
+<button class="flex flex-col items-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="text-[10px] font-bold">קניות</span>
+</button>
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[10px] font-bold">מתכנן</span>
+</button>
+</div>
+<script>
+        // Simple interactivity for checkboxes
+        document.querySelectorAll('.checkbox-custom').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if(this.checked) {
+                    label.classList.add('line-through', 'opacity-50');
+                } else {
+                    label.classList.remove('line-through', 'opacity-50');
+                }
+            });
+        });
+
+        // Toggle mobile dark mode (demonstrative)
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // document.documentElement.classList.add('dark');
+        }
+    </script>
+</body></html>

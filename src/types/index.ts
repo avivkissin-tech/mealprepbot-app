@@ -82,13 +82,6 @@ export interface Recipe {
   nutritionPerServing?: NutritionPerServing;
 }
 
-export interface ChecklistItem {
-  id: number;
-  titleHe: string;
-  titleEn: string;
-  descriptionHe: string;
-  descriptionEn: string;
-}
 
 export interface ScheduledStep {
   recipeId: string;

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9f7;
+            scroll-behavior: smooth;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c0c9c1;
+            border-radius: 10px;
+        }
+        .meal-card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(45, 90, 67, 0.08);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#e9e8e6",
+                      "on-secondary-fixed": "#1e1c14",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#002112",
+                      "on-primary-fixed-variant": "#224f39",
+                      "surface-variant": "#e3e2e0",
+                      "error-container": "#ffdad6",
+                      "on-surface": "#1a1c1b",
+                      "tertiary-container": "#375941",
+                      "inverse-primary": "#a1d1b4",
+                      "surface-container": "#efeeec",
+                      "on-secondary-fixed-variant": "#4a473e",
+                      "secondary-fixed": "#e8e2d6",
+                      "inverse-on-surface": "#f1f1ef",
+                      "surface-container-low": "#f4f3f1",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#20412b",
+                      "error": "#ba1a1a",
+                      "outline": "#717973",
+                      "on-tertiary-fixed-variant": "#2c4e36",
+                      "surface-bright": "#faf9f7",
+                      "on-tertiary-fixed": "#00210e",
+                      "secondary-container": "#e8e2d6",
+                      "on-secondary-container": "#68645b",
+                      "primary": "#14422d",
+                      "on-background": "#1a1c1b",
+                      "outline-variant": "#c0c9c1",
+                      "surface-dim": "#dadad8",
+                      "on-error-container": "#93000a",
+                      "secondary": "#625e55",
+                      "on-error": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#414943",
+                      "secondary-fixed-dim": "#cbc6ba",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#3a674f",
+                      "on-tertiary-container": "#a8ceaf",
+                      "primary-fixed": "#bceecf",
+                      "tertiary-fixed": "#c5eccc",
+                      "inverse-surface": "#2f3130",
+                      "primary-fixed-dim": "#a1d1b4",
+                      "tertiary-fixed-dim": "#aad0b1",
+                      "on-primary-container": "#9fcfb2",
+                      "primary-container": "#2d5a43",
+                      "surface-container-highest": "#e3e2e0",
+                      "surface": "#faf9f7",
+                      "background": "#faf9f7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "48px",
+                      "container-max": "1200px",
+                      "gutter": "24px",
+                      "md": "24px",
+                      "sm": "12px",
+                      "xs": "4px",
+                      "xl": "80px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="max-w-container-max mx-auto px-xl py-md flex justify-between items-center">
+<div class="flex items-center gap-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary">Easy PREP</span>
+<div class="hidden md:flex gap-md items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">דשבורד</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">מתכונים</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">מתכנן שבועי</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">רשימת קניות</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pr-10 pl-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary w-64" placeholder="חפש מתכון..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<img alt="פרופיל משתמש" class="w-10 h-10 rounded-full object-cover border-2 border-primary-container" data-alt="A professional headshot of a smiling health-conscious individual in a bright, airy studio setting. The lighting is soft and natural, emphasizing a clean and premium wellness aesthetic. The background is a soft, out-of-focus neutral beige that complements the brand's minimalist color palette. The overall mood is approachable, expert, and serene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_SxqkQbmn_aWJp5to5__Sric6goezas8SVY4zrF33R33YA1In_cMZETPSjQzmggVoizFN1M3s316mJU9cE6_VPWUHUvev6EaCPoUys2MwIl672eNs_xCE84RuoKyYjo1sBeEnMvX8YNXOIf7ERCkUAN3huHFGxqfj6WxYkRQ1fUdxcadxLQe1aGQC9x2GtdifL37w6wKwC9Ij7xj8DbNAE1_y2dR9Z0vosZQCefH8kSJmgu1_01VN7mco6goZwvLM8ya8w97dIOQ"/>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-xl px-md max-w-container-max mx-auto">
+<!-- Header Section -->
+<header class="mb-xl flex flex-col md:flex-row justify-between items-end gap-md">
+<div class="text-right">
+<h1 class="font-display-lg text-display-lg text-primary mb-xs">מתכנן שבועי</h1>
+<p class="font-body-lg text-body-lg text-secondary">ארגן את התזונה שלך בצורה חכמה ומדויקת</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-secondary-container text-primary px-md py-sm rounded-lg font-label-md text-label-md flex items-center gap-xs hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">print</span>
+                    הדפס תוכנית
+                </button>
+<button class="bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md flex items-center gap-xs shadow-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">auto_awesome</span>
+                    יצירה אוטומטית
+                </button>
+</div>
+</header>
+<!-- Main Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg lg:grid-flow-row-dense">
+<!-- Sidebar: Recipe Library (Bento Style) -->
+<aside class="space-y-md lg:col-start-10 lg:col-span-3">
+<div class="bg-surface-container-low rounded-2xl p-md shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<h3 class="font-headline-md text-headline-md text-primary mb-md text-right">ספריית מתכונים</h3>
+<div class="space-y-sm max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+<!-- Recipe Item -->
+<div class="bg-white p-sm rounded-xl meal-card-hover transition-all cursor-grab active:cursor-grabbing border border-outline-variant/30">
+<img class="w-full h-24 object-cover rounded-lg mb-sm" data-alt="A top-down view of a vibrant, healthy Buddha bowl filled with fresh quinoa, sliced avocado, roasted sweet potatoes, and crisp greens. The lighting is bright and crisp, highlighting the textures of the vegetables. The dish is presented on a minimalist white ceramic plate, following a premium minimalist aesthetic with a clean, expert feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Yo3ZXjxsUP2oPaqcKfjEYp6Fpfe1J4ioGo0-mqnB_pkUPUgKZbDIsPvUbd-usjmeP-AnJChv745AsPSOCz3_ayMMToyjgB21yJfMSUTozzEcqPFAUqaNfvHsbP8RglsVSIWCmlxkNT17dFi-xaK2dO9Z6x8N7bPGYznC3t0-PliK6xRvJBcmw9-Sc_tj_aplrv16fhPFsgIA4KYwQBJYRQn4A8EHVPtERJ00Ieam_2yJEQejNbH3aIA7rljfAOvKTorkdnsKSJc"/>
+<div class="text-right">
+<span class="bg-primary-fixed text-on-primary-fixed-variant text-[10px] px-2 py-0.5 rounded-full font-bold">צהריים</span>
+<h4 class="font-label-md text-label-md mt-1">קערת בודהה ים תיכונית</h4>
+<p class="text-[12px] text-secondary mt-1">450 קלוריות | 25 דק׳</p>
+</div>
+</div>
+<div class="bg-white p-sm rounded-xl meal-card-hover transition-all cursor-grab active:cursor-grabbing border border-outline-variant/30">
+<img class="w-full h-24 object-cover rounded-lg mb-sm" data-alt="A gourmet breakfast toast topped with perfectly poached eggs and thin slices of smoked salmon. Garnished with fresh dill and capers on a thick slice of sourdough. The lighting is soft morning light, creating a high-end wellness editorial atmosphere. The color palette is dominated by warm linen and fresh salmon tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5NPlFPo_yZNQLUZVEalyeKLeGqf-enpNdmNMNAU6cmKDhz5S9hzqPmD7BAxbH3V15fSfx3-n4YdAvobYa2FwdQ_Ogn4DvvqeYNoUfh_MvOEPRy39eOizOZPFcRZsf3KSD_-JUBcnEFooxRywc26xYHklWcFZ_K8lNLnRr-SeFsK0CLXPtg2CA42o9_PuI_J6i3sGJOAxJpnqbwCyCKgG5JNc4m_z7b3pw72GpuHesK72eA4zuWcUZev6anAobgRgeeLUKQeYlbGA"/>
+<div class="text-right">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] px-2 py-0.5 rounded-full font-bold">בוקר</span>
+<h4 class="font-label-md text-label-md mt-1">טוסט סלמון וביצה</h4>
+<p class="text-[12px] text-secondary mt-1">380 קלוריות | 15 דק׳</p>
+</div>
+</div>
+<div class="bg-white p-sm rounded-xl meal-card-hover transition-all cursor-grab active:cursor-grabbing border border-outline-variant/30">
+<img class="w-full h-24 object-cover rounded-lg mb-sm" data-alt="Thinly sliced seared tuna tataki served with a ginger-soy glaze and micro-greens. The presentation is professional and precise, set against a dark, textured plate that makes the vibrant pink of the fish pop. Minimalist and high-end culinary style with clean lines and soft ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj_R3PdWum01m85G87_AMKmeCtsKmP8-SKOcSoCg8IJNKzYYFa3-Kxl5LH8hZfdCmgTGN9SHRHg8HBX9zUt-tGvOpVGcVCEuUSaSC2L0vYaeL2I-Mye6IW-c33dTK4Ll0SfjoydhXRVQxHZ2a-SiWI5gEZCOAqoU_ieURhPkSZmXaoacV9Vy6tkebgV17PgzW4l9CMSOGASw7I_Jiyz5IV9IrJBUQpSh8egVe3aIVBI5sb6rE1WRqrjgdGsQjvrN5f0qjWWmhXKUA"/>
+<div class="text-right">
+<span class="bg-primary-fixed text-on-primary-fixed-variant text-[10px] px-2 py-0.5 rounded-full font-bold">ערב</span>
+<h4 class="font-label-md text-label-md mt-1">טאטאקי טונה צרובה</h4>
+<p class="text-[12px] text-secondary mt-1">320 קלוריות | 20 דק׳</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container text-on-primary-container rounded-2xl p-md">
+<h4 class="font-label-md text-label-md mb-2">סיכום תזונתי שבועי</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-[12px]">
+<span>1,850 / 2,100</span>
+<span class="font-bold">קלוריות (ממוצע)</span>
+</div>
+<div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-on-primary-container h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between items-center text-[12px]">
+<span>145g / 160g</span>
+<span class="font-bold">חלבון</span>
+</div>
+<div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-on-primary-container h-full w-[90%]"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Weekly Planner Grid -->
+<section class="">
+<div class="flex flex-col gap-md">
+<!-- Days Header (Desktop) -->
+<div class="hidden lg:grid grid-cols-7 gap-sm mb-2 text-center">
+<div class="font-label-md text-label-md text-primary">ראשון</div>
+<div class="font-label-md text-label-md text-primary">שני</div>
+<div class="font-label-md text-label-md text-primary">שלישי</div>
+<div class="font-label-md text-label-md text-primary">רביעי</div>
+<div class="font-label-md text-label-md text-primary">חמישי</div>
+<div class="font-label-md text-label-md text-primary">שישי</div>
+<div class="font-label-md text-label-md text-primary">שבת</div>
+</div>
+<!-- The 7-Day Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-sm">
+<!-- Sunday -->
+<div class="flex flex-col gap-sm bg-white p-sm rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)] border border-outline-variant/20 min-h-[400px]">
+<div class="lg:hidden font-bold text-primary text-center pb-2 border-b border-outline-variant">ראשון</div>
+<!-- Meal Slot: Breakfast -->
+<div class="group relative bg-surface-container-low rounded-xl p-3 border-2 border-dashed border-transparent hover:border-primary/30 transition-all min-h-[80px] flex flex-col justify-center">
+<div class="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary mb-1">add_circle</span>
+<span class="text-[10px] font-bold text-primary">ארוחת בוקר</span>
+</div>
+</div>
+<!-- Meal Slot: Lunch (Filled) -->
+<div class="bg-surface-bright rounded-xl p-2 border border-outline-variant/30 shadow-sm meal-card-hover transition-all">
+<div class="flex justify-between items-start mb-1">
+<button class="material-symbols-outlined text-[16px] text-outline hover:text-error transition-colors">close</button>
+<span class="text-[10px] text-secondary">צהריים</span>
+</div>
+<h5 class="text-[12px] font-bold text-primary leading-tight">סלט קינואה ועוף</h5>
+<p class="text-[10px] text-secondary mt-1">420 קלוריות</p>
+</div>
+<!-- Meal Slot: Dinner -->
+<div class="group relative bg-surface-container-low rounded-xl p-3 border-2 border-dashed border-transparent hover:border-primary/30 transition-all min-h-[80px] flex flex-col justify-center">
+<div class="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary mb-1">add_circle</span>
+<span class="text-[10px] font-bold text-primary">ארוחת ערב</span>
+</div>
+</div>
+</div>
+<!-- Repeat for Monday (Simplified for brevity in the code, but styled fully) -->
+<div class="flex flex-col gap-sm bg-white p-sm rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)] border border-outline-variant/20 min-h-[400px]">
+<div class="lg:hidden font-bold text-primary text-center pb-2 border-b border-outline-variant">שני</div>
+<!-- Filled Breakfast -->
+<div class="bg-surface-bright rounded-xl p-2 border border-outline-variant/30 shadow-sm meal-card-hover transition-all">
+<div class="flex justify-between items-start mb-1">
+<button class="material-symbols-outlined text-[16px] text-outline hover:text-error transition-colors">close</button>
+<span class="text-[10px] text-secondary">בוקר</span>
+</div>
+<h5 class="text-[12px] font-bold text-primary leading-tight">יוגורט עם גרנולה</h5>
+<p class="text-[10px] text-secondary mt-1">290 קלוריות</p>
+</div>
+<div class="group relative bg-surface-container-low rounded-xl p-3 border-2 border-dashed border-transparent hover:border-primary/30 transition-all min-h-[80px] flex flex-col justify-center">
+<div class="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary mb-1">add_circle</span>
+<span class="text-[10px] font-bold text-primary">ארוחת צהריים</span>
+</div>
+</div>
+<div class="bg-surface-bright rounded-xl p-2 border border-outline-variant/30 shadow-sm meal-card-hover transition-all">
+<div class="flex justify-between items-start mb-1">
+<button class="material-symbols-outlined text-[16px] text-outline hover:text-error transition-colors">close</button>
+<span class="text-[10px] text-secondary">ערב</span>
+</div>
+<h5 class="text-[12px] font-bold text-primary leading-tight">מרק עדשים כתומות</h5>
+<p class="text-[10px] text-secondary mt-1">310 קלוריות</p>
+</div>
+</div>
+<!-- Days 3-7 (Placeholders with similar structure) -->
+<script>
+                            const days = ['שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+                            days.forEach(day => {
+                                document.write(`
+                                    <div class="flex flex-col gap-sm bg-white p-sm rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)] border border-outline-variant/20 min-h-[400px]">
+                                        <div class="lg:hidden font-bold text-primary text-center pb-2 border-b border-outline-variant">${day}</div>
+                                        <div class="group bg-surface-container-low rounded-xl p-3 border-2 border-dashed border-transparent hover:border-primary/30 transition-all min-h-[80px] flex flex-col justify-center">
+                                            <div class="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100">
+                                                <span class="material-symbols-outlined text-primary mb-1">add_circle</span>
+                                                <span class="text-[10px] font-bold text-primary">בוקר</span>
+                                            </div>
+                                        </div>
+                                        <div class="group bg-surface-container-low rounded-xl p-3 border-2 border-dashed border-transparent hover:border-primary/30 transition-all min-h-[80px] flex flex-col justify-center">
+                                            <div class="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100">
+                                                <span class="material-symbols-outlined text-primary mb-1">add_circle</span>
+                                                <span class="text-[10px] font-bold text-primary">צהריים</span>
+                                            </div>
+                                        </div>
+                                        <div class="group bg-surface-container-low rounded-xl p-3 border-2 border-dashed border-transparent hover:border-primary/30 transition-all min-h-[80px] flex flex-col justify-center">
+                                            <div class="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100">
+                                                <span class="material-symbols-outlined text-primary mb-1">add_circle</span>
+                                                <span class="text-[10px] font-bold text-primary">ערב</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        </script>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant mt-xl">
+<div class="max-w-container-max mx-auto py-lg px-xl flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-primary font-bold">Easy PREP</span>
+<div class="flex gap-md font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">פרטיות</a>
+<a class="hover:text-primary transition-colors" href="#">תנאי שימוש</a>
+<a class="hover:text-primary transition-colors" href="#">צור קשר</a>
+</div>
+<p class="font-label-md text-label-md text-on-secondary-fixed-variant">© 2024 Easy PREP Nutrition. כל הזכויות שמורות.</p>
+</div>
+</footer>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-8 left-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<script>
+        // Simple micro-interaction for the FAB and hover effects
+        document.querySelectorAll('.meal-card-hover').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

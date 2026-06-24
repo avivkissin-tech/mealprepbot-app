@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#e9e8e6",
+                    "on-secondary-fixed": "#1e1c14",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#002112",
+                    "on-primary-fixed-variant": "#224f39",
+                    "surface-variant": "#e3e2e0",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#1a1c1b",
+                    "tertiary-container": "#375941",
+                    "inverse-primary": "#a1d1b4",
+                    "surface-container": "#efeeec",
+                    "on-secondary-fixed-variant": "#4a473e",
+                    "secondary-fixed": "#e8e2d6",
+                    "inverse-on-surface": "#f1f1ef",
+                    "surface-container-low": "#f4f3f1",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#20412b",
+                    "error": "#ba1a1a",
+                    "outline": "#717973",
+                    "on-tertiary-fixed-variant": "#2c4e36",
+                    "surface-bright": "#faf9f7",
+                    "on-tertiary-fixed": "#00210e",
+                    "secondary-container": "#e8e2d6",
+                    "on-secondary-container": "#68645b",
+                    "primary": "#14422d",
+                    "on-background": "#1a1c1b",
+                    "outline-variant": "#c0c9c1",
+                    "surface-dim": "#dadad8",
+                    "on-error-container": "#93000a",
+                    "secondary": "#625e55",
+                    "on-error": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#414943",
+                    "secondary-fixed-dim": "#cbc6ba",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#3a674f",
+                    "on-tertiary-container": "#a8ceaf",
+                    "primary-fixed": "#bceecf",
+                    "tertiary-fixed": "#c5eccc",
+                    "inverse-surface": "#2f3130",
+                    "primary-fixed-dim": "#a1d1b4",
+                    "tertiary-fixed-dim": "#aad0b1",
+                    "on-primary-container": "#9fcfb2",
+                    "primary-container": "#2d5a43",
+                    "surface-container-highest": "#e3e2e0",
+                    "surface": "#faf9f7",
+                    "background": "#faf9f7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "container-max": "1200px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "sm": "12px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9f7;
+            color: #1a1c1b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .step-number::before {
+            content: "";
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background-color: #14422d;
+            border-radius: 50%;
+        }
+        .custom-checkbox:checked {
+            background-color: #14422d;
+            border-color: #14422d;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest shadow-[0_8px_32px_rgba(45,90,67,0.05)] docked full-width top-0 z-50 sticky">
+<nav class="flex flex-row-reverse justify-between items-center w-full px-xl py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-lg">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Easy PREP</span>
+<div class="hidden md:flex flex-row-reverse gap-md">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">דשבורד</a>
+<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1" href="#">מתכונים</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">מתכנן שבועי</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">רשימת קניות</a>
+</div>
+</div>
+<div class="flex flex-row-reverse items-center gap-md">
+<button class="material-symbols-outlined text-primary" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-primary" data-icon="settings">settings</button>
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden">
+<img alt="פרופיל משתמש" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd2UWqKSaJEmiUqlewnCtv9RtGQ62NIZ-pwoIH2JPRbl8Dk4d1sOvsuMyy3TR0S5kt27GDKbFCf_e6QC-SGGojJVPNRii2K3RFWuOucmki8Mh3IQTRUB2nz07lP29IQ2CFDBkaX7IZ7ub9Sy_OU1YGt7YonMPk33m0S9KV7i_wuCm85tdUSsdDvvQx1doAt5ZAwijIUtV2JCSOV5FR9F7On-EdiepQAIFiSBVUuUwB7ShHVcnhjeXvUlR2ey_lf-TGRGOCLE-BN_8"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="max-w-container-max mx-auto px-gutter py-xl">
+<!-- Recipe Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-lg items-start mb-xl">
+<div class="lg:col-span-7">
+<div class="relative overflow-hidden rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)] aspect-[16/9]">
+<img class="w-full h-full object-cover" data-alt="A top-down, high-end culinary photograph of a vibrant Mediterranean salad bowl featuring quinoa, roasted chickpeas, fresh cucumbers, and bright cherry tomatoes. The scene is bathed in natural, soft daylight, emphasizing the textures of the ingredients. The background is a clean, neutral stoneware surface, aligned with a premium minimalist aesthetic. The overall mood is fresh, healthy, and sophisticated, using a palette of forest greens, earthy tans, and pops of red." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClv0mNkqSvnvNqPM2l_bDrmnup_4Mzu_dRbFm5MxXxLkQYWDsn-OGsEhDYvo391C95gS76RggT-1rrucNSQt6UniFs1G92YjFlzy2n5AkUc7aGcKR3KI9x7sWEPHY_g39sgb3qmpsalYCVxeOWMjoejcxvdgkfTgdGRxeq5lPzKOZMkhO6HDvG_OGoeZ9nNnBTZjjX6t5qNhYDMCDF8xj7S27JUUydfv1y7YrnM7OHaXbUk7htcr_KHvPXIPK2GQFZAiuDMyHJ91o"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-lg">
+<div class="text-white">
+<span class="bg-primary/90 px-sm py-xs rounded-full text-label-md font-label-md mb-xs inline-block">צהריים בריאים</span>
+<h1 class="font-display-lg text-display-lg">קערת קינואה ים-תיכונית עם חומוס קלוי</h1>
+</div>
+</div>
+</div>
+</div>
+<!-- Recipe Summary & CTA -->
+<div class="lg:col-span-5 flex flex-col gap-md">
+<div class="bg-surface-container-lowest p-lg rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="flex justify-between items-center mb-md">
+<div class="flex gap-base items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">25 דקות</span>
+</div>
+<div class="flex gap-base items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="restaurant">restaurant</span>
+<span class="font-label-md text-label-md">2 מנות</span>
+</div>
+<div class="flex gap-base items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="local_fire_department">local_fire_department</span>
+<span class="font-label-md text-label-md">450 קלוריות</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg leading-relaxed">
+                        קערה משביעה, עשירה בחלבון צמחי וסיבים תזונתיים. שילוב מושלם של טעמים רעננים ומרקמים פריכים שישאירו אתכם אנרגטיים לאורך כל היום.
+                    </p>
+<button class="w-full bg-primary text-white py-md rounded-xl font-label-md text-label-md flex justify-center items-center gap-base active:scale-95 transition-all shadow-md" id="cooked-btn">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+                        הכנתי היום
+                    </button>
+</div>
+<!-- Mini Nutrition Quick Look -->
+<div class="grid grid-cols-4 gap-sm">
+<div class="bg-primary-container/10 p-md rounded-xl text-center border border-primary-container/20">
+<div class="font-label-md text-label-md text-primary">פחמימות</div>
+<div class="font-headline-md text-headline-md text-primary">45ג</div>
+</div>
+<div class="bg-primary-container/10 p-md rounded-xl text-center border border-primary-container/20">
+<div class="font-label-md text-label-md text-primary">חלבון</div>
+<div class="font-headline-md text-headline-md text-primary">18ג</div>
+</div>
+<div class="bg-primary-container/10 p-md rounded-xl text-center border border-primary-container/20">
+<div class="font-label-md text-label-md text-primary">שומן</div>
+<div class="font-headline-md text-headline-md text-primary">22ג</div>
+</div>
+<div class="bg-primary-container/10 p-md rounded-xl text-center border border-primary-container/20">
+<div class="font-label-md text-label-md text-primary">סיבים</div>
+<div class="font-headline-md text-headline-md text-primary">12ג</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid lg:grid-cols-12 gap-lg">
+<!-- Left Side: Nutrition & Ingredients -->
+<aside class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Detailed Nutrition Table -->
+<section class="bg-surface-container-lowest p-lg rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<h2 class="font-headline-md text-headline-md text-primary mb-md">ערכים תזונתיים</h2>
+<div class="space-y-sm">
+<div class="flex justify-between py-xs border-b border-secondary/10">
+<span class="font-body-md text-body-md text-on-surface-variant">קלוריות</span>
+<span class="font-body-md text-body-md font-bold text-primary">450 kcal</span>
+</div>
+<div class="flex justify-between py-xs border-b border-secondary/10">
+<span class="font-body-md text-body-md text-on-surface-variant">סך שומנים</span>
+<span class="font-body-md text-body-md font-bold text-primary">22g</span>
+</div>
+<div class="flex justify-between py-xs border-b border-secondary/10">
+<span class="font-body-md text-body-md text-on-surface-variant">שומן רווי</span>
+<span class="font-body-md text-body-md font-bold text-primary">3g</span>
+</div>
+<div class="flex justify-between py-xs border-b border-secondary/10">
+<span class="font-body-md text-body-md text-on-surface-variant">נתרן</span>
+<span class="font-body-md text-body-md font-bold text-primary">180mg</span>
+</div>
+<div class="flex justify-between py-xs border-b border-secondary/10">
+<span class="font-body-md text-body-md text-on-surface-variant">פחמימות</span>
+<span class="font-body-md text-body-md font-bold text-primary">45g</span>
+</div>
+<div class="flex justify-between py-xs border-b border-secondary/10">
+<span class="font-body-md text-body-md text-on-surface-variant">חלבונים</span>
+<span class="font-body-md text-body-md font-bold text-primary">18g</span>
+</div>
+</div>
+</section>
+<!-- Ingredients List -->
+<section class="bg-surface-container-lowest p-lg rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)]">
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-headline-md text-headline-md text-primary">מצרכים</h2>
+<span class="text-label-md font-label-md text-on-secondary-fixed-variant">8 מרכיבים</span>
+</div>
+<ul class="space-y-md">
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">1 כוס קינואה מבושלת</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">1/2 כוס חומוס מבושל וקלוי</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">1 מלפפון חתוך לקוביות</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">10 עגבניות שרי חצויות</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">1/4 בצל סגול פרוס דק</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">2 כפות טחינה גולמית</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">מיץ מחצי לימון טרי</span>
+</li>
+<li class="flex items-center gap-md group">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary cursor-pointer custom-checkbox" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">חופן פטרוזיליה קצוצה</span>
+</li>
+</ul>
+</section>
+</aside>
+<!-- Right Side: Cooking Steps -->
+<section class="lg:col-span-8">
+<div class="bg-surface-container-lowest p-lg rounded-2xl shadow-[0_8px_32px_rgba(45,90,67,0.05)] h-full">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-lg border-r-4 border-primary pr-md">שלבי הכנה</h2>
+<div class="space-y-xl">
+<!-- Step 1 -->
+<div class="relative flex flex-col gap-base">
+<div class="flex items-center gap-md">
+<span class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-headline-md">1</span>
+<h3 class="font-headline-md text-headline-md text-primary">הכנת הבסיס</h3>
+</div>
+<div class="pr-[52px]">
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                                    הניחו את הקינואה המבושלת בתחתית הקערה. וודאו שהקינואה בטמפרטורת החדר לקבלת המרקם הטוב ביותר. פזרו מעט מלח ים ופלפל שחור גרוס.
+                                </p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative flex flex-col gap-base">
+<div class="flex items-center gap-md">
+<span class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-headline-md">2</span>
+<h3 class="font-headline-md text-headline-md text-primary">סידור הירקות</h3>
+</div>
+<div class="pr-[52px]">
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                                    סדרו את קוביות המלפפון, עגבניות השרי והבצל הסגול בקבוצות מעל הקינואה. שמירה על הפרדה ויזואלית יוצרת מראה מקצועי ומעורר תיאבון.
+                                </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative flex flex-col gap-base">
+<div class="flex items-center gap-md">
+<span class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-headline-md">3</span>
+<h3 class="font-headline-md text-headline-md text-primary">תוספת חלבון וקראנץ'</h3>
+</div>
+<div class="pr-[52px]">
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                                    הוסיפו את החומוס הקלוי במרכז הקערה. החומוס מספק את המרקם הפריך והחלבון הדרוש לארוחה מאוזנת.
+                                </p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="relative flex flex-col gap-base">
+<div class="flex items-center gap-md">
+<span class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-headline-md">4</span>
+<h3 class="font-headline-md text-headline-md text-primary">תיבול והגשה</h3>
+</div>
+<div class="pr-[52px]">
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                                    זלפו את הטחינה הגולמית ומיץ הלימון מעל הכל. פזרו פטרוזיליה קצוצה לתוספת רעננות. מומלץ לערבב רגע לפני האכילה.
+                                </p>
+<div class="mt-lg rounded-xl overflow-hidden shadow-sm">
+<img class="w-full h-48 object-cover opacity-90" data-alt="A close-up photograph of a professional chef drizzling creamy tahini sauce over a lush, green salad bowl. The focus is sharp on the golden liquid pouring, with soft-bokeh vegetables in the background. The lighting is studio-quality and warm, emphasizing the premium quality of the ingredients. The scene is clean and organized, set in a modern kitchen environment with subtle sage and forest green accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx1AFzHoo3huD6Uwk3yzngAJh0jVWIMCRQXhqWrtifui-ppv37cc1ObVarM0l2eJV3gFkjmhftlVnxblMhlhIq70wrCX2Ar_cscm779skFxFpDsKqw6jYYWXPPt585Dh6XEAwZTKCbqlqpSqfPw_XJmGQQJTlMWp9XtEaiNXizHj9XdVF7g5mzZWbglGOG1eY51r7fEfjmJdvzacfKxqepbE8dTxwigNI2FGhZjE2EWsVUw3zrJYp4Y8htaMZ8ACnCBnCCz8MlebU"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-container-highest border-t border-outline-variant full-width bottom-0 mt-xl">
+<div class="w-full py-lg px-xl flex flex-row-reverse justify-between items-center max-w-container-max mx-auto">
+<span class="font-headline-md text-headline-md text-primary font-bold">Easy PREP</span>
+<div class="flex flex-row-reverse gap-md font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">פרטיות</a>
+<a class="hover:text-primary transition-colors" href="#">תנאי שימוש</a>
+<a class="hover:text-primary transition-colors" href="#">צור קשר</a>
+</div>
+<p class="font-label-md text-label-md text-on-secondary-fixed-variant">© 2024 Easy PREP Nutrition. כל הזכויות שמורות.</p>
+</div>
+</footer>
+<script>
+        document.getElementById('cooked-btn').addEventListener('click', function() {
+            this.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">check_circle</span> נשמר ביומן!';
+            this.classList.remove('bg-primary');
+            this.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+            
+            // Add a small celebration effect
+            const btn = this;
+            btn.classList.add('scale-105');
+            setTimeout(() => btn.classList.remove('scale-105'), 200);
+        });
+
+        // Interactive checkboxes
+        const checkboxes = document.querySelectorAll('.custom-checkbox');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                const text = this.nextElementSibling;
+                if (this.checked) {
+                    text.classList.add('line-through', 'opacity-50');
+                } else {
+                    text.classList.remove('line-through', 'opacity-50');
+                }
+            });
+        });
+    </script>
+</body></html>

@@ -1,7 +1,7 @@
 export const he: Record<string, string> = {
   // Nav
   'nav.home': 'בית',
-  'nav.checklist': 'צ׳ק ליסט מילפרפ',
+  'nav.checklist': 'תכנון מילפרפ',
   'nav.planner': 'פלאנר שבועי',
   'brand.name': 'Easy PREP Nutrition',
   'brand.tagline': 'מתכוני מילפרפ לשגרה בריאה',
@@ -62,15 +62,29 @@ export const he: Record<string, string> = {
   'shopping.optional': 'אופציונלי',
   'shopping.tip': 'טיפ: סמן פריטים כשאתה מכניסם לעגלה',
 
-  // Checklist
-  'checklist.title': "צ'ק ליסט מילפרפ",
-  'checklist.subtitle': 'מהרגע שנכנסת למטבח עד שהאוכל מוכן בקופסאות',
-  'checklist.progress': 'הושלמו',
-  'checklist.of': 'מתוך',
-  'checklist.steps': 'שלבים',
-  'checklist.reset': 'איפוס',
-  'checklist.done': 'כל הכבוד! המילפרפ הושלם 🎉',
-  'checklist.tip': 'גם הכנה ליומיים בלבד היא התחלה מעולה. לא חייבים לבשל לשבוע שלם מההתחלה.',
+  // Meal Prep Planning Wizard (replaces old checklist)
+  'wizard.checklist.step1.title': 'בחר את המתכונים לשבוע',
+  'wizard.checklist.step1.badge': 'המלצת המערכת',
+  'wizard.checklist.step1.continue': 'המשך לתכנון קניות',
+  'wizard.checklist.step2.title': 'תכנן את הקניות',
+  'wizard.checklist.step2.timeEstimate': 'דקות בסופר',
+  'wizard.checklist.step2.addCalendar': 'הוסף ליומן — קניות',
+  'wizard.checklist.step2.shoppingDate': 'תאריך קניות',
+  'wizard.checklist.step2.shoppingTime': 'שעת קניות',
+  'wizard.checklist.step3.title': 'תכנן את הבישול',
+  'wizard.checklist.step3.cookTime': 'זמן בישול משוער',
+  'wizard.checklist.step3.storageWarning': 'אם עוברים יותר מ-3 ימים מהקנייה — הקפא בשר/עוף/דג',
+  'wizard.checklist.step3.addCalendar': 'הוסף ליומן — בישול',
+  'wizard.checklist.step3.cookingDate': 'תאריך בישול',
+  'wizard.checklist.step3.cookingTime': 'שעת בישול',
+  'wizard.checklist.step4.title': 'הכל מתוכנן!',
+  'wizard.checklist.step4.xpNew': '+50 XP — צעד ראשון!',
+  'wizard.checklist.step4.xpReturn': '+30 XP',
+  'wizard.checklist.step4.startCooking': 'התחל בישול עכשיו',
+  'wizard.checklist.step4.summary': 'סיכום השבוע',
+  'wizard.checklist.level.beginner': 'מתחיל',
+  'wizard.checklist.level.intermediate': 'בינוני',
+  'wizard.checklist.level.expert': 'מומחה',
 
   // Units (singular)
   'unit.g': 'גר׳',

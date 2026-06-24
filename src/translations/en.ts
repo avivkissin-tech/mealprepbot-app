@@ -1,7 +1,7 @@
 export const en: Record<string, string> = {
   // Nav
   'nav.home': 'Home',
-  'nav.checklist': 'Meal Prep Checklist',
+  'nav.checklist': 'Plan Meal Prep',
   'nav.planner': 'Weekly Planner',
   'brand.name': 'Easy PREP Nutrition',
   'brand.tagline': 'Meal prep recipes for a healthy routine',
@@ -62,15 +62,29 @@ export const en: Record<string, string> = {
   'shopping.optional': 'optional',
   'shopping.tip': 'Tip: check items off as you put them in your cart',
 
-  // Checklist
-  'checklist.title': 'Meal Prep Checklist',
-  'checklist.subtitle': 'From the moment you enter the kitchen until the food is in containers',
-  'checklist.progress': 'Completed',
-  'checklist.of': 'of',
-  'checklist.steps': 'steps',
-  'checklist.reset': 'Reset',
-  'checklist.done': 'Excellent! Meal prep complete 🎉',
-  'checklist.tip': 'Prepping for just 2 days is a great start. You don\'t have to cook for the whole week right away.',
+  // Meal Prep Planning Wizard (replaces old checklist)
+  'wizard.checklist.step1.title': "Choose This Week's Recipes",
+  'wizard.checklist.step1.badge': 'Recommended',
+  'wizard.checklist.step1.continue': 'Continue to Shopping Plan',
+  'wizard.checklist.step2.title': 'Plan Your Shopping Trip',
+  'wizard.checklist.step2.timeEstimate': 'min at the store',
+  'wizard.checklist.step2.addCalendar': 'Add to Calendar — Shopping',
+  'wizard.checklist.step2.shoppingDate': 'Shopping Date',
+  'wizard.checklist.step2.shoppingTime': 'Shopping Time',
+  'wizard.checklist.step3.title': 'Plan Your Cooking Session',
+  'wizard.checklist.step3.cookTime': 'Estimated cook time',
+  'wizard.checklist.step3.storageWarning': 'If more than 3 days from shopping — freeze meat/chicken/fish',
+  'wizard.checklist.step3.addCalendar': 'Add to Calendar — Cooking',
+  'wizard.checklist.step3.cookingDate': 'Cooking Date',
+  'wizard.checklist.step3.cookingTime': 'Cooking Time',
+  'wizard.checklist.step4.title': "All Planned!",
+  'wizard.checklist.step4.xpNew': '+50 XP — First Step!',
+  'wizard.checklist.step4.xpReturn': '+30 XP',
+  'wizard.checklist.step4.startCooking': 'Start Cooking Now',
+  'wizard.checklist.step4.summary': 'Week Summary',
+  'wizard.checklist.level.beginner': 'Beginner',
+  'wizard.checklist.level.intermediate': 'Intermediate',
+  'wizard.checklist.level.expert': 'Expert',
 
   // Units (singular)
   'unit.g': 'g',

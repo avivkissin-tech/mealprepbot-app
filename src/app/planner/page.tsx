@@ -200,39 +200,73 @@ export default function PlannerPage() {
             {totalRecipes > 0 ? `${totalRecipes} ארוחות מתוכננות השבוע` : 'לחץ + להוסיף ארוחה לכל יום'}
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Global people selector */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: '#fff', border: '1px solid #c0c9c1',
-            borderRadius: 9999, padding: '8px 16px',
-          }}>
-            <span style={{ fontSize: 13, color: 'rgba(26,25,24,0.6)', whiteSpace: 'nowrap' }}>מכין עבור</span>
-            <button
-              onClick={() => setGlobalPeople(p => Math.max(1, p - 1))}
-              style={{ ...serveBtnStyle, width: 24, height: 24 }}
-            >−</button>
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b', minWidth: 16, textAlign: 'center' }}>
-              {globalPeople}
-            </span>
-            <button
-              onClick={() => setGlobalPeople(p => Math.min(20, p + 1))}
-              style={{ ...serveBtnStyle, width: 24, height: 24 }}
-            >+</button>
-            <span style={{ fontSize: 13, color: 'rgba(26,25,24,0.6)' }}>אנשים</span>
-          </div>
+        {/* People selector — visible on all sizes */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: '#fff', border: '1px solid #c0c9c1',
+          borderRadius: 9999, padding: '8px 14px',
+        }}>
+          <span className="hidden md:inline" style={{ fontSize: 13, color: 'rgba(26,25,24,0.6)', whiteSpace: 'nowrap' }}>מכין עבור</span>
+          <button onClick={() => setGlobalPeople(p => Math.max(1, p - 1))} style={{ ...serveBtnStyle, width: 24, height: 24 }}>−</button>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b', minWidth: 16, textAlign: 'center' }}>{globalPeople}</span>
+          <button onClick={() => setGlobalPeople(p => Math.min(20, p + 1))} style={{ ...serveBtnStyle, width: 24, height: 24 }}>+</button>
+          <span style={{ fontSize: 13, color: 'rgba(26,25,24,0.6)' }}>אנשים</span>
+        </div>
 
-        {totalRecipes > 0 && (
+        {/* Action buttons — desktop only (mobile gets sticky bottom bar) */}
+        <div className="hidden md:flex" style={{ gap: 8 }}>
+          {totalRecipes > 0 && (
+            <button
+              onClick={() => { setPrepSelectedIds(new Set(plannerRecipes.map(r => r.id))); setShowMealPrepModal(true); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 20px', borderRadius: 9999,
+                background: '#14422d', color: '#faf9f7',
+                fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
+              }}
+            >
+              🍳 התחל מילפרפ
+            </button>
+          )}
           <button
-            onClick={() => {
-              setPrepSelectedIds(new Set(plannerRecipes.map(r => r.id)));
-              setShowMealPrepModal(true);
-            }}
+            onClick={() => setShowShopping(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '10px 20px', borderRadius: 9999,
-              background: '#14422d', color: '#faf9f7',
+              background: '#1a1c1b', color: '#faf9f7',
               fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <path d="M9 12h6M9 16h4"/>
+            </svg>
+            רשימת קניות
+            {shoppingList.length > 0 && (
+              <span style={{ background: '#C9572A', color: '#fff', borderRadius: 9999, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>
+                {shoppingList.length}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Mobile sticky bottom bar ── */}
+      <div className="md:hidden" style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+        background: '#fff', borderTop: '1px solid #e8e2d6',
+        padding: '10px 16px 18px',
+        display: 'flex', gap: 10,
+      }}>
+        {totalRecipes > 0 && (
+          <button
+            onClick={() => { setPrepSelectedIds(new Set(plannerRecipes.map(r => r.id))); setShowMealPrepModal(true); }}
+            style={{
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              padding: '12px', borderRadius: 14,
+              background: '#14422d', color: '#faf9f7',
+              fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer',
             }}
           >
             🍳 התחל מילפרפ
@@ -241,10 +275,10 @@ export default function PlannerPage() {
         <button
           onClick={() => setShowShopping(true)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 20px', borderRadius: 9999,
+            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            padding: '12px', borderRadius: 14,
             background: '#1a1c1b', color: '#faf9f7',
-            fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
+            fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -254,19 +288,15 @@ export default function PlannerPage() {
           </svg>
           רשימת קניות
           {shoppingList.length > 0 && (
-            <span style={{
-              background: '#C9572A', color: '#fff',
-              borderRadius: 9999, padding: '1px 7px', fontSize: 11, fontWeight: 700,
-            }}>
+            <span style={{ background: '#C9572A', color: '#fff', borderRadius: 9999, padding: '1px 8px', fontSize: 12, fontWeight: 700 }}>
               {shoppingList.length}
             </span>
           )}
         </button>
-        </div>
       </div>
 
       {/* ── Mobile: day tabs + single-day view ── */}
-      <div className="md:hidden" style={{ maxWidth: 600, margin: '0 auto', padding: '16px 16px 80px' }}>
+      <div className="md:hidden" style={{ maxWidth: 600, margin: '0 auto', padding: '16px 16px 120px' }}>
         {/* Day tab strip */}
         <div style={{
           display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12,
