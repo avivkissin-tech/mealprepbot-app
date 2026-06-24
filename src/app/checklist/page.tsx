@@ -15,6 +15,7 @@ import MealPrepSession from '@/components/recipes/MealPrepSession';
 // ─── Types ─────────────────────────────────────────────────────────────────
 
 type WizardStep = 1 | 2 | 3 | 4;
+type CategoryFilter = 'all' | 'recommended' | RecipeCategory;
 
 interface StoredProfile {
   goal?: string;
@@ -128,6 +129,28 @@ function downloadICS(
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+/** Returns display string like "2 ק״ג", "500 גר׳", "3 כוסות" */
+function formatQty(qty: number, unit: string, isHe: boolean): string {
+  if (unit === 'to_taste') return isHe ? 'לפי הטעם' : 'to taste';
+  if (qty <= 0) return '';
+  if (unit === 'g' && qty >= 1000) {
+    const kg = Math.round(qty / 100) / 10;
+    return `${kg} ${isHe ? 'ק״ג' : 'kg'}`;
+  }
+  if (unit === 'ml' && qty >= 1000) {
+    const l = Math.round(qty / 100) / 10;
+    return `${l} ${isHe ? 'ל׳' : 'L'}`;
+  }
+  if (unit === 'unit') return String(qty);
+  const unitLabels: Record<string, [string, string]> = {
+    g: ["גר׳", 'g'], kg: ['ק״ג', 'kg'], ml: ['מ״ל', 'ml'],
+    cup: ['כוס', 'cup'], tbsp: ['כף', 'tbsp'], tsp: ['כפית', 'tsp'],
+    can: ['פחית', 'can'], pinch: ['קורט', 'pinch'],
+  };
+  const label = unitLabels[unit]?.[isHe ? 0 : 1] ?? unit;
+  return `${qty} ${label}`;
 }
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
@@ -246,6 +269,29 @@ function StepDots({ current, total }: { current: number; total: number }) {
   );
 }
 
+function CountStepper({
+  value, onChange, min = 1, max = 99,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0, border: '1px solid #E0D9CE', borderRadius: 10, overflow: 'hidden', background: '#fff' }}>
+      <button
+        onClick={() => onChange(Math.max(min, value - 1))}
+        style={{ padding: '8px 14px', border: 'none', background: 'none', fontSize: 18, cursor: 'pointer', color: '#14422d', fontWeight: 700 }}
+      >−</button>
+      <span style={{ fontSize: 16, fontWeight: 700, minWidth: 28, textAlign: 'center', color: '#1a1c1b' }}>{value}</span>
+      <button
+        onClick={() => onChange(Math.min(max, value + 1))}
+        style={{ padding: '8px 14px', border: 'none', background: 'none', fontSize: 18, cursor: 'pointer', color: '#14422d', fontWeight: 700 }}
+      >+</button>
+    </div>
+  );
+}
+
 // ─── Main Page ──────────────────────────────────────────────────────────────
 
 export default function MealPrepPlannerPage() {
@@ -257,6 +303,10 @@ export default function MealPrepPlannerPage() {
   const [direction, setDirection] = useState<1 | -1>(1);
   const [profile, setProfile] = useState<StoredProfile | null>(null);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<Set<string>>(new Set());
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
+  const [people, setPeople] = useState(2);
+  const [days, setDays] = useState(5);
+  const [haveAtHome, setHaveAtHome] = useState<Set<string>>(new Set());
   const [shoppingDate, setShoppingDate] = useState('');
   const [shoppingTime, setShoppingTime] = useState('10:00');
   const [cookingDate, setCookingDate] = useState('');
@@ -270,7 +320,11 @@ export default function MealPrepPlannerPage() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem('easyprep_profile');
-      if (raw) setProfile(JSON.parse(raw));
+      if (raw) {
+        const p = JSON.parse(raw) as StoredProfile;
+        setProfile(p);
+        if (p.householdSize) setPeople(p.householdSize);
+      }
     } catch {}
     try {
       setXp(Number(localStorage.getItem('easyprep_xp') ?? '0'));
@@ -285,6 +339,7 @@ export default function MealPrepPlannerPage() {
       if (p) {
         const sp = p as StoredProfile;
         setProfile(sp);
+        if (sp.householdSize) setPeople(sp.householdSize);
         try { localStorage.setItem('easyprep_profile', JSON.stringify(sp)); } catch {}
       }
     }).catch(() => {});
@@ -309,17 +364,41 @@ export default function MealPrepPlannerPage() {
     [selectedRecipeIds]
   );
 
+  // Category filter options
+  const filterOptions: { value: CategoryFilter; labelHe: string; labelEn: string }[] = [
+    { value: 'all',        labelHe: 'הכל',         labelEn: 'All' },
+    { value: 'recommended', labelHe: 'המלצה',       labelEn: 'Recommended' },
+    { value: 'chicken',    labelHe: 'עוף',          labelEn: 'Chicken' },
+    { value: 'beef',       labelHe: 'בקר',          labelEn: 'Beef' },
+    { value: 'fish',       labelHe: 'דגים',         labelEn: 'Fish' },
+    { value: 'side',       labelHe: 'תוספות',       labelEn: 'Sides' },
+    { value: 'salad',      labelHe: 'סלטים',        labelEn: 'Salads' },
+    { value: 'breakfast',  labelHe: 'ארוחת בוקר',   labelEn: 'Breakfast' },
+    { value: 'tofu',       labelHe: 'טופו',         labelEn: 'Tofu' },
+  ];
+
+  const filteredRecipes = useMemo(() => {
+    if (categoryFilter === 'all') return recipes;
+    if (categoryFilter === 'recommended') return recipes.filter(r => recommendedIds.has(r.id));
+    return recipes.filter(r => r.category === categoryFilter);
+  }, [categoryFilter, recommendedIds]);
+
+  // Shopping list scaled by people × days
   const shoppingListItems = useMemo(() => {
-    const servings = profile?.householdSize ?? 2;
     return mergeShoppingLists(
-      selectedRecipes.map(r => calculateShoppingList(r, r.baseServings * servings))
+      selectedRecipes.map(r => calculateShoppingList(r, people))
     );
-  }, [selectedRecipes, profile]);
+  }, [selectedRecipes, people]);
+
+  const visibleShoppingItems = useMemo(
+    () => shoppingListItems.filter(item => !haveAtHome.has(`${item.nameHe}__${item.unit}`)),
+    [shoppingListItems, haveAtHome]
+  );
 
   const shoppingTimeEst = useMemo(() => {
-    const raw = Math.max(30, shoppingListItems.length * 1.5);
+    const raw = Math.max(30, visibleShoppingItems.length * 1.5);
     return Math.ceil(raw / 15) * 15;
-  }, [shoppingListItems]);
+  }, [visibleShoppingItems]);
 
   const cookingSchedule = useMemo(() => scheduleMealPrep(selectedRecipes), [selectedRecipes]);
   const estimatedCookMin = useMemo(() => estimateTotalMinutes(cookingSchedule), [cookingSchedule]);
@@ -331,6 +410,7 @@ export default function MealPrepPlannerPage() {
   }, [shoppingDate, cookingDate]);
 
   const grouped = groupByCategory(shoppingListItems);
+  const groupedVisible = groupByCategory(visibleShoppingItems);
 
   // Award XP on step 4
   useEffect(() => {
@@ -394,7 +474,7 @@ export default function MealPrepPlannerPage() {
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1c1b', marginBottom: 4 }}>
                   {t('wizard.checklist.step1.title')}
                 </h2>
-                <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 16 }}>
+                <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 14 }}>
                   {isHe
                     ? isExperienced
                       ? 'כמנוסה — המלצנו על 2 חלבונים ו-2 תוספות. שנה לפי טעמך.'
@@ -404,12 +484,37 @@ export default function MealPrepPlannerPage() {
                       : 'As a beginner — we recommended 1 protein & 1 side. Simple and effective!'}
                 </p>
 
+                {/* Category filter pills */}
+                <div style={{
+                  display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4,
+                  marginBottom: 16, WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'none',
+                }}>
+                  {filterOptions.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setCategoryFilter(opt.value)}
+                      style={{
+                        flexShrink: 0,
+                        padding: '6px 14px', borderRadius: 9999, fontSize: 12, fontWeight: 600,
+                        border: `1.5px solid ${categoryFilter === opt.value ? '#14422d' : '#E0D9CE'}`,
+                        background: categoryFilter === opt.value ? '#14422d' : '#fff',
+                        color: categoryFilter === opt.value ? '#fff' : '#6B6560',
+                        cursor: 'pointer', transition: 'all 0.15s',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {isHe ? opt.labelHe : opt.labelEn}
+                    </button>
+                  ))}
+                </div>
+
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
                   gap: 10, marginBottom: 24,
                 }}>
-                  {recipes.map(recipe => (
+                  {filteredRecipes.map(recipe => (
                     <WizardRecipeCard
                       key={recipe.id}
                       recipe={recipe}
@@ -425,9 +530,19 @@ export default function MealPrepPlannerPage() {
                       }}
                     />
                   ))}
+                  {filteredRecipes.length === 0 && (
+                    <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'rgba(26,25,24,0.4)', fontSize: 14, padding: '24px 0' }}>
+                      {isHe ? 'אין מתכונים בקטגוריה זו' : 'No recipes in this category'}
+                    </p>
+                  )}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(26,25,24,0.45)' }}>
+                    {selectedRecipeIds.size > 0
+                      ? (isHe ? `${selectedRecipeIds.size} נבחרו` : `${selectedRecipeIds.size} selected`)
+                      : (isHe ? 'בחר לפחות מתכון אחד' : 'Select at least one recipe')}
+                  </span>
                   <button
                     onClick={goNext}
                     disabled={selectedRecipeIds.size === 0}
@@ -451,47 +566,121 @@ export default function MealPrepPlannerPage() {
                   {t('wizard.checklist.step2.title')}
                 </h2>
                 <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 16 }}>
-                  {isHe
-                    ? `רשימת הקניות שלך מכילה ${shoppingListItems.length} פריטים`
-                    : `Your shopping list has ${shoppingListItems.length} items`}
+                  {isHe ? 'ספר לנו עבור מי אתה מבשל' : 'Tell us who you\'re cooking for'}
                 </p>
 
-                {/* Time estimate pill */}
+                {/* People + Days selectors */}
                 <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: '#EBF2ED', borderRadius: 9999, padding: '6px 14px',
-                  marginBottom: 16,
+                  background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE',
+                  padding: '16px', marginBottom: 16,
+                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16,
                 }}>
-                  <span style={{ fontSize: 16 }}>🛒</span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#14422d' }}>
-                    ~{shoppingTimeEst} {t('wizard.checklist.step2.timeEstimate')}
-                  </span>
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#6B6560', margin: '0 0 8px' }}>
+                      {isHe ? '👤 עבור כמה אנשים?' : '👤 How many people?'}
+                    </p>
+                    <CountStepper value={people} onChange={setPeople} min={1} max={12} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#6B6560', margin: '0 0 8px' }}>
+                      {isHe ? '📅 לכמה ימים?' : '📅 How many days?'}
+                    </p>
+                    <CountStepper value={days} onChange={setDays} min={1} max={7} />
+                  </div>
                 </div>
 
-                {/* Shopping list preview */}
+                {/* Time estimate pill */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    background: '#EBF2ED', borderRadius: 9999, padding: '6px 14px',
+                  }}>
+                    <span style={{ fontSize: 16 }}>🛒</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#14422d' }}>
+                      ~{shoppingTimeEst} {t('wizard.checklist.step2.timeEstimate')}
+                    </span>
+                  </div>
+                  {haveAtHome.size > 0 && (
+                    <div style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      background: '#F0EBE3', borderRadius: 9999, padding: '6px 14px',
+                    }}>
+                      <span style={{ fontSize: 13, color: '#6B6560' }}>
+                        {isHe ? `✓ ${haveAtHome.size} יש בבית` : `✓ ${haveAtHome.size} at home`}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Shopping list with "יש בבית" checkboxes */}
                 <div style={{
                   background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE',
                   padding: '12px 16px', marginBottom: 20,
-                  maxHeight: 200, overflowY: 'auto',
+                  maxHeight: 280, overflowY: 'auto',
                 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
-                      <div key={cat}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: '#A09893', margin: '0 0 4px', textTransform: 'uppercase' }}>
-                          {SHOPPING_ICON[cat]} {isHe ? SHOPPING_LABEL_HE[cat] : cat}
-                        </p>
-                        {grouped[cat].map((item, i) => (
-                          <p key={i} style={{ fontSize: 11, color: '#1a1c1b', margin: '0 0 2px' }}>
-                            {isHe ? item.nameHe : item.nameEn}
-                            {item.quantity > 0 && item.unit !== 'to_taste' && (
-                              <span style={{ color: '#14422d', fontWeight: 600 }}> {item.quantity}</span>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#A09893', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {isHe ? 'רשימת הקניות — סמן מה יש לך כבר בבית' : 'Shopping List — check what you already have'}
+                  </p>
+                  {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
+                    <div key={cat} style={{ marginBottom: 12 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: '#A09893', margin: '0 0 6px', textTransform: 'uppercase' }}>
+                        {SHOPPING_ICON[cat]} {isHe ? SHOPPING_LABEL_HE[cat] : cat}
+                      </p>
+                      {grouped[cat].map((item) => {
+                        const itemKey = `${item.nameHe}__${item.unit}`;
+                        const atHome = haveAtHome.has(itemKey);
+                        return (
+                          <label
+                            key={itemKey}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 8,
+                              padding: '5px 0', cursor: 'pointer',
+                              opacity: atHome ? 0.45 : 1,
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={atHome}
+                              onChange={() => {
+                                setHaveAtHome(prev => {
+                                  const next = new Set(prev);
+                                  atHome ? next.delete(itemKey) : next.add(itemKey);
+                                  return next;
+                                });
+                              }}
+                              style={{ accentColor: '#14422d', width: 15, height: 15, flexShrink: 0 }}
+                            />
+                            <span style={{
+                              fontSize: 12, color: '#1a1c1b', flex: 1,
+                              textDecoration: atHome ? 'line-through' : 'none',
+                            }}>
+                              {isHe ? item.nameHe : item.nameEn}
+                            </span>
+                            {item.unit !== 'to_taste' && item.quantity > 0 && (
+                              <span style={{ fontSize: 11, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
+                                {formatQty(item.quantity, item.unit, isHe)}
+                              </span>
                             )}
-                          </p>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+                            {atHome && (
+                              <span style={{ fontSize: 10, color: '#14422d', flexShrink: 0 }}>
+                                {isHe ? 'יש בבית' : 'at home'}
+                              </span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
+
+                {/* Show visible (still needed) count */}
+                {haveAtHome.size > 0 && (
+                  <p style={{ fontSize: 12, color: '#6B6560', margin: '0 0 12px' }}>
+                    {isHe
+                      ? `צריך לקנות: ${visibleShoppingItems.length} פריטים`
+                      : `Need to buy: ${visibleShoppingItems.length} items`}
+                  </p>
+                )}
 
                 {/* Date/time picker */}
                 <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE', padding: '16px', marginBottom: 16 }}>
@@ -552,8 +741,8 @@ export default function MealPrepPlannerPage() {
                 </h2>
                 <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 16 }}>
                   {isHe
-                    ? `בחרת ${selectedRecipes.length} מתכונים`
-                    : `You selected ${selectedRecipes.length} recipes`}
+                    ? `${selectedRecipes.length} מתכונים · ${people} ${people === 1 ? 'אדם' : 'אנשים'} · ${days} ימים`
+                    : `${selectedRecipes.length} recipes · ${people} ${people === 1 ? 'person' : 'people'} · ${days} days`}
                 </p>
 
                 {/* Cook time estimate */}
@@ -705,6 +894,16 @@ export default function MealPrepPlannerPage() {
                     {t('wizard.checklist.step4.summary')}
                   </p>
 
+                  {/* People + days summary */}
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                    <div style={{ background: '#EBF2ED', borderRadius: 9999, padding: '4px 12px', fontSize: 12, color: '#14422d', fontWeight: 600 }}>
+                      👤 {people} {isHe ? (people === 1 ? 'אדם' : 'אנשים') : (people === 1 ? 'person' : 'people')}
+                    </div>
+                    <div style={{ background: '#EBF2ED', borderRadius: 9999, padding: '4px 12px', fontSize: 12, color: '#14422d', fontWeight: 600 }}>
+                      📅 {days} {isHe ? 'ימים' : 'days'}
+                    </div>
+                  </div>
+
                   <div style={{ marginBottom: 12 }}>
                     {selectedRecipes.map(r => (
                       <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -758,6 +957,7 @@ export default function MealPrepPlannerPage() {
                     setSelectedRecipeIds(new Set(recommendedIds));
                     setShoppingDate('');
                     setCookingDate('');
+                    setHaveAtHome(new Set());
                   }}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer',
