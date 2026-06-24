@@ -379,9 +379,9 @@ export default function MealPrepPlannerPage() {
 
   const filteredRecipes = useMemo(() => {
     if (categoryFilter === 'all') return recipes;
-    if (categoryFilter === 'recommended') return recipes.filter(r => recommendedIds.has(r.id));
+    if (categoryFilter === 'recommended') return recipes.filter(r => r.tags.includes('recommended'));
     return recipes.filter(r => r.category === categoryFilter);
-  }, [categoryFilter, recommendedIds]);
+  }, [categoryFilter]);
 
   // Shopping list scaled by people × days
   const shoppingListItems = useMemo(() => {

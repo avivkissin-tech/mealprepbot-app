@@ -166,7 +166,7 @@ export const recipes: Recipe[] = [
     prepTimeMin: 5,
     cookTimeMin: 0,
     storageDays: 4,
-    tags: ['vegetarian', 'no-cook'],
+    tags: ['recommended', 'vegetarian', 'no-cook'],
     dietaryTags: ['vegetarian', 'dairy-free'],
     nutritionPerServing: { calories: 280, protein: 12, carbs: 38, fat: 7 },
     ingredients: [
@@ -202,7 +202,7 @@ export const recipes: Recipe[] = [
     prepTimeMin: 10,
     cookTimeMin: 10,
     storageDays: 3,
-    tags: ['dairy-free', 'high-protein'],
+    tags: ['recommended', 'dairy-free', 'high-protein'],
     dietaryTags: ['dairy-free', 'high-protein'],
     nutritionPerServing: { calories: 195, protein: 26, carbs: 7, fat: 7 },
     ingredients: [
