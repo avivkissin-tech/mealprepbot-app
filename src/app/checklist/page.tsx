@@ -85,7 +85,7 @@ function toICSDate(dateStr: string, timeStr: string): string {
   return `${y}${m}${d}T${h}${min}00`;
 }
 
-function downloadICS(
+function openGoogleCalendar(
   type: 'shopping' | 'cooking',
   dateStr: string,
   timeStr: string,
@@ -97,38 +97,88 @@ function downloadICS(
   const dtend = toICSDate(dateStr, `${padTwo(end.getHours())}:${padTwo(end.getMinutes())}`);
 
   const isShopping = type === 'shopping';
-  const summary = isShopping ? 'קניות לארוחות השבוע' : 'בישול מילפרפ שבועי';
-  const description = isShopping
+  const text = isShopping ? 'קניות לארוחות השבוע' : 'בישול מילפרפ שבועי';
+  const details = isShopping
     ? 'קניות לפי רשימת המרכיבים — Easy PREP'
     : 'בישול מילפרפ שבועי — Easy PREP Nutrition';
 
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//EasyPREP//MealPrepWizard//HE',
-    'BEGIN:VEVENT',
-    `DTSTART:${dtstart}`,
-    `DTEND:${dtend}`,
-    `SUMMARY:${summary}`,
-    `DESCRIPTION:${description}`,
-    'BEGIN:VALARM',
-    'ACTION:DISPLAY',
-    'TRIGGER:-PT60M',
-    `DESCRIPTION:תזכורת — ${summary}`,
-    'END:VALARM',
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\r\n');
+  const url =
+    `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+    `&text=${encodeURIComponent(text)}` +
+    `&dates=${dtstart}/${dtend}` +
+    `&details=${encodeURIComponent(details)}`;
 
-  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${isShopping ? 'shopping' : 'cooking'}-prep.ics`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  window.open(url, '_blank');
+}
+
+function printShoppingList(
+  groupedItems: Record<string, import('@/types').ShoppingListEntry[]>,
+  visibleCount: number,
+  isHe: boolean,
+  people: number,
+  days: number,
+  recipeNames: string[]
+) {
+  const iconMap: Record<string, string> = {
+    protein: '🥩', vegetables: '🥦', dairy: '🥛', grains: '🌾', spices: '🧂', other: '🛒',
+  };
+  const labelMapHe: Record<string, string> = {
+    protein: 'חלבונים', vegetables: 'ירקות', dairy: 'חלב', grains: 'דגנים', spices: 'תבלינים', other: 'שונות',
+  };
+  const catOrder = ['protein', 'vegetables', 'dairy', 'grains', 'spices', 'other'];
+
+  const rows = catOrder
+    .filter(cat => groupedItems[cat]?.length)
+    .map(cat => {
+      const items = groupedItems[cat]
+        .map(item => {
+          let qty = item.quantity;
+          let unit = item.unit;
+          if (unit === 'g' && qty >= 1000) { qty = Math.round(qty / 100) / 10; unit = isHe ? 'ק״ג' : 'kg'; }
+          else if (unit === 'ml' && qty >= 1000) { qty = Math.round(qty / 100) / 10; unit = isHe ? 'ל׳' : 'L'; }
+          else if (unit === 'unit') unit = '';
+          const qtyStr = unit === 'to_taste' ? (isHe ? 'לפי הטעם' : 'to taste') : qty > 0 ? `${qty}${unit ? ' ' + unit : ''}` : '';
+          return `<div class="item"><span>${isHe ? item.nameHe : item.nameEn}</span><span class="qty">${qtyStr}</span></div>`;
+        })
+        .join('');
+      const catLabel = isHe ? labelMapHe[cat] : cat;
+      return `<div class="cat"><div class="cat-title">${iconMap[cat]} ${catLabel}</div>${items}</div>`;
+    })
+    .join('');
+
+  const html = `<!DOCTYPE html>
+<html dir="${isHe ? 'rtl' : 'ltr'}" lang="${isHe ? 'he' : 'en'}">
+<head>
+<meta charset="UTF-8">
+<title>${isHe ? 'רשימת קניות' : 'Shopping List'}</title>
+<style>
+  body { font-family: -apple-system, Arial, sans-serif; padding: 28px 36px; color: #1a1c1b; max-width: 600px; }
+  h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+  .meta { color: #6B6560; font-size: 13px; margin: 0 0 6px; }
+  .recipes { font-size: 12px; color: #A09893; margin: 0 0 20px; }
+  .cat { margin-bottom: 18px; }
+  .cat-title { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #A09893; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0ebe3; font-size: 13px; }
+  .qty { font-weight: 700; color: #14422d; }
+  .footer { margin-top: 24px; font-size: 11px; color: #A09893; border-top: 1px solid #E0D9CE; padding-top: 10px; }
+  @media print { @page { margin: 18mm; } body { padding: 0; } }
+</style>
+</head>
+<body>
+<h1>${isHe ? '🛒 רשימת קניות' : '🛒 Shopping List'}</h1>
+<p class="meta">${isHe ? `${people} אנשים · ${days} ימים · ${visibleCount} פריטים` : `${people} people · ${days} days · ${visibleCount} items`}</p>
+<p class="recipes">${recipeNames.join(' · ')}</p>
+${rows}
+<p class="footer">Easy PREP Nutrition</p>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 400);
+  }
 }
 
 /** Returns display string like "2 ק״ג", "500 גר׳", "3 כוסות" */
@@ -711,20 +761,43 @@ export default function MealPrepPlannerPage() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => shoppingDate && downloadICS('shopping', shoppingDate, shoppingTime, shoppingTimeEst)}
-                  disabled={!shoppingDate}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                    padding: '12px 20px', borderRadius: 12, marginBottom: 24,
-                    background: shoppingDate ? '#1a1c1b' : '#c0c9c1',
-                    color: '#fff', fontSize: 13, fontWeight: 600,
-                    border: 'none', cursor: shoppingDate ? 'pointer' : 'default',
-                    justifyContent: 'center',
-                  }}
-                >
-                  📅 {t('wizard.checklist.step2.addCalendar')}
-                </button>
+                {/* Calendar + Print buttons */}
+                <div style={{ display: 'flex', gap: 10, marginBottom: 24 }}>
+                  <button
+                    onClick={() => shoppingDate && openGoogleCalendar('shopping', shoppingDate, shoppingTime, shoppingTimeEst)}
+                    disabled={!shoppingDate}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '12px 16px', borderRadius: 12,
+                      background: shoppingDate ? '#1a1c1b' : '#c0c9c1',
+                      color: '#fff', fontSize: 13, fontWeight: 600,
+                      border: 'none', cursor: shoppingDate ? 'pointer' : 'default',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    📅 {isHe ? 'הוסף ליומן גוגל' : 'Add to Google Calendar'}
+                  </button>
+                  <button
+                    onClick={() => printShoppingList(
+                      groupedVisible,
+                      visibleShoppingItems.length,
+                      isHe,
+                      people,
+                      days,
+                      selectedRecipes.map(r => isHe ? r.nameHe : r.nameEn)
+                    )}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      padding: '12px 16px', borderRadius: 12,
+                      background: '#F0EBE3', color: '#6B6560',
+                      fontSize: 13, fontWeight: 600,
+                      border: 'none', cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    🖨️ {isHe ? 'הדפס' : 'Print'}
+                  </button>
+                </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <button onClick={goBack} style={backBtnStyle}>{isHe ? '→ חזרה' : '← Back'}</button>
@@ -831,7 +904,7 @@ export default function MealPrepPlannerPage() {
                 </div>
 
                 <button
-                  onClick={() => cookingDate && downloadICS('cooking', cookingDate, cookingTime, estimatedCookMin)}
+                  onClick={() => cookingDate && openGoogleCalendar('cooking', cookingDate, cookingTime, estimatedCookMin)}
                   disabled={!cookingDate}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8, width: '100%',
@@ -842,7 +915,7 @@ export default function MealPrepPlannerPage() {
                     justifyContent: 'center',
                   }}
                 >
-                  📅 {t('wizard.checklist.step3.addCalendar')}
+                  📅 {isHe ? 'הוסף ליומן גוגל' : 'Add to Google Calendar'}
                 </button>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
