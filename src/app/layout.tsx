@@ -5,7 +5,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { MealPlanProvider } from '@/context/MealPlanContext';
 import { SavedProvider } from '@/context/SavedContext';
-import Header from '@/components/layout/Header';
+import Sidebar from '@/components/layout/Sidebar';
 import Footer from '@/components/layout/Footer';
 import MealPlanPanel from '@/components/ui/MealPlanPanel';
 
@@ -30,18 +30,27 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen flex flex-col antialiased">
+      <body className="min-h-screen antialiased" style={{ background: '#faf9f7' }}>
         <ClerkProvider>
-        <LanguageProvider>
-          <MealPlanProvider>
-          <SavedProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <MealPlanPanel />
-          </SavedProvider>
-          </MealPlanProvider>
-        </LanguageProvider>
+          <LanguageProvider>
+            <MealPlanProvider>
+              <SavedProvider>
+                {/* Permanent sidebar */}
+                <Sidebar />
+
+                {/* Content offset by sidebar width on md+ */}
+                <div
+                  className="md:pr-[240px]"
+                  style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+                >
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+
+                <MealPlanPanel />
+              </SavedProvider>
+            </MealPlanProvider>
+          </LanguageProvider>
         </ClerkProvider>
       </body>
     </html>
