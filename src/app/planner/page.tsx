@@ -195,13 +195,13 @@ export default function PlannerPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>הפלאנר שלי</h1>
+          <h1 id="tour-planner-title" style={{ fontSize: 26, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>הפלאנר שלי</h1>
           <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginTop: 2 }}>
             {totalRecipes > 0 ? `${totalRecipes} ארוחות מתוכננות השבוע` : 'לחץ + להוסיף ארוחה לכל יום'}
           </p>
         </div>
         {/* People selector — visible on all sizes */}
-        <div style={{
+        <div id="tour-planner-people" style={{
           display: 'flex', alignItems: 'center', gap: 8,
           background: '#fff', border: '1px solid #c0c9c1',
           borderRadius: 9999, padding: '8px 14px',
@@ -229,6 +229,7 @@ export default function PlannerPage() {
             </button>
           )}
           <button
+            id="tour-planner-shopping"
             onClick={() => setShowShopping(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
@@ -531,6 +532,7 @@ export default function PlannerPage() {
 
                 {/* Add button */}
                 <button
+                  id={dayIdx === 0 ? 'tour-planner-add' : undefined}
                   onClick={() => setPickingDay(dayIdx)}
                   style={{
                     margin: '0 8px 10px',

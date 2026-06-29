@@ -206,7 +206,7 @@ export default function IngredientsPage() {
               <circle cx="19" cy="21" r="1" fill="#2A4F3A" stroke="none"/>
             </svg>
           </div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1A1918', margin: '0 0 8px' }}>
+          <h1 id="tour-fridge-title" style={{ fontSize: 26, fontWeight: 800, color: '#1A1918', margin: '0 0 8px' }}>
             מה יש לי במקרר?
           </h1>
           <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.5)', margin: 0, lineHeight: 1.5 }}>
@@ -216,6 +216,7 @@ export default function IngredientsPage() {
 
         {/* Chip input box */}
         <div
+          id="tour-fridge-input"
           style={{
             background: '#fff', border: '2px solid #E0D9CE', borderRadius: 16,
             padding: '12px 14px', marginBottom: 16, cursor: 'text',

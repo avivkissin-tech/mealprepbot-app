@@ -19,8 +19,7 @@ const NAV_LINKS = [
   { href: '/',           labelHe: 'מאגר מתכונים',    labelEn: 'Recipes',         icon: '📖', tourId: 'tour-recipes' },
   { href: '/checklist',  labelHe: 'תכנון מילפרפ',    labelEn: 'Meal Prep',       icon: '📋', tourId: 'tour-checklist' },
   { href: '/planner',    labelHe: 'פלאנר שבועי',      labelEn: 'Weekly Planner',  icon: '🗓', tourId: 'tour-planner' },
-  { href: '/mealprep',   labelHe: 'מדריך AI',         labelEn: 'AI Guide',        icon: '🤖', tourId: 'tour-wizard' },
-  { href: '/ingredients',labelHe: 'מחשבון מרכיבים',  labelEn: 'Ingredients',     icon: '⚖️', tourId: undefined },
+  { href: '/ingredients',labelHe: 'מה יש לי במקרר',  labelEn: 'Fridge Recipes',  icon: '🥦', tourId: 'tour-fridge-title' },
 ];
 
 export const SIDEBAR_WIDTH = 240;
