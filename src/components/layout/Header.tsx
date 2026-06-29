@@ -7,6 +7,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/ui/LanguageToggle';
 import FeedbackModal from '@/components/ui/FeedbackModal';
 import SiteTour from '@/components/ui/SiteTour';
+import SidePanel from '@/components/ui/SidePanel';
+import WelcomeModal from '@/components/ui/WelcomeModal';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 interface DropdownItem { labelKey: string; href: string; }
@@ -37,7 +39,7 @@ export default function Header() {
   const { t } = useLanguage();
   const { isSignedIn } = useAuth();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [tourActive, setTourActive] = useState(false);
 
@@ -56,10 +58,7 @@ export default function Header() {
               <path d="M5 14 L10 6 L15 14" stroke="#faf9f7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               <path d="M7.5 11 L12.5 11" stroke="#C9572A" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            <span
-              className="font-semibold tracking-tight text-sm"
-              style={{ color: '#1A1918', letterSpacing: '-0.01em' }}
-            >
+            <span className="font-semibold tracking-tight text-sm" style={{ color: '#1A1918', letterSpacing: '-0.01em' }}>
               {t('brand.name')}
             </span>
           </Link>
@@ -95,30 +94,23 @@ export default function Header() {
                     </svg>
                   </button>
                 )}
-
                 {item.dropdown && openMenu === item.labelKey && (
-                  <div
-                    className="absolute top-full start-0 w-44 z-50"
-                    style={{ paddingTop: 6 }}
-                  >
-                  <div
-                    className="rounded-xl border py-1.5"
-                    style={{ background: '#FFFFFF', borderColor: '#E0D9CE', boxShadow: '0 8px 24px rgba(26,25,24,0.10)' }}
-                  >
-                    {item.dropdown.map((sub) => (
-                      <Link
-                        key={sub.href}
-                        href={sub.href}
-                        className="block px-4 py-2 text-sm transition-colors"
-                        style={{ color: '#6B6560' }}
-                        onMouseEnter={e => { e.currentTarget.style.color = '#1A1918'; e.currentTarget.style.background = '#F7F3EE'; }}
-                        onMouseLeave={e => { e.currentTarget.style.color = '#6B6560'; e.currentTarget.style.background = 'transparent'; }}
-                        onClick={() => setOpenMenu(null)}
-                      >
-                        {t(sub.labelKey)}
-                      </Link>
-                    ))}
-                  </div>
+                  <div className="absolute top-full start-0 w-44 z-50" style={{ paddingTop: 6 }}>
+                    <div className="rounded-xl border py-1.5" style={{ background: '#FFFFFF', borderColor: '#E0D9CE', boxShadow: '0 8px 24px rgba(26,25,24,0.10)' }}>
+                      {item.dropdown.map((sub) => (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          className="block px-4 py-2 text-sm transition-colors"
+                          style={{ color: '#6B6560' }}
+                          onMouseEnter={e => { e.currentTarget.style.color = '#1A1918'; e.currentTarget.style.background = '#F7F3EE'; }}
+                          onMouseLeave={e => { e.currentTarget.style.color = '#6B6560'; e.currentTarget.style.background = 'transparent'; }}
+                          onClick={() => setOpenMenu(null)}
+                        >
+                          {t(sub.labelKey)}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -127,20 +119,6 @@ export default function Header() {
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
-            {/* Tour trigger */}
-            <button
-              onClick={() => setTourActive(true)}
-              title="סיור באתר"
-              style={{
-                width: 32, height: 32, borderRadius: '50%',
-                background: '#F0EBE3', border: 'none',
-                fontSize: 14, cursor: 'pointer', color: '#6B6560',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-            >
-              ?
-            </button>
-
             <Link
               href="/mealprep"
               id="tour-wizard"
@@ -152,105 +130,53 @@ export default function Header() {
               {t('nav.wizard')}
             </Link>
 
-            {isSignedIn ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/profile"
-                  style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: '#EBF2ED', border: '1.5px solid #a0c4b0',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 16, textDecoration: 'none',
-                  }}
-                  title="פרופיל"
-                >
-                  👤
-                </Link>
-                <UserButton />
-              </div>
-            ) : (
+            {isSignedIn ? <UserButton /> : (
               <SignInButton mode="modal">
-                <button
-                  style={{
-                    padding: '6px 14px', borderRadius: 9999,
-                    background: '#F0EBE3', border: '1px solid #E0D9CE',
-                    fontSize: 13, fontWeight: 600, color: '#1A1918', cursor: 'pointer',
-                  }}
-                >
+                <button style={{ padding: '6px 14px', borderRadius: 9999, background: '#F0EBE3', border: '1px solid #E0D9CE', fontSize: 13, fontWeight: 600, color: '#1A1918', cursor: 'pointer' }}>
                   כניסה
                 </button>
               </SignInButton>
             )}
+
             <LanguageToggle />
+
+            {/* Sidebar toggle — always visible */}
             <button
-              className="md:hidden p-2.5 rounded-lg min-touch"
-              onClick={() => setMobileOpen((v) => !v)}
-              aria-label="Toggle menu"
-              style={{ color: '#6B6560' }}
+              onClick={() => setSidePanelOpen(true)}
+              aria-label="Open menu"
+              style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: '#F0EBE3', border: 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', flexShrink: 0,
+              }}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20">
-                {mobileOpen
-                  ? <path d="M4 4l12 12M4 16L16 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  : <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                }
+              <svg width="16" height="16" fill="none" viewBox="0 0 20 20">
+                <path d="M3 5h14M3 10h14M3 15h14" stroke="#6B6560" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
             </button>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div
-            className="md:hidden border-t px-4 pb-3"
-            style={{ background: '#ffffff', borderColor: '#e0d9ce' }}
-          >
-            <Link href="/" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-              {t('home.filter.all')}
-            </Link>
-            <Link href="/planner" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-              {t('nav.planner')}
-            </Link>
-            <Link href="/ingredients" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-              {t('nav.ingredients')}
-            </Link>
-            <Link href="/checklist" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-              {t('nav.checklist')}
-            </Link>
-            {isSignedIn && (
-              <Link href="/profile" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-                👤 {t('nav.profile') || 'פרופיל'}
-              </Link>
-            )}
-            <Link href="/mealprep" className="flex items-center min-touch text-sm font-bold" style={{ color: '#14422d' }} onClick={() => setMobileOpen(false)}>
-              {t('nav.wizard')}
-            </Link>
-          </div>
-        )}
       </header>
 
-      {/* Floating feedback button */}
-      <button
-        onClick={() => setFeedbackOpen(true)}
-        className="print:hidden"
-        style={{
-          position: 'fixed', bottom: 20, left: 20, zIndex: 7000,
-          width: 44, height: 44, borderRadius: '50%',
-          background: '#14422d', border: 'none',
-          boxShadow: '0 4px 16px rgba(20,66,45,0.35)',
-          cursor: 'pointer', fontSize: 20,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
-        title="עזרו לנו להשתפר"
-      >
-        💬
-      </button>
+      {/* Side panel */}
+      <SidePanel
+        isOpen={sidePanelOpen}
+        onClose={() => setSidePanelOpen(false)}
+        onStartTour={() => setTourActive(true)}
+        onFeedback={() => setFeedbackOpen(true)}
+      />
 
-      {/* Portals */}
+      {/* Tour */}
+      <SiteTour forceShow={tourActive} onDone={() => setTourActive(false)} />
+
+      {/* Welcome modal for new users */}
+      <WelcomeModal onStartTour={() => setTourActive(true)} />
+
+      {/* Feedback modal */}
       <AnimatePresence>
         {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
       </AnimatePresence>
-
-      <SiteTour forceShow={tourActive} onDone={() => setTourActive(false)} />
     </>
   );
 }
