@@ -2,16 +2,20 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageToggle from '@/components/ui/LanguageToggle';
+import FeedbackModal from '@/components/ui/FeedbackModal';
+import SiteTour from '@/components/ui/SiteTour';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 interface DropdownItem { labelKey: string; href: string; }
-interface NavItem { labelKey: string; href?: string; dropdown?: DropdownItem[]; }
+interface NavItem { labelKey: string; href?: string; tourId?: string; dropdown?: DropdownItem[]; }
 
 const NAV_ITEMS: NavItem[] = [
   {
     labelKey: 'nav.recipes',
+    tourId: 'tour-recipes',
     dropdown: [
       { labelKey: 'home.filter.all',       href: '/' },
       { labelKey: 'home.filter.fish',      href: '/?cat=fish' },
@@ -25,8 +29,8 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   { labelKey: 'nav.ingredients', href: '/ingredients' },
-  { labelKey: 'nav.checklist', href: '/checklist' },
-  { labelKey: 'nav.planner',   href: '/planner' },
+  { labelKey: 'nav.checklist',   href: '/checklist', tourId: 'tour-checklist' },
+  { labelKey: 'nav.planner',     href: '/planner',   tourId: 'tour-planner' },
 ];
 
 export default function Header() {
@@ -34,155 +38,219 @@ export default function Header() {
   const { isSignedIn } = useAuth();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [tourActive, setTourActive] = useState(false);
 
   return (
-    <header
-      className="sticky top-0 z-50 print:hidden"
-      style={{ background: '#ffffff', boxShadow: '0 1px 0 #e0d9ce, 0 4px 16px rgba(45,90,67,0.04)' }}
-    >
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+    <>
+      <header
+        className="sticky top-0 z-50 print:hidden"
+        style={{ background: '#ffffff', boxShadow: '0 1px 0 #e0d9ce, 0 4px 16px rgba(45,90,67,0.04)' }}
+      >
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect width="20" height="20" rx="5" fill="#14422d" />
-            <path d="M5 14 L10 6 L15 14" stroke="#faf9f7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            <path d="M7.5 11 L12.5 11" stroke="#C9572A" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-          <span
-            className="font-semibold tracking-tight text-sm"
-            style={{ color: '#1A1918', letterSpacing: '-0.01em' }}
-          >
-            {t('brand.name')}
-          </span>
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-0.5">
-          {NAV_ITEMS.map((item) => (
-            <div
-              key={item.labelKey}
-              className="relative"
-              onMouseEnter={() => item.dropdown && setOpenMenu(item.labelKey)}
-              onMouseLeave={() => setOpenMenu(null)}
-            >
-              {item.href && !item.dropdown ? (
-                <Link
-                  href={item.href}
-                  className="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-                  style={{ color: '#6B6560' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#1A1918')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#6B6560')}
-                >
-                  {t(item.labelKey)}
-                </Link>
-              ) : (
-                <button
-                  className="flex items-center gap-0.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-                  style={{ color: '#6B6560' }}
-                >
-                  {t(item.labelKey)}
-                  <svg className="w-3.5 h-3.5 mt-0.5" fill="none" viewBox="0 0 16 16">
-                    <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              )}
-
-              {item.dropdown && openMenu === item.labelKey && (
-                <div
-                  className="absolute top-full start-0 w-44 z-50"
-                  style={{ paddingTop: 6 }}
-                >
-                <div
-                  className="rounded-xl border py-1.5"
-                  style={{ background: '#FFFFFF', borderColor: '#E0D9CE', boxShadow: '0 8px 24px rgba(26,25,24,0.10)' }}
-                >
-                  {item.dropdown.map((sub) => (
-                    <Link
-                      key={sub.href}
-                      href={sub.href}
-                      className="block px-4 py-2 text-sm transition-colors"
-                      style={{ color: '#6B6560' }}
-                      onMouseEnter={e => { e.currentTarget.style.color = '#1A1918'; e.currentTarget.style.background = '#F7F3EE'; }}
-                      onMouseLeave={e => { e.currentTarget.style.color = '#6B6560'; e.currentTarget.style.background = 'transparent'; }}
-                      onClick={() => setOpenMenu(null)}
-                    >
-                      {t(sub.labelKey)}
-                    </Link>
-                  ))}
-                </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
-
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
-          <Link
-            href="/mealprep"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold rounded-full transition-colors"
-            style={{ background: '#14422d', color: '#FFFFFF' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#2d5a43')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#14422d')}
-          >
-            {t('nav.wizard')}
-          </Link>
-          {isSignedIn ? (
-            <UserButton />
-          ) : (
-            <SignInButton mode="modal">
-              <button
-                style={{
-                  padding: '6px 14px', borderRadius: 9999,
-                  background: '#F0EBE3', border: '1px solid #E0D9CE',
-                  fontSize: 13, fontWeight: 600, color: '#1A1918', cursor: 'pointer',
-                }}
-              >
-                כניסה
-              </button>
-            </SignInButton>
-          )}
-          <LanguageToggle />
-          <button
-            className="md:hidden p-2.5 rounded-lg min-touch"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
-            style={{ color: '#6B6560' }}
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20">
-              {mobileOpen
-                ? <path d="M4 4l12 12M4 16L16 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                : <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              }
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect width="20" height="20" rx="5" fill="#14422d" />
+              <path d="M5 14 L10 6 L15 14" stroke="#faf9f7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path d="M7.5 11 L12.5 11" stroke="#C9572A" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-          </button>
-        </div>
-      </div>
+            <span
+              className="font-semibold tracking-tight text-sm"
+              style={{ color: '#1A1918', letterSpacing: '-0.01em' }}
+            >
+              {t('brand.name')}
+            </span>
+          </Link>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div
-          className="md:hidden border-t px-4 pb-3"
-          style={{ background: '#ffffff', borderColor: '#e0d9ce' }}
-        >
-          <Link href="/" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-            {t('home.filter.all')}
-          </Link>
-          <Link href="/planner" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-            {t('nav.planner')}
-          </Link>
-          <Link href="/ingredients" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-            {t('nav.ingredients')}
-          </Link>
-          <Link href="/checklist" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
-            {t('nav.checklist')}
-          </Link>
-          <Link href="/mealprep" className="flex items-center min-touch text-sm font-bold" style={{ color: '#14422d' }} onClick={() => setMobileOpen(false)}>
-            {t('nav.wizard')}
-          </Link>
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-0.5">
+            {NAV_ITEMS.map((item) => (
+              <div
+                key={item.labelKey}
+                id={item.tourId}
+                className="relative"
+                onMouseEnter={() => item.dropdown && setOpenMenu(item.labelKey)}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                {item.href && !item.dropdown ? (
+                  <Link
+                    href={item.href}
+                    className="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors"
+                    style={{ color: '#6B6560' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#1A1918')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#6B6560')}
+                  >
+                    {t(item.labelKey)}
+                  </Link>
+                ) : (
+                  <button
+                    className="flex items-center gap-0.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors"
+                    style={{ color: '#6B6560' }}
+                  >
+                    {t(item.labelKey)}
+                    <svg className="w-3.5 h-3.5 mt-0.5" fill="none" viewBox="0 0 16 16">
+                      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                )}
+
+                {item.dropdown && openMenu === item.labelKey && (
+                  <div
+                    className="absolute top-full start-0 w-44 z-50"
+                    style={{ paddingTop: 6 }}
+                  >
+                  <div
+                    className="rounded-xl border py-1.5"
+                    style={{ background: '#FFFFFF', borderColor: '#E0D9CE', boxShadow: '0 8px 24px rgba(26,25,24,0.10)' }}
+                  >
+                    {item.dropdown.map((sub) => (
+                      <Link
+                        key={sub.href}
+                        href={sub.href}
+                        className="block px-4 py-2 text-sm transition-colors"
+                        style={{ color: '#6B6560' }}
+                        onMouseEnter={e => { e.currentTarget.style.color = '#1A1918'; e.currentTarget.style.background = '#F7F3EE'; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = '#6B6560'; e.currentTarget.style.background = 'transparent'; }}
+                        onClick={() => setOpenMenu(null)}
+                      >
+                        {t(sub.labelKey)}
+                      </Link>
+                    ))}
+                  </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* Right actions */}
+          <div className="flex items-center gap-2">
+            {/* Tour trigger */}
+            <button
+              onClick={() => setTourActive(true)}
+              title="סיור באתר"
+              style={{
+                width: 32, height: 32, borderRadius: '50%',
+                background: '#F0EBE3', border: 'none',
+                fontSize: 14, cursor: 'pointer', color: '#6B6560',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              ?
+            </button>
+
+            <Link
+              href="/mealprep"
+              id="tour-wizard"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold rounded-full transition-colors"
+              style={{ background: '#14422d', color: '#FFFFFF' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#2d5a43')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#14422d')}
+            >
+              {t('nav.wizard')}
+            </Link>
+
+            {isSignedIn ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/profile"
+                  style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: '#EBF2ED', border: '1.5px solid #a0c4b0',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, textDecoration: 'none',
+                  }}
+                  title="פרופיל"
+                >
+                  👤
+                </Link>
+                <UserButton />
+              </div>
+            ) : (
+              <SignInButton mode="modal">
+                <button
+                  style={{
+                    padding: '6px 14px', borderRadius: 9999,
+                    background: '#F0EBE3', border: '1px solid #E0D9CE',
+                    fontSize: 13, fontWeight: 600, color: '#1A1918', cursor: 'pointer',
+                  }}
+                >
+                  כניסה
+                </button>
+              </SignInButton>
+            )}
+            <LanguageToggle />
+            <button
+              className="md:hidden p-2.5 rounded-lg min-touch"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label="Toggle menu"
+              style={{ color: '#6B6560' }}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20">
+                {mobileOpen
+                  ? <path d="M4 4l12 12M4 16L16 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  : <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                }
+              </svg>
+            </button>
+          </div>
         </div>
-      )}
-    </header>
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div
+            className="md:hidden border-t px-4 pb-3"
+            style={{ background: '#ffffff', borderColor: '#e0d9ce' }}
+          >
+            <Link href="/" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
+              {t('home.filter.all')}
+            </Link>
+            <Link href="/planner" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
+              {t('nav.planner')}
+            </Link>
+            <Link href="/ingredients" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
+              {t('nav.ingredients')}
+            </Link>
+            <Link href="/checklist" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
+              {t('nav.checklist')}
+            </Link>
+            {isSignedIn && (
+              <Link href="/profile" className="flex items-center min-touch text-sm font-medium border-b" style={{ color: '#1A1918', borderColor: '#f0ebe3' }} onClick={() => setMobileOpen(false)}>
+                👤 {t('nav.profile') || 'פרופיל'}
+              </Link>
+            )}
+            <Link href="/mealprep" className="flex items-center min-touch text-sm font-bold" style={{ color: '#14422d' }} onClick={() => setMobileOpen(false)}>
+              {t('nav.wizard')}
+            </Link>
+          </div>
+        )}
+      </header>
+
+      {/* Floating feedback button */}
+      <button
+        onClick={() => setFeedbackOpen(true)}
+        className="print:hidden"
+        style={{
+          position: 'fixed', bottom: 20, left: 20, zIndex: 7000,
+          width: 44, height: 44, borderRadius: '50%',
+          background: '#14422d', border: 'none',
+          boxShadow: '0 4px 16px rgba(20,66,45,0.35)',
+          cursor: 'pointer', fontSize: 20,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+        title="עזרו לנו להשתפר"
+      >
+        💬
+      </button>
+
+      {/* Portals */}
+      <AnimatePresence>
+        {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
+      </AnimatePresence>
+
+      <SiteTour forceShow={tourActive} onDone={() => setTourActive(false)} />
+    </>
   );
 }

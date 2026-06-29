@@ -133,11 +133,12 @@ function printShoppingList(
       const items = groupedItems[cat]
         .map(item => {
           let qty = item.quantity;
-          let unit = item.unit;
-          if (unit === 'g' && qty >= 1000) { qty = Math.round(qty / 100) / 10; unit = isHe ? 'ק״ג' : 'kg'; }
-          else if (unit === 'ml' && qty >= 1000) { qty = Math.round(qty / 100) / 10; unit = isHe ? 'ל׳' : 'L'; }
-          else if (unit === 'unit') unit = '';
-          const qtyStr = unit === 'to_taste' ? (isHe ? 'לפי הטעם' : 'to taste') : qty > 0 ? `${qty}${unit ? ' ' + unit : ''}` : '';
+          const rawUnit = item.unit;
+          let displayUnit: string = rawUnit;
+          if (rawUnit === 'g' && qty >= 1000) { qty = Math.round(qty / 100) / 10; displayUnit = isHe ? 'ק״ג' : 'kg'; }
+          else if (rawUnit === 'ml' && qty >= 1000) { qty = Math.round(qty / 100) / 10; displayUnit = isHe ? 'ל׳' : 'L'; }
+          else if (rawUnit === 'unit') displayUnit = '';
+          const qtyStr = rawUnit === 'to_taste' ? (isHe ? 'לפי הטעם' : 'to taste') : qty > 0 ? `${qty}${displayUnit ? ' ' + displayUnit : ''}` : '';
           return `<div class="item"><span>${isHe ? item.nameHe : item.nameEn}</span><span class="qty">${qtyStr}</span></div>`;
         })
         .join('');
