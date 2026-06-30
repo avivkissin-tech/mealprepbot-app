@@ -3,6 +3,7 @@ import { Heebo, Fraunces } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { MealPlanProvider } from '@/context/MealPlanContext';
 import { SavedProvider } from '@/context/SavedContext';
 import Sidebar from '@/components/layout/Sidebar';
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl" className={`${heebo.variable} ${fraunces.variable}`}>
       <body className="min-h-screen antialiased" style={{ background: '#faf9f7' }}>
         <ClerkProvider>
+          <ThemeProvider>
           <LanguageProvider>
             <MealPlanProvider>
               <SavedProvider>
@@ -51,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </SavedProvider>
             </MealPlanProvider>
           </LanguageProvider>
+          </ThemeProvider>
         </ClerkProvider>
       </body>
     </html>

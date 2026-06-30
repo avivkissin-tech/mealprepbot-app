@@ -23,11 +23,45 @@
   --shadow-card-hover:  0 12px 40px rgba(45,90,67,0.10);
 }
 
+/* ── Theme CSS Variables ── */
+:root {
+  --bg-page:      #faf9f7;
+  --bg-surface:   #ffffff;
+  --bg-surface-2: #F7F3EE;
+  --bg-hover:     #F7F3EE;
+  --bg-muted:     #F0EBE3;
+  --text-primary:   #1a1c1b;
+  --text-secondary: #6B6560;
+  --text-muted:     #A09893;
+  --border:       #E0D9CE;
+  --border-2:     #F0EBE3;
+  --sidebar-bg:   #ffffff;
+  --sidebar-border: #E0D9CE;
+  --card-bg:      #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg-page:      #111312;
+  --bg-surface:   #1c1f1d;
+  --bg-surface-2: #232623;
+  --bg-hover:     #272b28;
+  --bg-muted:     #2a2e2b;
+  --text-primary:   #ede9e3;
+  --text-secondary: #9a9590;
+  --text-muted:     #6b6762;
+  --border:       #2e3330;
+  --border-2:     #252928;
+  --sidebar-bg:   #181b19;
+  --sidebar-border: #2a2e2b;
+  --card-bg:      #1c1f1d;
+}
+
 /* ── Base styles ── */
 body {
   font-family: var(--font-heebo), 'Inter', Arial, sans-serif;
-  background-color: #faf9f7;
-  color: #1a1c1b;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
 }
 
 /* Display headings: use Fraunces in LTR (EN), Heebo in RTL (HE) */
