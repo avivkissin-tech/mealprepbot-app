@@ -146,7 +146,7 @@ export default function StudioClient({ stats, topRecipes, feedback, recentUsers 
                           {f.type}
                         </span>
                         <span style={{ fontSize: 13, color: '#e8e6e1', flex: 1, textAlign: 'right' }}>{f.title}</span>
-                        <span style={{ fontSize: 11, color: '#6B7280', flexShrink: 0, marginRight: 8 }}>{fmt(f.created_at)}</span>
+                        <span style={{ fontSize: 11, color: '#6B7280', flexShrink: 0, marginInlineStart: 8 }}>{fmt(f.created_at)}</span>
                         <span style={{ color: '#6B7280', fontSize: 12 }}>{isExpanded ? '▲' : '▼'}</span>
                       </button>
                       {isExpanded && f.description && (

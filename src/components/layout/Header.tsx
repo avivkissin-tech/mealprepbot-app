@@ -143,7 +143,7 @@ export default function Header() {
             {/* Sidebar toggle — always visible */}
             <button
               onClick={() => setSidePanelOpen(true)}
-              aria-label="Open menu"
+              aria-label="פתיחת תפריט"
               style={{
                 width: 36, height: 36, borderRadius: 10,
                 background: '#F0EBE3', border: 'none',

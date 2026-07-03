@@ -191,7 +191,7 @@ export default function IngredientsPage() {
   const activeSuggestions = SUGGESTIONS.filter(s => !chips.includes(s));
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: '#F7F3EE' }}>
+    <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '40px 20px 80px' }}>
 
         {/* Header */}

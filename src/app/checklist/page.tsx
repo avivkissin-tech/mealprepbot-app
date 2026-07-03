@@ -11,6 +11,7 @@ import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CA
 import { scheduleMealPrep, estimateTotalMinutes, formatTimerMinutes } from '@/lib/mealPrepScheduler';
 import { fetchProfile } from '@/lib/userDataApi';
 import MealPrepSession from '@/components/recipes/MealPrepSession';
+import { Beef, Leaf, Droplets, Wheat, Flame, ShoppingBag } from 'lucide-react';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -30,10 +31,17 @@ interface StoredProfile {
 const PROTEIN_CATEGORIES: RecipeCategory[] = ['chicken', 'beef', 'fish'];
 const SIDE_CATEGORIES: RecipeCategory[] = ['side', 'salad', 'tofu', 'breakfast'];
 
-const SHOPPING_ICON: Record<string, string> = {
-  protein: '🥩', vegetables: '🥦', dairy: '🥛',
-  grains: '🌾', spices: '🧂', other: '🛒',
-};
+function getShoppingIcon(cat: string) {
+  const props = { size: 14, strokeWidth: 1.75 };
+  switch (cat) {
+    case 'protein':    return <Beef {...props} />;
+    case 'vegetables': return <Leaf {...props} />;
+    case 'dairy':      return <Droplets {...props} />;
+    case 'grains':     return <Wheat {...props} />;
+    case 'spices':     return <Flame {...props} />;
+    default:           return <ShoppingBag {...props} />;
+  }
+}
 
 const SHOPPING_LABEL_HE: Record<string, string> = {
   protein: 'חלבונים', vegetables: 'ירקות', dairy: 'חלב',
@@ -493,12 +501,12 @@ export default function MealPrepPlannerPage() {
   const todayStr = new Date().toISOString().slice(0, 10);
 
   return (
-    <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: '#faf9f7' }}>
+    <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '32px 20px 80px' }}>
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1a1c1b', margin: '0 0 4px' }}>
+          <h1 id="tour-checklist-title" style={{ fontSize: 26, fontWeight: 800, color: '#1a1c1b', margin: '0 0 4px' }}>
             {isHe ? 'תכנון מילפרפ שבועי' : 'Weekly Meal Prep Planner'}
           </h1>
           <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
@@ -675,7 +683,7 @@ export default function MealPrepPlannerPage() {
                   {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
                     <div key={cat} style={{ marginBottom: 12 }}>
                       <p style={{ fontSize: 10, fontWeight: 700, color: '#A09893', margin: '0 0 6px', textTransform: 'uppercase' }}>
-                        {SHOPPING_ICON[cat]} {isHe ? SHOPPING_LABEL_HE[cat] : cat}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{getShoppingIcon(cat)} {isHe ? SHOPPING_LABEL_HE[cat] : cat}</span>
                       </p>
                       {grouped[cat].map((item) => {
                         const itemKey = `${item.nameHe}__${item.unit}`;

@@ -102,3 +102,17 @@ export interface ShoppingListEntry {
   optional: boolean;
   shoppingCategory?: ShoppingCategory;
 }
+
+export interface AppNotification {
+  id: string;
+  type: 'shopping-list' | 'planner' | 'prep-guide' | 'reminder' | 'recommendation';
+  titleHe: string;
+  titleEn: string;
+  descriptionHe: string;
+  descriptionEn: string;
+  createdAt: string; // ISO 8601
+  read: boolean;
+  actionLabelHe?: string;
+  actionLabelEn?: string;
+  actionUrl?: string;
+}

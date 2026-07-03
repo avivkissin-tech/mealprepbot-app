@@ -11,13 +11,21 @@ import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CA
 import { ShoppingCategory, Recipe } from '@/types';
 import { scheduleMealPrep, estimateTotalMinutes, formatTimerMinutes } from '@/lib/mealPrepScheduler';
 import MealPrepSession from '@/components/recipes/MealPrepSession';
+import { Beef, Leaf, Droplets, Wheat, Flame, ShoppingBag } from 'lucide-react';
 
 const DAYS = ['יום 1', 'יום 2', 'יום 3', 'יום 4', 'יום 5', 'יום 6', 'יום 7'];
 
-const SHOPPING_ICON: Record<ShoppingCategory, string> = {
-  protein: '🥩', vegetables: '🥦', dairy: '🥛',
-  grains: '🌾', spices: '🧂', other: '🛒',
-};
+function getShoppingIcon(cat: ShoppingCategory) {
+  const props = { size: 14, strokeWidth: 1.75 };
+  switch (cat) {
+    case 'protein':    return <Beef {...props} />;
+    case 'vegetables': return <Leaf {...props} />;
+    case 'dairy':      return <Droplets {...props} />;
+    case 'grains':     return <Wheat {...props} />;
+    case 'spices':     return <Flame {...props} />;
+    case 'other':      return <ShoppingBag {...props} />;
+  }
+}
 
 const SHOPPING_LABEL_HE: Record<ShoppingCategory, string> = {
   protein: 'חלבונים', vegetables: 'ירקות', dairy: 'חלב ומוצריו',
@@ -187,7 +195,7 @@ export default function PlannerPage() {
   }, [pickingDay]);
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: '#faf9f7' }}>
+    <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
 
       {/* ── Header bar ── */}
       <div style={{
@@ -581,7 +589,7 @@ export default function PlannerPage() {
               style={{
                 position: 'fixed', bottom: 0, left: 0, right: 0,
                 maxHeight: '80vh',
-                background: '#faf9f7',
+                background: 'var(--bg-page)',
                 borderRadius: '20px 20px 0 0',
                 zIndex: 101,
                 display: 'flex', flexDirection: 'column',
@@ -691,7 +699,7 @@ export default function PlannerPage() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               style={{
                 position: 'fixed', bottom: 0, left: 0, right: 0,
-                maxHeight: '80vh', background: '#faf9f7',
+                maxHeight: '80vh', background: 'var(--bg-page)',
                 borderRadius: '20px 20px 0 0', zIndex: 101,
                 display: 'flex', flexDirection: 'column', overflow: 'hidden',
               }}
@@ -884,7 +892,7 @@ export default function PlannerPage() {
                         {/* Card header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontSize: 14 }}>{SHOPPING_ICON[cat]}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getShoppingIcon(cat)}</span>
                             <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1c1b' }}>{SHOPPING_LABEL_HE[cat]}</span>
                           </div>
                           <span style={{
@@ -934,7 +942,7 @@ export default function PlannerPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', gap: 10,
                         padding: '10px 12px',
-                        background: '#faf9f7',
+                        background: 'var(--bg-surface)',
                         borderBottom: '1px solid #c0c9c1',
                       }}>
                         <div style={{ position: 'relative', width: 36, height: 36, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
@@ -957,7 +965,7 @@ export default function PlannerPage() {
                           }}>
                             <span style={{ fontSize: 12, color: '#1a1c1b' }}>
                               {isHe ? item.nameHe : item.nameEn}
-                              {item.optional && <span style={{ fontSize: 10, color: 'rgba(26,25,24,0.4)', marginRight: 4 }}>(אופציונלי)</span>}
+                              {item.optional && <span style={{ fontSize: 10, color: 'rgba(26,25,24,0.4)', marginInlineStart: 4 }}>(אופציונלי)</span>}
                             </span>
                             <span style={{ fontSize: 12, fontWeight: 600, color: '#14422d', flexShrink: 0 }}>
                               {item.quantity > 0 ? `${item.quantity} ${t(`unit.${item.unit}`)}` : t(`unit.${item.unit}`)}

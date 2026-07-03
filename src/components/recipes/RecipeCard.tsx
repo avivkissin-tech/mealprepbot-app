@@ -85,7 +85,7 @@ export default function RecipeCard({ recipe }: Props) {
           {/* Add to plan button */}
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleRecipe(recipe.id); }}
-            aria-label={selected ? 'Remove from plan' : 'Add to plan'}
+            aria-label={selected ? 'הסר מתכנית' : 'הוסף לתכנית'}
             style={{
               position: 'absolute', bottom: 10, left: 10,
               width: 32, height: 32, borderRadius: '50%',

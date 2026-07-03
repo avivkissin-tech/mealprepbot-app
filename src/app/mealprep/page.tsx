@@ -6,16 +6,33 @@ import { useMealPlan } from '@/context/MealPlanContext';
 import { recipes } from '@/data/recipes';
 import { Recipe, PrepStep, ShoppingCategory } from '@/types';
 import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CATEGORY_ORDER } from '@/lib/shoppingList';
+import { Beef, Leaf, Droplets, Wheat, Flame, ShoppingBag, Fish, Utensils, Coffee, Sun } from 'lucide-react';
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  fish: '🐟', chicken: '🍗', tofu: '🟡',
-  breakfast: '🌅', beef: '🥩', salad: '🥗', side: '🍚',
-};
+function getCategoryIcon(cat: string) {
+  const props = { size: 16, strokeWidth: 1.75 };
+  switch (cat) {
+    case 'fish':      return <Fish {...props} />;
+    case 'chicken':   return <Utensils {...props} />;
+    case 'tofu':      return <Leaf {...props} />;
+    case 'breakfast': return <Coffee {...props} />;
+    case 'beef':      return <Beef {...props} />;
+    case 'salad':     return <Leaf {...props} />;
+    case 'side':      return <Utensils {...props} />;
+    default:          return <Utensils {...props} />;
+  }
+}
 
-const SHOPPING_ICON: Record<ShoppingCategory, string> = {
-  protein: '🥩', vegetables: '🥦', dairy: '🥛',
-  grains: '🌾', spices: '🧂', other: '🛒',
-};
+function getShoppingIcon(cat: ShoppingCategory) {
+  const props = { size: 14, strokeWidth: 1.75 };
+  switch (cat) {
+    case 'protein':    return <Beef {...props} />;
+    case 'vegetables': return <Leaf {...props} />;
+    case 'dairy':      return <Droplets {...props} />;
+    case 'grains':     return <Wheat {...props} />;
+    case 'spices':     return <Flame {...props} />;
+    case 'other':      return <ShoppingBag {...props} />;
+  }
+}
 
 type Step = 1 | 2 | 3;
 type GuidePhase = 'setup' | 'prep' | 'cook' | 'pack';
@@ -506,7 +523,7 @@ export default function MealPrepWizardPage() {
                   className="flex items-center gap-3 p-4 rounded-xl border-2 text-start transition-all"
                   style={isSelected ? { borderColor: '#2A4F3A', background: '#EBF2ED' } : { borderColor: '#E0D9CE', background: '#fff' }}
                 >
-                  <span className="text-2xl">{CATEGORY_EMOJI[recipe.category] ?? '🍽'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getCategoryIcon(recipe.category)}</span>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate" style={{ color: '#1A1918' }}>{name}</p>
                     <p className="text-xs mt-0.5" style={{ color: '#A09893' }}>{recipe.category}</p>
@@ -554,7 +571,7 @@ export default function MealPrepWizardPage() {
                   style={{ borderColor: '#E0D9CE', background: '#fff' }}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{CATEGORY_EMOJI[recipe.category] ?? '🍽'}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getCategoryIcon(recipe.category)}</span>
                     <p className="font-medium text-sm" style={{ color: '#1A1918' }}>{name}</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -592,7 +609,7 @@ export default function MealPrepWizardPage() {
               {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length > 0).map(cat => (
                 <div key={cat} className="mb-4 last:mb-0">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <span className="text-sm">{SHOPPING_ICON[cat]}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getShoppingIcon(cat)}</span>
                     <h4 className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: '#A09893' }}>
                       {t(`shopping.category.${cat}`)}
                     </h4>

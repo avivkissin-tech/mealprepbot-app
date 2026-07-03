@@ -7,17 +7,21 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useMealPlan } from '@/context/MealPlanContext';
 import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CATEGORY_ORDER } from '@/lib/shoppingList';
 import { ShoppingCategory } from '@/types';
+import { Beef, Leaf, Droplets, Wheat, Flame, ShoppingBag } from 'lucide-react';
 
 type PanelView = 'recipes' | 'shopping';
 
-const CATEGORY_ICON: Record<ShoppingCategory, string> = {
-  protein:    '🥩',
-  vegetables: '🥦',
-  dairy:      '🥛',
-  grains:     '🌾',
-  spices:     '🧂',
-  other:      '🛒',
-};
+function getCategoryIcon(cat: ShoppingCategory) {
+  const props = { size: 14, strokeWidth: 1.75 };
+  switch (cat) {
+    case 'protein':    return <Beef {...props} />;
+    case 'vegetables': return <Leaf {...props} />;
+    case 'dairy':      return <Droplets {...props} />;
+    case 'grains':     return <Wheat {...props} />;
+    case 'spices':     return <Flame {...props} />;
+    case 'other':      return <ShoppingBag {...props} />;
+  }
+}
 
 export default function MealPlanPanel() {
   const { t, locale } = useLanguage();
@@ -99,7 +103,7 @@ export default function MealPlanPanel() {
                   onClick={() => setOpen(false)}
                   className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
                   style={{ background: '#EDE7DC', color: '#6B6560' }}
-                  aria-label="Close"
+                  aria-label={locale === 'he' ? 'סגור' : 'Close'}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14">
                     <path d="M2 2l10 10M2 12L12 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -199,7 +203,7 @@ export default function MealPlanPanel() {
                           onClick={() => removeRecipe(recipe.id)}
                           className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-colors hover:bg-[#FAE9E1]"
                           style={{ color: '#C9572A' }}
-                          aria-label="Remove"
+                          aria-label={locale === 'he' ? 'הסר' : 'Remove'}
                         >
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 12 12">
                             <path d="M2 2l8 8M2 10L10 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -223,7 +227,7 @@ export default function MealPlanPanel() {
                         <div key={cat} className="mb-4">
                           {/* Category header */}
                           <div className="flex items-center gap-1.5 mb-2">
-                            <span className="text-sm">{CATEGORY_ICON[cat]}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getCategoryIcon(cat)}</span>
                             <h3 className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: '#A09893' }}>
                               {t(`shopping.category.${cat}`)}
                             </h3>

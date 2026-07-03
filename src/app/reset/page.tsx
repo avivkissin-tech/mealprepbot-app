@@ -23,7 +23,7 @@ export default function ResetPage() {
   }, [user, router]);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#faf9f7' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-page)' }}>
       <p style={{ color: '#14422d', fontSize: 16 }}>מאפס...</p>
     </div>
   );

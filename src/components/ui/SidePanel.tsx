@@ -238,7 +238,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                   <span style={{ fontSize: 18, width: 24, textAlign: 'center' }}>{link.icon}</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{isHe ? link.labelHe : link.labelEn}</span>
                   {link.href === '/' && savedIds.length > 0 && (
-                    <span style={{ marginRight: 'auto', marginLeft: 'auto', fontSize: 10, background: '#EBF2ED', color: '#14422d', padding: '2px 7px', borderRadius: 9999, fontWeight: 700 }}>
+                    <span style={{ marginInline: 'auto', fontSize: 10, background: '#EBF2ED', color: '#14422d', padding: '2px 7px', borderRadius: 9999, fontWeight: 700 }}>
                       {isHe ? `${savedIds.length} שמורים` : `${savedIds.length} saved`}
                     </span>
                   )}

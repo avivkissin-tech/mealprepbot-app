@@ -5,39 +5,83 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@clerk/nextjs';
 import { pushProfile } from '@/lib/userDataApi';
+import { recipes } from '@/data/recipes';
 
 /* ─── Types ─────────────────────────────────────────────── */
-type GoalType = 'save-money' | 'eat-healthy' | 'save-time' | 'all';
-type HouseholdSize = 1 | 2 | 4 | 5;
-type MonthlyBudget = 'under-500' | '500-1000' | '1000-1500' | 'over-1500';
+type GoalType = 'lose-weight' | 'eat-healthy' | 'order-less' | 'save-time' | 'variety';
+type CurrentState = 'improvise' | 'sometimes' | 'usually' | 'advanced';
+type OrderFrequency = 'never' | '1' | '2-3' | '4+';
+type OrderCost = 'under-50' | '50-80' | '80-120' | 'over-120';
 type PrepFrequency = 'never' | '1-2' | '3-5' | 'always';
 
 export interface UserProfile {
   goal: GoalType;
-  householdSize: HouseholdSize;
-  monthlyBudget: MonthlyBudget;
-  prepFrequency: PrepFrequency;
+  currentState: CurrentState;
   dietaryPrefs: string[];
+  orderFrequency?: OrderFrequency;
+  orderCost?: OrderCost;
+  prepFrequency: PrepFrequency;
   estimatedSavings: number;
   completedAt: string;
 }
 
-/* ─── Constants ─────────────────────────────────────────── */
-const SAVINGS_MAP: Record<MonthlyBudget, number> = {
-  'under-500':  80,
-  '500-1000':   200,
-  '1000-1500':  320,
-  'over-1500':  450,
+/* ─── Helpers ───────────────────────────────────────────── */
+const COST_MAP: Record<OrderCost, number> = {
+  'under-50': 35,
+  '50-80': 65,
+  '80-120': 100,
+  'over-120': 140,
+};
+const FREQ_MAP: Record<Exclude<OrderFrequency, 'never'>, number> = {
+  '1': 4,
+  '2-3': 10,
+  '4+': 16,
+};
+const STATE_TO_PREP: Record<CurrentState, PrepFrequency> = {
+  improvise: 'never',
+  sometimes: '1-2',
+  usually: '3-5',
+  advanced: 'always',
 };
 
-const RECIPES_MAP: Record<HouseholdSize, number> = { 1: 12, 2: 18, 4: 24, 5: 30 };
-const HOURS_MAP: Record<PrepFrequency, number> = { 'never': 2, '1-2': 1.5, '3-5': 1, 'always': 0.5 };
+function countMatchingRecipes(prefs: string[]): number {
+  if (!prefs.length || prefs.includes('none')) return recipes.length;
+  return recipes.filter(r => {
+    const allTags = [...(r.tags ?? []), ...(r.dietaryTags ?? [])];
+    if (prefs.includes('vegan') && !allTags.includes('vegan')) return false;
+    if (prefs.includes('vegetarian') && !allTags.some(t => t === 'vegetarian' || t === 'vegan')) return false;
+    if (prefs.includes('gluten-free') && !allTags.includes('gluten-free')) return false;
+    if (prefs.includes('dairy-free') && !allTags.includes('dairy-free')) return false;
+    return true;
+  }).length;
+}
 
-const TOTAL_STEPS = 5;
+const GOAL_LABELS: Record<GoalType, { he: string; en: string }> = {
+  'lose-weight': { he: 'לרדת במשקל', en: 'Lose weight' },
+  'eat-healthy': { he: 'לאכול בריא', en: 'Eat healthy' },
+  'order-less':  { he: 'להזמין פחות אוכל', en: 'Order less food' },
+  'save-time':   { he: 'לחסוך זמן', en: 'Save time' },
+  'variety':     { he: 'לגוון את התפריט', en: 'Add variety' },
+};
+
+const STATE_LABELS: Record<CurrentState, { he: string; en: string }> = {
+  improvise: { he: 'מאלתר כל יום', en: 'Improvise daily' },
+  sometimes: { he: 'לפעמים מכין מראש', en: 'Sometimes prep ahead' },
+  usually:   { he: 'בדרך כלל מתכנן', en: 'Usually plan ahead' },
+  advanced:  { he: 'כמעט הכל מראש', en: 'Almost always prep' },
+};
+
+const DIET_LABELS: Record<string, { he: string; en: string }> = {
+  none:         { he: 'ללא מגבלות', en: 'No restrictions' },
+  vegetarian:   { he: 'צמחוני', en: 'Vegetarian' },
+  vegan:        { he: 'טבעוני', en: 'Vegan' },
+  'gluten-free': { he: 'ללא גלוטן', en: 'Gluten-free' },
+  'dairy-free':  { he: 'ללא חלב', en: 'Dairy-free' },
+};
 
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 30 };
 
-/* ─── Option Button ─────────────────────────────────────── */
+/* ─── OptionButton ──────────────────────────────────────── */
 function OptionButton({
   selected, onClick, children,
 }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -66,22 +110,24 @@ function OptionButton({
   );
 }
 
-/* ─── Progress Dots ─────────────────────────────────────── */
-function ProgressDots({ current, total }: { current: number; total: number }) {
+/* ─── ProgressBar ───────────────────────────────────────── */
+function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 40 }}>
-      {Array.from({ length: total }).map((_, i) => (
+    <div style={{ marginBottom: 36 }}>
+      <div style={{ height: 4, background: '#e0d9ce', borderRadius: 9999, overflow: 'hidden' }}>
         <div
-          key={i}
           style={{
-            height: 8,
+            height: '100%',
+            width: `${((current + 1) / total) * 100}%`,
+            background: '#14422d',
             borderRadius: 9999,
-            background: i === current ? '#14422d' : '#e0d9ce',
-            width: i === current ? 24 : 8,
-            transition: 'all 0.3s ease',
+            transition: 'width 0.35s ease',
           }}
         />
-      ))}
+      </div>
+      <div style={{ fontSize: 11, color: '#A09893', marginTop: 6, textAlign: 'left' }}>
+        {current + 1} / {total}
+      </div>
     </div>
   );
 }
@@ -94,67 +140,88 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
 
-  const [goals, setGoals] = useState<GoalType[]>([]);
-  const [householdSize, setHouseholdSize] = useState<HouseholdSize | null>(null);
-  const [monthlyBudget, setMonthlyBudget] = useState<MonthlyBudget | null>(null);
-  const [prepFrequency, setPrepFrequency] = useState<PrepFrequency | null>(null);
+  const [goal, setGoal] = useState<GoalType | null>(null);
+  const [currentState, setCurrentState] = useState<CurrentState | null>(null);
   const [dietaryPrefs, setDietaryPrefs] = useState<string[]>([]);
+  const [orderFrequency, setOrderFrequency] = useState<OrderFrequency | null>(null);
+  const [orderCost, setOrderCost] = useState<OrderCost | null>(null);
+  const [isWow, setIsWow] = useState(false);
+
+  const isOrderLess = goal === 'order-less';
+  const totalSteps = isOrderLess ? 4 : 3;
 
   function goNext() {
     setDirection(1);
-    setStep(s => s + 1);
+    // Handle step 3 sub-steps for order-less
+    if (isOrderLess && step === 3) {
+      if (orderFrequency === 'never') {
+        setIsWow(true);
+        return;
+      }
+      if (orderFrequency && orderCost) {
+        setIsWow(true);
+        return;
+      }
+      return; // wait for both selections
+    }
+    if (step >= totalSteps - 1) {
+      setIsWow(true);
+    } else {
+      setStep(s => s + 1);
+    }
   }
 
   function goBack() {
+    if (isWow) {
+      setIsWow(false);
+      return;
+    }
     setDirection(-1);
     setStep(s => s - 1);
   }
 
-  function toggleGoal(val: GoalType) {
-    setGoals(prev =>
-      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
-    );
-  }
-
   function toggleDiet(val: string) {
-    setDietaryPrefs(prev =>
-      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
-    );
+    setDietaryPrefs(prev => {
+      if (val === 'none') return ['none'];
+      const without = prev.filter(v => v !== 'none');
+      return without.includes(val) ? without.filter(v => v !== val) : [...without, val];
+    });
   }
 
-  const canProceed = [
-    goals.length > 0,
-    !!householdSize,
-    !!monthlyBudget,
-    !!prepFrequency,
-    true, // dietary prefs optional
-  ][step];
+  const canProceed = (() => {
+    if (step === 0) return !!goal;
+    if (step === 1) return !!currentState;
+    if (step === 2) return true; // dietary optional
+    if (step === 3 && isOrderLess) {
+      if (!orderFrequency) return false;
+      if (orderFrequency === 'never') return true;
+      return !!orderCost;
+    }
+    return true;
+  })();
 
   async function handleFinish() {
+    const prepFrequency = STATE_TO_PREP[currentState ?? 'improvise'];
+    let estimatedSavings = 0;
+    if (isOrderLess && orderFrequency && orderFrequency !== 'never' && orderCost) {
+      estimatedSavings = Math.round(COST_MAP[orderCost] * FREQ_MAP[orderFrequency as Exclude<OrderFrequency, 'never'>] * 0.6);
+    }
+
     const profile: UserProfile = {
-      goal: goals[0] ?? 'all',
-      householdSize: householdSize!,
-      monthlyBudget: monthlyBudget!,
-      prepFrequency: prepFrequency!,
+      goal: goal!,
+      currentState: currentState!,
       dietaryPrefs,
-      estimatedSavings: SAVINGS_MAP[monthlyBudget!],
+      ...(isOrderLess && orderFrequency ? { orderFrequency } : {}),
+      ...(isOrderLess && orderFrequency && orderFrequency !== 'never' && orderCost ? { orderCost } : {}),
+      prepFrequency,
+      estimatedSavings,
       completedAt: new Date().toISOString(),
     };
 
-    // 1. Save to localStorage (always)
-    try {
-      localStorage.setItem('easyprep_profile', JSON.stringify(profile));
-    } catch { /* ignore */ }
-
-    // 2. Save to Clerk unsafeMetadata (if signed in)
-    try {
-      await user?.update({ unsafeMetadata: { profile } });
-    } catch { /* ignore */ }
-
-    // 3. Save to Supabase
+    try { localStorage.setItem('easyprep_profile', JSON.stringify(profile)); } catch { /* ignore */ }
+    try { await user?.update({ unsafeMetadata: { profile } }); } catch { /* ignore */ }
     try { await pushProfile(profile as unknown as Record<string, unknown>); } catch { /* ignore */ }
 
-    // 4. Set cookie + redirect
     document.cookie = 'onboarding_done=1; path=/; max-age=31536000';
     router.push('/dashboard');
   }
@@ -165,14 +232,19 @@ export default function OnboardingPage() {
     exit: (dir: number) => ({ x: dir < 0 ? 60 : -60, opacity: 0 }),
   };
 
-  /* ── Wow moment screen (after step 4) ── */
-  const isWow = step === TOTAL_STEPS;
-  const savings = SAVINGS_MAP[monthlyBudget ?? 'under-500'];
-  const matchedRecipes = RECIPES_MAP[householdSize ?? 1];
-  const prepHours = HOURS_MAP[prepFrequency ?? 'never'];
+  /* ── Wow moment values ── */
+  const matchedRecipesCount = countMatchingRecipes(dietaryPrefs);
+  const showSavings =
+    isOrderLess &&
+    orderFrequency &&
+    orderFrequency !== 'never' &&
+    !!orderCost;
+  const savingsAmount = showSavings
+    ? Math.round(COST_MAP[orderCost!] * FREQ_MAP[orderFrequency as Exclude<OrderFrequency, 'never'>] * 0.6)
+    : 0;
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: '#faf9f7', display: 'flex', flexDirection: 'column' }}>
+    <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '48px 24px 80px', width: '100%', flex: 1 }}>
 
         {/* Skip button */}
@@ -183,217 +255,210 @@ export default function OnboardingPage() {
                 document.cookie = 'onboarding_done=1; path=/; max-age=31536000';
                 router.push('/dashboard');
               }}
-              style={{
-                fontSize: 13, color: '#717973', background: 'none', border: 'none',
-                cursor: 'pointer', padding: 0, fontWeight: 500,
-              }}
+              style={{ fontSize: 13, color: '#717973', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 500 }}
             >
-              דלג ←
+              דלג
             </button>
           </div>
         )}
 
-        {/* Progress dots */}
-        {!isWow && <ProgressDots current={step} total={TOTAL_STEPS} />}
+        {/* Progress bar */}
+        {!isWow && <ProgressBar current={step} total={totalSteps} />}
 
         {/* Animated step content */}
         <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={step}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={springTransition}
-          >
+          {!isWow ? (
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={springTransition}
+            >
 
-            {/* ── Step 0: Goal ── */}
-            {step === 0 && (
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
-                  מה המטרה שלך?
-                </h2>
-                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>בחר את מה שהכי חשוב לך</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {([
-                    { id: 'save-money',   icon: '💰', label: 'לחסוך כסף' },
-                    { id: 'eat-healthy',  icon: '🥗', label: 'לאכול בריא' },
-                    { id: 'save-time',    icon: '⏱', label: 'לחסוך זמן' },
-                    { id: 'all',          icon: '✨', label: 'הכל יחד' },
-                  ] as { id: GoalType; icon: string; label: string }[]).map(opt => (
-                    <OptionButton key={opt.id} selected={goals.includes(opt.id)} onClick={() => toggleGoal(opt.id)}>
-                      <span style={{ fontSize: 20 }}>{opt.icon}</span>
-                      {opt.label}
-                    </OptionButton>
-                  ))}
+              {/* ── Step 0: Goal ── */}
+              {step === 0 && (
+                <div>
+                  <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                    מה הדבר שהכי חשוב לכם?
+                  </h2>
+                  <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>בחרו מטרה אחת</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {(Object.entries(GOAL_LABELS) as [GoalType, { he: string }][]).map(([id, label]) => (
+                      <OptionButton key={id} selected={goal === id} onClick={() => setGoal(id)}>
+                        {label.he}
+                      </OptionButton>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* ── Step 1: Household size ── */}
-            {step === 1 && (
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
-                  בשביל כמה אנשים אתה מבשל?
-                </h2>
-                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>נתאים את הכמויות בהתאם</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {([
-                    { id: 1,  icon: '👤', label: 'רק אני' },
-                    { id: 2,  icon: '👫', label: '2 אנשים' },
-                    { id: 4,  icon: '👨‍👩‍👧', label: '3-4 אנשים' },
-                    { id: 5,  icon: '👨‍👩‍👧‍👦', label: '5 ומעלה' },
-                  ] as { id: HouseholdSize; icon: string; label: string }[]).map(opt => (
-                    <OptionButton key={opt.id} selected={householdSize === opt.id} onClick={() => setHouseholdSize(opt.id)}>
-                      <span style={{ fontSize: 20 }}>{opt.icon}</span>
-                      {opt.label}
-                    </OptionButton>
-                  ))}
+              {/* ── Step 1: Current state ── */}
+              {step === 1 && (
+                <div>
+                  <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                    איך נראה השבוע שלכם היום?
+                  </h2>
+                  <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>היו כנים :)</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {(Object.entries(STATE_LABELS) as [CurrentState, { he: string }][]).map(([id, label]) => (
+                      <OptionButton key={id} selected={currentState === id} onClick={() => setCurrentState(id)}>
+                        {label.he}
+                      </OptionButton>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* ── Step 2: Monthly budget ── */}
-            {step === 2 && (
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
-                  כמה אתה מוציא על קניות בחודש?
-                </h2>
-                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>נחשב כמה תחסוך</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {([
-                    { id: 'under-500',  label: 'עד ₪500' },
-                    { id: '500-1000',   label: '₪500 – ₪1,000' },
-                    { id: '1000-1500',  label: '₪1,000 – ₪1,500' },
-                    { id: 'over-1500',  label: 'מעל ₪1,500' },
-                  ] as { id: MonthlyBudget; label: string }[]).map(opt => (
-                    <OptionButton key={opt.id} selected={monthlyBudget === opt.id} onClick={() => setMonthlyBudget(opt.id)}>
-                      <span style={{ fontSize: 20 }}>💳</span>
-                      {opt.label}
-                    </OptionButton>
-                  ))}
+              {/* ── Step 2: Dietary prefs ── */}
+              {step === 2 && (
+                <div>
+                  <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                    העדפות תזונה?
+                  </h2>
+                  <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>בחרו הכל שרלוונטי (אופציונלי)</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {(Object.entries(DIET_LABELS) as [string, { he: string }][]).map(([id, label]) => (
+                      <OptionButton key={id} selected={dietaryPrefs.includes(id)} onClick={() => toggleDiet(id)}>
+                        {label.he}
+                      </OptionButton>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* ── Step 3: Prep frequency ── */}
-            {step === 3 && (
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
-                  כמה ארוחות אתה מכין מראש בשבוע?
-                </h2>
-                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>כנה איתנו :)</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {([
-                    { id: 'never',  label: '0 — מאלתר כל יום' },
-                    { id: '1-2',    label: '1-2 ארוחות' },
-                    { id: '3-5',    label: '3-5 ארוחות' },
-                    { id: 'always', label: 'כמעט הכל מראש' },
-                  ] as { id: PrepFrequency; label: string }[]).map(opt => (
-                    <OptionButton key={opt.id} selected={prepFrequency === opt.id} onClick={() => setPrepFrequency(opt.id)}>
-                      <span style={{ fontSize: 20 }}>🍱</span>
-                      {opt.label}
-                    </OptionButton>
-                  ))}
-                </div>
-              </div>
-            )}
+              {/* ── Step 3: Order habits (only if order-less) ── */}
+              {step === 3 && isOrderLess && (
+                <div>
+                  <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                    הרגלי הזמנה
+                  </h2>
+                  <p style={{ fontSize: 14, color: '#717973', marginBottom: 20 }}>כמה פעמים מזמינים בשבוע?</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+                    {([
+                      { id: 'never', label: 'כמעט לא מזמין' },
+                      { id: '1',    label: 'פעם בשבוע' },
+                      { id: '2-3',  label: '2–3 פעמים בשבוע' },
+                      { id: '4+',   label: '4 פעמים ומעלה' },
+                    ] as { id: OrderFrequency; label: string }[]).map(opt => (
+                      <OptionButton key={opt.id} selected={orderFrequency === opt.id} onClick={() => { setOrderFrequency(opt.id); if (opt.id === 'never') setOrderCost(null); }}>
+                        {opt.label}
+                      </OptionButton>
+                    ))}
+                  </div>
 
-            {/* ── Step 4: Dietary prefs ── */}
-            {step === 4 && (
-              <div>
-                <h2 style={{ fontSize: 26, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
-                  העדפות תזונה
-                </h2>
-                <p style={{ fontSize: 14, color: '#717973', marginBottom: 28 }}>בחר הכל שרלוונטי (אופציונלי)</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {([
-                    { id: 'none',        label: 'ללא מגבלות' },
-                    { id: 'vegetarian',  label: 'צמחוני / טבעוני' },
-                    { id: 'gluten-free', label: 'ללא גלוטן' },
-                    { id: 'dairy-free',  label: 'ללא חלב' },
-                  ]).map(opt => (
-                    <OptionButton
-                      key={opt.id}
-                      selected={dietaryPrefs.includes(opt.id)}
-                      onClick={() => toggleDiet(opt.id)}
-                    >
-                      <span style={{ fontSize: 20 }}>🌿</span>
-                      {opt.label}
-                    </OptionButton>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── Wow moment ── */}
-            {isWow && (
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
-                <h2 style={{ fontSize: 28, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
-                  Easy PREP בנוי בשבילך
-                </h2>
-                <p style={{ fontSize: 15, color: '#717973', marginBottom: 36 }}>
-                  על סמך הנתונים שלך, הנה מה שמחכה לך:
-                </p>
-
-                {/* Value cards */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 40 }}>
-                  {[
-                    { icon: '💰', label: 'חיסכון משוער',   value: `₪${savings}`,            sub: 'לחודש' },
-                    { icon: '📖', label: 'מתכונים מתאימים', value: `${matchedRecipes}`,        sub: 'מתכונים' },
-                    { icon: '⏱', label: 'זמן בישול',       value: `~${prepHours} שעות`,      sub: 'בשבוע' },
-                  ].map(card => (
-                    <div
-                      key={card.label}
-                      style={{
-                        background: '#ffffff',
-                        borderRadius: 20,
-                        padding: '20px 24px',
-                        boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 16,
-                        textAlign: 'right',
-                      }}
-                    >
-                      <div style={{
-                        width: 48, height: 48, borderRadius: 14,
-                        background: 'rgba(20,66,45,0.08)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 22, flexShrink: 0,
-                      }}>
-                        {card.icon}
+                  {orderFrequency && orderFrequency !== 'never' && (
+                    <>
+                      <p style={{ fontSize: 14, color: '#717973', marginBottom: 14 }}>כמה עולה הזמנה בממוצע?</p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {([
+                          { id: 'under-50', label: 'עד ₪50' },
+                          { id: '50-80',    label: '₪50 – ₪80' },
+                          { id: '80-120',   label: '₪80 – ₪120' },
+                          { id: 'over-120', label: 'מעל ₪120' },
+                        ] as { id: OrderCost; label: string }[]).map(opt => (
+                          <OptionButton key={opt.id} selected={orderCost === opt.id} onClick={() => setOrderCost(opt.id)}>
+                            {opt.label}
+                          </OptionButton>
+                        ))}
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 12, color: '#717973', marginBottom: 2 }}>{card.label}</div>
-                        <div style={{ fontSize: 22, fontWeight: 700, color: '#14422d', lineHeight: 1 }}>
-                          {card.value}
-                          <span style={{ fontSize: 13, fontWeight: 500, color: '#717973', marginRight: 6 }}>
-                            {card.sub}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+            </motion.div>
+          ) : (
+            /* ── Wow moment ── */
+            <motion.div
+              key="wow"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{ textAlign: 'center' }}
+            >
+              <h2 style={{ fontSize: 28, fontWeight: 700, color: '#14422d', marginBottom: 8 }}>
+                הכיוון שלכם מוכן
+              </h2>
+              <p style={{ fontSize: 14, color: '#717973', marginBottom: 32 }}>
+                על סמך הבחירות שלכם — הנה מה שמחכה לכם:
+              </p>
+
+              {/* Goal + state summary */}
+              <div style={{
+                background: '#fff', borderRadius: 20, padding: '20px 24px',
+                boxShadow: '0 8px 32px rgba(45,90,67,0.05)', marginBottom: 14, textAlign: 'right',
+              }}>
+                <div style={{ fontSize: 12, color: '#A09893', marginBottom: 6 }}>המטרה שלכם</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: '#14422d' }}>
+                  {goal ? GOAL_LABELS[goal].he : ''}
+                </div>
+                {currentState && (
+                  <div style={{ fontSize: 13, color: '#717973', marginTop: 4 }}>
+                    {STATE_LABELS[currentState].he}
+                  </div>
+                )}
+              </div>
+
+              {/* Dietary prefs pills */}
+              {dietaryPrefs.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14, justifyContent: 'center' }}>
+                  {dietaryPrefs.map(p => (
+                    <span key={p} style={{
+                      fontSize: 12, fontWeight: 600,
+                      background: '#EBF2ED', color: '#14422d',
+                      borderRadius: 9999, padding: '4px 12px',
+                    }}>
+                      {DIET_LABELS[p]?.he ?? p}
+                    </span>
                   ))}
                 </div>
+              )}
 
+              {/* Matched recipes count */}
+              <div style={{
+                background: '#fff', borderRadius: 20, padding: '20px 24px',
+                boxShadow: '0 8px 32px rgba(45,90,67,0.05)', marginBottom: 14, textAlign: 'right',
+              }}>
+                <div style={{ fontSize: 12, color: '#A09893', marginBottom: 4 }}>מתכונים מתאימים עבורכם</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: '#14422d' }}>
+                  {matchedRecipesCount}
+                  <span style={{ fontSize: 14, fontWeight: 500, color: '#717973', marginInlineStart: 8 }}>מתכונים</span>
+                </div>
+              </div>
+
+              {/* Savings card (conditional) */}
+              {showSavings && (
+                <div style={{
+                  background: '#EBF2ED', borderRadius: 20, padding: '20px 24px',
+                  marginBottom: 14, textAlign: 'right',
+                }}>
+                  <div style={{ fontSize: 12, color: '#14422d', marginBottom: 4 }}>חיסכון משוער</div>
+                  <div style={{ fontSize: 26, fontWeight: 700, color: '#14422d' }}>
+                    ₪{savingsAmount}
+                    <span style={{ fontSize: 13, fontWeight: 500, color: '#14422d', marginInlineStart: 8 }}>לחודש</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: '#14422d', opacity: 0.7, marginTop: 4 }}>הערכה בלבד</div>
+                </div>
+              )}
+
+              {/* CTAs */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 32 }}>
                 <button
                   onClick={handleFinish}
                   style={{
                     width: '100%', padding: '16px 0', borderRadius: 16,
                     background: '#14422d', color: '#ffffff',
-                    fontSize: 16, fontWeight: 700, border: 'none',
-                    cursor: 'pointer',
+                    fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer',
                   }}
                 >
-                  בואו נתחיל ←
+                  מצאו לי מתכונים
                 </button>
               </div>
-            )}
-
-          </motion.div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Navigation */}
@@ -405,11 +470,10 @@ export default function OnboardingPage() {
                 style={{
                   padding: '14px 24px', borderRadius: 16,
                   border: '2px solid #14422d', background: 'transparent',
-                  color: '#14422d', fontSize: 15, fontWeight: 600,
-                  cursor: 'pointer',
+                  color: '#14422d', fontSize: 15, fontWeight: 600, cursor: 'pointer',
                 }}
               >
-                → חזרה
+                חזרה
               </button>
             )}
             <button
@@ -424,7 +488,7 @@ export default function OnboardingPage() {
                 transition: 'all 0.15s',
               }}
             >
-              {step === TOTAL_STEPS - 1 ? 'סיים וראה את התוצאות' : '← המשך'}
+              {step >= totalSteps - 1 ? 'סיום' : 'המשך'}
             </button>
           </div>
         )}

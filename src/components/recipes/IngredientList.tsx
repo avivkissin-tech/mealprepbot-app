@@ -83,7 +83,7 @@ export default function IngredientList({ ingredients, portions, baseServings }: 
             }}>
               {name}
               {ing.optional && (
-                <span style={{ fontSize: 11, color: '#b0b8b2', marginRight: 4 }}>({t('recipe.optional')})</span>
+                <span style={{ fontSize: 11, color: '#b0b8b2', marginInlineStart: 4 }}>({t('recipe.optional')})</span>
               )}
             </span>
             {/* Quantity */}

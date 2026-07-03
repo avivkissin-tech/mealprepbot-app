@@ -244,7 +244,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
           <p style={{ fontSize: 12, fontWeight: 700, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             שלב {currentIndex + 1}/{steps.length}
             {runningTimers.length > 0 && (
-              <span style={{ color: '#C9572A', marginRight: 6 }}>
+              <span style={{ color: '#C9572A', marginInlineStart: 6 }}>
                 ⏱ {formatSeconds(runningTimers[0].remaining)}
               </span>
             )}
@@ -337,7 +337,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                 {r.nameHe}
               </span>
             ))}
-            <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', marginRight: 2 }}>
+            <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', marginInlineStart: 2 }}>
               ~{formatTimerMinutes(totalMinutes)}
             </span>
           </div>

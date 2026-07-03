@@ -68,7 +68,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
   const nutrition = recipe.nutritionPerServing;
 
   return (
-    <div dir="rtl" style={{ background: '#faf9f7', minHeight: '100vh' }}>
+    <div dir="rtl" style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px 80px' }}>
 
         {/* Back */}

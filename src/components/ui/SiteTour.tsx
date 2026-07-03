@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { useRouter } from 'next/navigation';
+import { Compass, CalendarDays, Refrigerator, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const TOUR_KEY = 'easyprep_tour_seen_v2';
 
@@ -23,42 +24,42 @@ interface TourStep {
 const TOURS: Record<TourType, TourStep[]> = {
   general: [
     {
-      page: '/',
+      page: '/dashboard',
       targetId: 'tour-recipes',
-      titleHe: '📖 מאגר המתכונים',
-      titleEn: '📖 Recipe Library',
+      titleHe: 'מאגר המתכונים',
+      titleEn: 'Recipe Library',
       bodyHe: 'כאן תמצא את כל מתכוני המילפרפ. לחץ על מתכון לפתיחה, שמור אחד, ותוכל לצפות בשלבי ההכנה וטיימר בישול.',
       bodyEn: 'Find all your meal prep recipes here. Open one, save it, and follow the prep steps with a built-in timer.',
     },
     {
       page: '/checklist',
       targetId: 'tour-checklist-title',
-      titleHe: '📋 תכנון מילפרפ',
-      titleEn: '📋 Meal Prep Planner',
+      titleHe: 'תכנון מילפרפ',
+      titleEn: 'Meal Prep Planner',
       bodyHe: 'בחר מתכונים לשבוע, הגדר כמה אנשים ולכמה ימים — הוסף את הקניות ליומן גוגל וקבל רשימת קניות מפורטת.',
       bodyEn: 'Select recipes for the week, set people & days — export to Google Calendar and get a detailed shopping list.',
     },
     {
       page: '/planner',
       targetId: 'tour-planner-title',
-      titleHe: '🗓 פלאנר שבועי',
-      titleEn: '🗓 Weekly Planner',
+      titleHe: 'פלאנר שבועי',
+      titleEn: 'Weekly Planner',
       bodyHe: 'תכנן ארוחות לכל יום בשבוע, קבל רשימת קניות מאוחדת, ותתחיל בישול מסודר עם הטיימר המובנה.',
       bodyEn: 'Plan meals for every day, get a merged shopping list, and start a guided cooking session.',
     },
     {
       page: '/planner',
       targetId: 'tour-planner-people',
-      titleHe: '👥 עבור כמה אנשים?',
-      titleEn: '👥 How many people?',
+      titleHe: 'עבור כמה אנשים?',
+      titleEn: 'How many people?',
       bodyHe: 'שנה כאן את מספר האנשים — כל הכמויות ברשימת הקניות יתעדכנו אוטומטית.',
       bodyEn: 'Change the number of people here — all quantities in your shopping list update automatically.',
     },
     {
       page: '/ingredients',
       targetId: 'tour-fridge-title',
-      titleHe: '🥦 מה יש לי במקרר',
-      titleEn: '🥦 What\'s in my fridge',
+      titleHe: 'מה יש לי במקרר',
+      titleEn: "What's in my fridge",
       bodyHe: 'הזן מוצרים שיש לך בבית — האתר ימצא מתכונים שמתאימים בדיוק למה שיש לך.',
       bodyEn: 'Enter items you have at home — the app finds recipes that match exactly what you have.',
     },
@@ -67,32 +68,32 @@ const TOURS: Record<TourType, TourStep[]> = {
     {
       page: '/planner',
       targetId: 'tour-planner-title',
-      titleHe: '🗓 הפלאנר השבועי',
-      titleEn: '🗓 Weekly Planner',
+      titleHe: 'הפלאנר השבועי',
+      titleEn: 'Weekly Planner',
       bodyHe: 'ברוך הבא לפלאנר! כאן תתכנן את כל ארוחות השבוע שלך.',
       bodyEn: 'Welcome to the planner! Here you\'ll plan all your weekly meals.',
     },
     {
       page: '/planner',
       targetId: 'tour-planner-people',
-      titleHe: '👥 מכין עבור כמה?',
-      titleEn: '👥 Cooking for how many?',
+      titleHe: 'מכין עבור כמה?',
+      titleEn: 'Cooking for how many?',
       bodyHe: 'קבע כאן את מספר האנשים — כל הכמויות יחושבו בהתאם אוטומטית.',
       bodyEn: 'Set the number of people here — all quantities are calculated automatically.',
     },
     {
       page: '/planner',
       targetId: 'tour-planner-add',
-      titleHe: '➕ הוסף מתכון ליום',
-      titleEn: '➕ Add a recipe to a day',
+      titleHe: 'הוסף מתכון ליום',
+      titleEn: 'Add a recipe to a day',
       bodyHe: 'לחץ על + בכל עמודת יום להוסיף מתכון. אפשר להוסיף כמה מתכונים לכל יום.',
       bodyEn: 'Click + on any day column to add a recipe. You can add multiple recipes per day.',
     },
     {
       page: '/planner',
       targetId: 'tour-planner-shopping',
-      titleHe: '🛒 רשימת קניות',
-      titleEn: '🛒 Shopping List',
+      titleHe: 'רשימת קניות',
+      titleEn: 'Shopping List',
       bodyHe: 'לחץ על רשימת קניות לקבלת כל המרכיבים המאוחדים לכל השבוע, ממוינים לפי קטגוריה.',
       bodyEn: 'Click Shopping List to get all ingredients merged for the whole week, sorted by category.',
     },
@@ -101,16 +102,16 @@ const TOURS: Record<TourType, TourStep[]> = {
     {
       page: '/ingredients',
       targetId: 'tour-fridge-title',
-      titleHe: '🥦 מה יש לי במקרר',
-      titleEn: '🥦 What\'s in my fridge',
+      titleHe: 'מה יש לי במקרר',
+      titleEn: "What's in my fridge",
       bodyHe: 'הזן מוצרים שיש לך בבית — שם, כמות, כל מה שתרצה. האתר ימצא מתכונים שמתאימים בדיוק למה שיש לך.',
       bodyEn: 'Enter items you have at home — name, quantity, anything. The app finds recipes that match what you have.',
     },
     {
       page: '/ingredients',
       targetId: 'tour-fridge-input',
-      titleHe: '✏️ הזן מוצרים',
-      titleEn: '✏️ Enter ingredients',
+      titleHe: 'הזן מוצרים',
+      titleEn: 'Enter ingredients',
       bodyHe: 'כתוב את שם המוצר — למשל "עוף, ביצים, קישואים" — ולחץ Enter או חפש.',
       bodyEn: 'Type an ingredient — e.g. "chicken, eggs, zucchini" — and press Enter or search.',
     },
@@ -125,7 +126,10 @@ interface Props {
   onDone?: () => void;
 }
 
-interface TooltipPos { top: number; left: number; flip?: boolean; }
+interface TargetRect { x: number; y: number; width: number; height: number; }
+interface TooltipPos { top: number; left: number; flip?: boolean; targetRect: TargetRect; }
+
+const SPOTLIGHT_PAD = 12; // px around the highlighted element
 
 export default function SiteTour({ forceShow = false, initialTourType, onDone }: Props) {
   const { locale } = useLanguage();
@@ -141,7 +145,7 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
   const stepRef = useRef(step);
   stepRef.current = step;
 
-  // Calculate tooltip position using fixed coordinates
+  // Calculate tooltip position + target rect for spotlight
   const updatePos = useCallback((stepIndex: number, type: TourType) => {
     const steps = TOURS[type];
     const id = steps[stepIndex]?.targetId;
@@ -152,13 +156,14 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
       return;
     }
     const rect = el.getBoundingClientRect();
-    const tooltipH = 200;
+    const tooltipH = 220;
     const spaceBelow = window.innerHeight - rect.bottom;
     const flip = spaceBelow < tooltipH + 20;
     setPos({
-      top: flip ? rect.top - 10 : rect.bottom + 10,
-      left: Math.min(rect.left, window.innerWidth - 300),
+      top: flip ? rect.top - SPOTLIGHT_PAD - 10 : rect.bottom + SPOTLIGHT_PAD + 10,
+      left: Math.min(rect.left, window.innerWidth - 316),
       flip,
+      targetRect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
     });
   }, []);
 
@@ -260,10 +265,10 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
   const steps = tourType ? TOURS[tourType] : [];
   const current = steps[step];
 
-  const TOUR_OPTIONS: { type: TourType; labelHe: string; labelEn: string; icon: string; descHe: string; descEn: string }[] = [
-    { type: 'general', icon: '🧭', labelHe: 'סיור כללי', labelEn: 'General Tour', descHe: 'הכר את כל חלקי האתר', descEn: 'Get to know all parts of the app' },
-    { type: 'planner', icon: '🗓', labelHe: 'הפלאנר השבועי', labelEn: 'Weekly Planner', descHe: 'למד איך לתכנן את השבוע', descEn: 'Learn how to plan your week' },
-    { type: 'fridge', icon: '🥦', labelHe: 'מה יש לי במקרר', labelEn: 'Fridge Recipes', descHe: 'מצא מתכונים לפי מה שיש בבית', descEn: 'Find recipes from what you have' },
+  const TOUR_OPTIONS: { type: TourType; labelHe: string; labelEn: string; icon: React.ReactNode; descHe: string; descEn: string }[] = [
+    { type: 'general', icon: <Compass size={22} strokeWidth={1.75} />, labelHe: 'סיור כללי', labelEn: 'General Tour', descHe: 'הכר את כל חלקי האתר', descEn: 'Get to know all parts of the app' },
+    { type: 'planner', icon: <CalendarDays size={22} strokeWidth={1.75} />, labelHe: 'הפלאנר השבועי', labelEn: 'Weekly Planner', descHe: 'למד איך לתכנן את השבוע', descEn: 'Learn how to plan your week' },
+    { type: 'fridge', icon: <Refrigerator size={22} strokeWidth={1.75} />, labelHe: 'מה יש לי במקרר', labelEn: 'Fridge Recipes', descHe: 'מצא מתכונים לפי מה שיש בבית', descEn: 'Find recipes from what you have' },
   ];
 
   return (
@@ -289,7 +294,7 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
                 <div>
                   <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1a1c1b', margin: '0 0 4px' }}>
-                    {isHe ? '🧭 בחר סיור' : '🧭 Choose a Tour'}
+                    {isHe ? 'בחר סיור' : 'Choose a Tour'}
                   </h2>
                   <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
                     {isHe ? 'כל סיור מסביר חלק אחר באתר' : 'Each tour explains a different part of the app'}
@@ -307,12 +312,14 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
                     onMouseEnter={e => { e.currentTarget.style.borderColor = '#14422d'; e.currentTarget.style.background = '#EBF2ED'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = '#E0D9CE'; e.currentTarget.style.background = '#faf9f7'; }}
                   >
-                    <span style={{ fontSize: 28, flexShrink: 0 }}>{opt.icon}</span>
+                    <span style={{ flexShrink: 0, color: '#14422d', display: 'flex', alignItems: 'center' }}>{opt.icon}</span>
                     <div>
                       <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1b', margin: '0 0 2px' }}>{isHe ? opt.labelHe : opt.labelEn}</p>
                       <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.5)', margin: 0 }}>{isHe ? opt.descHe : opt.descEn}</p>
                     </div>
-                    <span style={{ marginInlineStart: 'auto', fontSize: 14, color: '#14422d' }}>←</span>
+                    <span style={{ marginInlineStart: 'auto', color: '#14422d', display: 'flex', alignItems: 'center' }}>
+                      <ChevronLeft size={16} strokeWidth={2} />
+                    </span>
                   </button>
                 ))}
               </div>
@@ -325,11 +332,60 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
       <AnimatePresence>
         {visible && current && (
           <>
-            {/* Dim overlay (non-blocking) */}
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'rgba(26,25,24,0.3)', pointerEvents: 'none' }}
-            />
+            {/* Spotlight SVG overlay — dims everything except the target */}
+            {pos ? (
+              <motion.svg
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', zIndex: 8000, pointerEvents: 'none' }}
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <mask id="tour-spotlight-mask">
+                    {/* White = visible (dimmed) */}
+                    <rect width="100%" height="100%" fill="white" />
+                    {/* Black = cutout (bright) */}
+                    <rect
+                      x={pos.targetRect.x - SPOTLIGHT_PAD}
+                      y={pos.targetRect.y - SPOTLIGHT_PAD}
+                      width={pos.targetRect.width + SPOTLIGHT_PAD * 2}
+                      height={pos.targetRect.height + SPOTLIGHT_PAD * 2}
+                      rx={14}
+                      fill="black"
+                    />
+                  </mask>
+                </defs>
+                <rect width="100%" height="100%" fill="rgba(26,25,24,0.55)" mask="url(#tour-spotlight-mask)" />
+              </motion.svg>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                style={{ position: 'fixed', inset: 0, zIndex: 8000, background: 'rgba(26,25,24,0.45)', pointerEvents: 'none' }}
+              />
+            )}
+
+            {/* Spotlight border ring around target */}
+            {pos && (
+              <motion.div
+                key={`ring-${tourType}-${step}`}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  position: 'fixed',
+                  top: pos.targetRect.y - SPOTLIGHT_PAD,
+                  left: pos.targetRect.x - SPOTLIGHT_PAD,
+                  width: pos.targetRect.width + SPOTLIGHT_PAD * 2,
+                  height: pos.targetRect.height + SPOTLIGHT_PAD * 2,
+                  borderRadius: 14,
+                  border: '2.5px solid #14422d',
+                  boxShadow: '0 0 0 4px rgba(20,66,45,0.18), 0 8px 32px rgba(20,66,45,0.15)',
+                  pointerEvents: 'none',
+                  zIndex: 8001,
+                }}
+              />
+            )}
 
             {/* Tooltip */}
             {pos && (
@@ -344,12 +400,12 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
                   position: 'fixed',
                   top: pos.flip ? undefined : pos.top,
                   bottom: pos.flip ? window.innerHeight - pos.top + 10 : undefined,
-                  left: Math.max(8, Math.min(pos.left, window.innerWidth - 308)),
-                  zIndex: 8001,
-                  width: 300,
+                  left: Math.max(8, Math.min(pos.left, window.innerWidth - 316)),
+                  zIndex: 8002,
+                  width: 'min(308px, calc(100vw - 32px))',
                   background: '#fff',
                   borderRadius: 16,
-                  boxShadow: '0 12px 40px rgba(26,25,24,0.2)',
+                  boxShadow: '0 12px 40px rgba(26,25,24,0.22)',
                   padding: '16px 18px',
                   border: '1px solid #E0D9CE',
                 }}
@@ -390,12 +446,12 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
                   <span style={{ fontSize: 11, color: '#A09893' }}>{step + 1} / {steps.length}</span>
                   <div style={{ display: 'flex', gap: 8 }}>
                     {step > 0 && (
-                      <button onClick={goPrev} style={{ padding: '7px 14px', borderRadius: 9999, background: '#F0EBE3', border: 'none', fontSize: 12, fontWeight: 600, color: '#6B6560', cursor: 'pointer' }}>
-                        {isHe ? '→' : '←'}
+                      <button onClick={goPrev} style={{ padding: '7px 14px', borderRadius: 9999, background: '#F0EBE3', border: 'none', fontSize: 12, fontWeight: 600, color: '#6B6560', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        {isHe ? <ChevronRight size={14} strokeWidth={2} /> : <ChevronLeft size={14} strokeWidth={2} />}
                       </button>
                     )}
                     <button onClick={goNext} style={{ padding: '7px 18px', borderRadius: 9999, background: '#14422d', border: 'none', fontSize: 12, fontWeight: 600, color: '#fff', cursor: 'pointer' }}>
-                      {step < steps.length - 1 ? (isHe ? 'הבא ←' : 'Next →') : (isHe ? 'סיום ✓' : 'Done ✓')}
+                      {step < steps.length - 1 ? (isHe ? 'הבא' : 'Next') : (isHe ? 'סיום' : 'Done')}
                     </button>
                   </div>
                 </div>

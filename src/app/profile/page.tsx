@@ -10,28 +10,30 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-type GoalType = 'save-money' | 'eat-healthy' | 'save-time' | 'all';
-type MonthlyBudget = 'under-500' | '500-1000' | '1000-1500' | 'over-1500';
+type GoalType = 'lose-weight' | 'eat-healthy' | 'order-less' | 'save-time' | 'variety';
 type PrepFrequency = 'never' | '1-2' | '3-5' | 'always';
 
 interface UserProfile {
   goal?: GoalType;
-  householdSize?: number;
-  monthlyBudget?: MonthlyBudget;
+  currentState?: string;
   prepFrequency?: PrepFrequency;
   dietaryPrefs?: string[];
   estimatedSavings?: number;
   completedAt?: string;
+  // Legacy fields from old onboarding — kept for backward compat display
+  householdSize?: number;
+  monthlyBudget?: string;
 }
 
-const GOAL_OPTIONS: { value: GoalType; he: string; en: string; emoji: string }[] = [
-  { value: 'save-money', he: 'לחסוך כסף', en: 'Save money', emoji: '💰' },
-  { value: 'eat-healthy', he: 'לאכול בריא', en: 'Eat healthy', emoji: '🥗' },
-  { value: 'save-time', he: 'לחסוך זמן', en: 'Save time', emoji: '⏱' },
-  { value: 'all', he: 'הכל יחד', en: 'All of the above', emoji: '✨' },
+const GOAL_OPTIONS: { value: GoalType; he: string; en: string }[] = [
+  { value: 'lose-weight', he: 'לרדת במשקל', en: 'Lose weight' },
+  { value: 'eat-healthy', he: 'לאכול בריא', en: 'Eat healthy' },
+  { value: 'order-less',  he: 'להזמין פחות', en: 'Order less food' },
+  { value: 'save-time',   he: 'לחסוך זמן', en: 'Save time' },
+  { value: 'variety',     he: 'לגוון את התפריט', en: 'Add variety' },
 ];
 
-const BUDGET_OPTIONS: { value: MonthlyBudget; he: string; en: string }[] = [
+const BUDGET_OPTIONS: { value: string; he: string; en: string }[] = [
   { value: 'under-500', he: 'עד ₪500', en: 'Under ₪500' },
   { value: '500-1000', he: '₪500–₪1,000', en: '₪500–₪1,000' },
   { value: '1000-1500', he: '₪1,000–₪1,500', en: '₪1,000–₪1,500' },
@@ -111,7 +113,7 @@ export default function ProfilePage() {
   if (!isLoaded) return null;
   if (!isSignedIn) {
     return (
-      <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: '#faf9f7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
+      <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
         <p style={{ fontSize: 16, color: '#1a1c1b', fontWeight: 600 }}>{isHe ? 'יש להתחבר כדי לצפות בפרופיל' : 'Sign in to view your profile'}</p>
         <Link href="/" style={{ color: '#14422d', fontWeight: 600, fontSize: 14 }}>{isHe ? '→ חזרה לבית' : '→ Back home'}</Link>
       </div>
@@ -121,7 +123,7 @@ export default function ProfilePage() {
   const current = editMode ? draft : profile;
 
   return (
-    <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: '#faf9f7' }}>
+    <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 20px 80px' }}>
 
         {/* Avatar + name */}
@@ -178,7 +180,7 @@ export default function ProfilePage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 {GOAL_OPTIONS.map(o => (
                   <button key={o.value} onClick={() => setDraft(d => ({ ...d, goal: o.value }))} style={{ padding: '10px', borderRadius: 10, border: `1.5px solid ${draft.goal === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.goal === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: '#1a1c1b', cursor: 'pointer', textAlign: 'center' }}>
-                    {o.emoji} {isHe ? o.he : o.en}
+                    {isHe ? o.he : o.en}
                   </button>
                 ))}
               </div>

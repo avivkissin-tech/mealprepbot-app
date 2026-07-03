@@ -64,6 +64,11 @@ body {
   transition: background-color 0.2s, color 0.2s;
 }
 
+/* Ensure main content area follows theme */
+main {
+  background-color: var(--bg-page);
+}
+
 /* Display headings: use Fraunces in LTR (EN), Heebo in RTL (HE) */
 .font-display {
   font-family: var(--font-fraunces), var(--font-heebo), serif;
@@ -109,6 +114,12 @@ button, a, [role="button"] {
   height: 3px;
   background: #C9572A;
   border-radius: 9999px;
+}
+
+/* ── Skeleton shimmer animation ── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ── Print ── */

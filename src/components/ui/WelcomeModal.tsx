@@ -66,14 +66,13 @@ export default function WelcomeModal({ onStartTour }: Props) {
               boxShadow: '0 24px 64px rgba(26,25,24,0.2)',
             }}
           >
-            <div style={{ fontSize: 52, marginBottom: 16 }}>👋</div>
             <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1a1c1b', margin: '0 0 10px' }}>
-              {isHe ? 'ברוך הבא ל-Easy PREP!' : 'Welcome to Easy PREP!'}
+              {isHe ? 'ברוכים הבאים ל-Easy PREP' : 'Welcome to Easy PREP'}
             </h2>
             <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.55)', margin: '0 0 28px', lineHeight: 1.6 }}>
               {isHe
-                ? 'רוצה שנסביר לך בקצרה איך האתר עובד? לוקח פחות מדקה.'
-                : 'Want a quick tour of the site? It takes less than a minute.'}
+                ? 'בסיור קצר נראה לכם איך לבחור מתכונים, לתכנן את השבוע, לקבל רשימת קניות ולהכין הכול יחד.'
+                : "In a short tour we'll show you how to choose recipes, plan the week, get a shopping list, and prep everything together."}
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <button
@@ -84,7 +83,7 @@ export default function WelcomeModal({ onStartTour }: Props) {
                   fontSize: 14, fontWeight: 600, color: '#6B6560', cursor: 'pointer',
                 }}
               >
-                {isHe ? 'דלג' : 'Skip'}
+                {isHe ? 'אני רוצה לגלות לבד' : 'I\'ll explore on my own'}
               </button>
               <button
                 onClick={startTour}
@@ -94,7 +93,7 @@ export default function WelcomeModal({ onStartTour }: Props) {
                   fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer',
                 }}
               >
-                {isHe ? 'בוא נתחיל ←' : "Let's go →"}
+                {isHe ? 'התחלת סיור' : 'Start tour'}
               </button>
             </div>
           </motion.div>

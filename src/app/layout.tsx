@@ -31,7 +31,17 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen antialiased" style={{ background: '#faf9f7' }}>
+      {/* Synchronous theme script — runs before CSS to prevent flash of wrong theme */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var t = localStorage.getItem('easyprep_theme');
+            var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+          } catch(e) {}
+        `}} />
+      </head>
+      <body className="min-h-screen antialiased">
         <ClerkProvider>
           <ThemeProvider>
           <LanguageProvider>
@@ -42,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 {/* Content offset by sidebar width on md+ */}
                 <div
-                  className="md:pr-[240px]"
+                  className="md:pe-[240px]"
                   style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
                 >
                   <main className="flex-1">{children}</main>
