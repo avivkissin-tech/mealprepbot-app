@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Recipe, DietaryTag } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useMealPlan } from '@/context/MealPlanContext';
 import { useSaved } from '@/context/SavedContext';
+import RecipeImageFallback from '@/components/ui/RecipeImageFallback';
 
 export const DIETARY_BADGE: Record<DietaryTag, { he: string; en: string; bg: string; color: string }> = {
   'vegan':        { he: 'טבעוני',      en: 'Vegan',        bg: 'rgba(20,66,45,0.12)',  color: '#14422d' },
@@ -26,6 +28,7 @@ export default function RecipeCard({ recipe }: Props) {
   const { isSaved, toggleSaved } = useSaved();
   const selected = isSelected(recipe.id);
   const saved = isSaved(recipe.id);
+  const [imgError, setImgError] = useState(false);
   const name = locale === 'he' ? recipe.nameHe : recipe.nameEn;
   const totalMin = recipe.prepTimeMin + recipe.cookTimeMin;
   const primaryTag = recipe.dietaryTags?.[0];
@@ -57,13 +60,18 @@ export default function RecipeCard({ recipe }: Props) {
       >
         {/* Image */}
         <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
-          <Image
-            src={recipe.image}
-            alt={name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            sizes="240px"
-          />
+          {imgError ? (
+            <RecipeImageFallback size="lg" />
+          ) : (
+            <Image
+              src={recipe.image}
+              alt={name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+              sizes="240px"
+              onError={() => setImgError(true)}
+            />
+          )}
           {/* Bottom gradient overlay */}
           <div style={{
             position: 'absolute', inset: 0,

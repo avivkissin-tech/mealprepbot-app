@@ -195,6 +195,7 @@ export default function PlannerPage() {
     }
   }, [pickingDay]);
 
+  // TODO(post-launch): replace skeleton with proper loading state if Clerk cold-start is noticeable
   if (!isLoaded) {
     return (
       <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--bg-page)', padding: '24px 24px 80px', maxWidth: 1400, margin: '0 auto' }}>

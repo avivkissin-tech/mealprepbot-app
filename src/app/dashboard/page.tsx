@@ -11,6 +11,7 @@ import { useSaved } from '@/context/SavedContext';
 import { fetchCookHistory, fetchPlanner, fetchProfile } from '@/lib/userDataApi';
 import { Clock } from 'lucide-react';
 import { RecipeCardSkeleton } from '@/components/ui/Skeleton';
+import RecipeImageFallback from '@/components/ui/RecipeImageFallback';
 
 /* ─── Types ──────────────────────────────────────────────── */
 type UserState = 'new' | 'has-plan' | 'active' | 'returning';
@@ -72,15 +73,24 @@ const FILTERS = [
 /* ─── Recipe Card ─────────────────────────────────────────── */
 interface RecipeCardProps { title: string; image: string; time: string; tags: string[]; id: string; chef?: string; }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, chef }) => (
+const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, chef }) => {
+  const [imgError, setImgError] = React.useState(false);
+  return (
   <Link href={`/recipes/${id}`} style={{ textDecoration: 'none' }}>
     <motion.div
       whileHover={{ y: -4, boxShadow: '0 16px 40px rgba(26,25,24,0.12)' }}
       transition={{ duration: 0.25 }}
-      style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', boxShadow: '0 2px 8px rgba(26,25,24,0.07)' }}
+      style={{ background: 'var(--card-bg)', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', boxShadow: '0 2px 8px rgba(26,25,24,0.07)' }}
     >
       <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
-        <div style={{ width: '100%', height: '100%', backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        {imgError ? (
+          <RecipeImageFallback size="md" />
+        ) : (
+          <div
+            style={{ width: '100%', height: '100%', backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            onError={() => setImgError(true)}
+          />
+        )}
         {tags[0] && (
           <div style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(26,25,24,0.75)', backdropFilter: 'blur(6px)', borderRadius: 20, padding: '3px 9px', fontSize: 11, fontWeight: 600, color: '#fff' }}>
             {tags[0]}
@@ -106,7 +116,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, c
       </div>
     </motion.div>
   </Link>
-);
+  );
+};
 
 /* ─── Page ───────────────────────────────────────────────── */
 export default function DashboardPage() {
