@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 {/* Content offset by sidebar width on md+ */}
                 <div
-                  className="md:pe-[240px]"
+                  className="md:ps-[240px]"
                   style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
                 >
                   <main className="flex-1">{children}</main>
