@@ -95,7 +95,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
               [isHe ? 'right' : 'left']: 0,
               zIndex: 9501,
               width: 300,
-              background: '#fff',
+              background: 'var(--bg-surface)',
               boxShadow: isHe
                 ? '-8px 0 40px rgba(26,25,24,0.15)'
                 : '8px 0 40px rgba(26,25,24,0.15)',
@@ -131,7 +131,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                     />
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1b', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {user.firstName} {user.lastName}
                     </p>
                     <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)', margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -171,7 +171,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                   style={{
                     width: '100%', padding: '9px 14px', borderRadius: 10,
                     border: '1.5px solid #E0D9CE', fontSize: 13,
-                    background: '#faf9f7', outline: 'none',
+                    background: 'var(--bg-page)', outline: 'none',
                     boxSizing: 'border-box',
                   }}
                 />
@@ -189,7 +189,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                       <div style={{ position: 'relative', width: 32, height: 32, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
                         <Image src={r.image} alt="" fill sizes="32px" style={{ objectFit: 'cover' }} />
                       </div>
-                      <span style={{ fontSize: 12, color: '#1a1c1b', fontWeight: 600 }}>{isHe ? r.nameHe : r.nameEn}</span>
+                      <span style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}>{isHe ? r.nameHe : r.nameEn}</span>
                     </Link>
                   ))}
                 </div>
@@ -202,7 +202,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 18 }}>🔔</span>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', margin: 0 }}>{isHe ? 'התראות' : 'Notifications'}</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{isHe ? 'התראות' : 'Notifications'}</p>
                     <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)', margin: 0 }}>
                       {notifPerm === 'granted' ? (isHe ? 'מופעל' : 'Enabled') : notifPerm === 'denied' ? (isHe ? 'חסום' : 'Blocked') : (isHe ? 'לא הופעל' : 'Not enabled')}
                     </p>
@@ -231,7 +231,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                   href={link.href}
                   id={link.tourId}
                   onClick={onClose}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 10px', borderRadius: 10, textDecoration: 'none', color: '#1a1c1b', transition: 'background 0.12s' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 10px', borderRadius: 10, textDecoration: 'none', color: 'var(--text-primary)', transition: 'background 0.12s' }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F7F3EE')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
@@ -255,7 +255,7 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <span style={{ fontSize: 18, width: 24, textAlign: 'center' }}>🧭</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b' }}>{isHe ? 'התחל סיור' : 'Start Tour'}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{isHe ? 'התחל סיור' : 'Start Tour'}</span>
               </button>
 
               <button
@@ -265,14 +265,14 @@ export default function SidePanel({ isOpen, onClose, onStartTour, onFeedback }: 
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <span style={{ fontSize: 18, width: 24, textAlign: 'center' }}>💬</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b' }}>{isHe ? 'עזרו לנו להשתפר' : 'Help us improve'}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{isHe ? 'עזרו לנו להשתפר' : 'Help us improve'}</span>
               </button>
 
               {isSignedIn && (
                 <Link
                   href="/profile"
                   onClick={onClose}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 10px', borderRadius: 10, textDecoration: 'none', color: '#1a1c1b' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 10px', borderRadius: 10, textDecoration: 'none', color: 'var(--text-primary)' }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F7F3EE')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >

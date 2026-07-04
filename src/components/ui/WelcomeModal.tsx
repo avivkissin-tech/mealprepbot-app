@@ -59,14 +59,14 @@ export default function WelcomeModal({ onStartTour }: Props) {
             transition={{ type: 'spring', stiffness: 320, damping: 28 }}
             dir={isHe ? 'rtl' : 'ltr'}
             style={{
-              background: '#fff', borderRadius: 24,
+              background: 'var(--bg-surface)', borderRadius: 24,
               width: '100%', maxWidth: 420,
               padding: '32px 28px',
               textAlign: 'center',
               boxShadow: '0 24px 64px rgba(26,25,24,0.2)',
             }}
           >
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#1a1c1b', margin: '0 0 10px' }}>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 10px' }}>
               {isHe ? 'ברוכים הבאים ל-Easy PREP' : 'Welcome to Easy PREP'}
             </h2>
             <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.55)', margin: '0 0 28px', lineHeight: 1.6 }}>

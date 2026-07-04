@@ -243,7 +243,7 @@ const PHASE_CONFIG: Record<GuidePhase, { label: string; color: string; bg: strin
   setup: { label: 'הכנה',   color: '#6B6560', bg: '#F0EBE3' },
   prep:  { label: 'הכנה מוקדמת', color: '#2A4F3A', bg: '#EBF2ED' },
   cook:  { label: 'בישול',  color: '#C9572A', bg: '#FBF0EB' },
-  pack:  { label: 'אריזה',  color: '#1A1918', bg: '#F0EBE3' },
+  pack:  { label: 'אריזה',  color: 'var(--text-primary)', bg: '#F0EBE3' },
 };
 
 // ─── Timer component ───────────────────────────────────────────────────────────
@@ -332,7 +332,7 @@ function StepTimer({ minutes, stepId }: { minutes: number; stepId: number }) {
         </svg>
         <span style={{
           position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 9, fontWeight: 700, color: '#1A1918',
+          fontSize: 9, fontWeight: 700, color: 'var(--text-primary)',
         }}>
           {mins}:{String(secs).padStart(2, '0')}
         </span>
@@ -374,7 +374,7 @@ function StepTimer({ minutes, stepId }: { minutes: number; stepId: number }) {
 const smallBtnStyle: React.CSSProperties = {
   padding: '5px 11px', borderRadius: 9999,
   background: '#F0EBE3', border: 'none',
-  fontSize: 12, fontWeight: 600, color: '#1A1918', cursor: 'pointer',
+  fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer',
 };
 
 // ─── Body renderer (supports **bold** and \n) ──────────────────────────────────
@@ -389,7 +389,7 @@ function StepBody({ text }: { text: string }) {
           <div key={i}>
             {parts.map((p, j) =>
               p.startsWith('**') && p.endsWith('**')
-                ? <strong key={j} style={{ color: '#1A1918', fontWeight: 600 }}>{p.slice(2, -2)}</strong>
+                ? <strong key={j} style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{p.slice(2, -2)}</strong>
                 : p
             )}
           </div>
@@ -406,8 +406,8 @@ function StepCard({ step, index }: { step: GuideStep; index: number }) {
 
   return (
     <div style={{
-      background: '#fff',
-      border: '1px solid #E0D9CE',
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border)',
       borderRadius: 16,
       padding: '18px 20px',
       display: 'flex',
@@ -434,7 +434,7 @@ function StepCard({ step, index }: { step: GuideStep; index: number }) {
           }}>
             {cfg.label.toUpperCase()}
           </span>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1A1918', margin: 0 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
             {step.titleHe}
           </h3>
         </div>
@@ -452,7 +452,7 @@ function StepCard({ step, index }: { step: GuideStep; index: number }) {
             {step.involvedRecipes.map(name => (
               <span key={name} style={{
                 fontSize: 10, padding: '2px 8px', borderRadius: 9999,
-                background: '#F7F3EE', border: '1px solid #E0D9CE',
+                background: '#F7F3EE', border: '1px solid var(--border)',
                 color: '#6B6560',
               }}>
                 {name}
@@ -490,7 +490,7 @@ export default function MealPrepWizardPage() {
     <div className="max-w-2xl mx-auto px-4 py-10">
       {/* Title + step indicator */}
       <div className="mb-8 text-center">
-        <h1 className="font-display text-3xl font-bold" style={{ color: '#1A1918' }}>
+        <h1 className="font-display text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
           {t('wizard.title')}
         </h1>
         <div className="flex items-center justify-center gap-2 mt-4">
@@ -521,11 +521,11 @@ export default function MealPrepWizardPage() {
                   key={recipe.id}
                   onClick={() => toggleRecipe(recipe.id)}
                   className="flex items-center gap-3 p-4 rounded-xl border-2 text-start transition-all"
-                  style={isSelected ? { borderColor: '#2A4F3A', background: '#EBF2ED' } : { borderColor: '#E0D9CE', background: '#fff' }}
+                  style={isSelected ? { borderColor: '#2A4F3A', background: '#EBF2ED' } : { borderColor: '#E0D9CE', background: 'var(--bg-surface)' }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getCategoryIcon(recipe.category)}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate" style={{ color: '#1A1918' }}>{name}</p>
+                    <p className="font-medium text-sm truncate" style={{ color: 'var(--text-primary)' }}>{name}</p>
                     <p className="text-xs mt-0.5" style={{ color: '#A09893' }}>{recipe.category}</p>
                   </div>
                   <div
@@ -568,11 +568,11 @@ export default function MealPrepWizardPage() {
                 <div
                   key={recipe.id}
                   className="flex items-center justify-between p-4 rounded-xl border"
-                  style={{ borderColor: '#E0D9CE', background: '#fff' }}
+                  style={{ borderColor: '#E0D9CE', background: 'var(--bg-surface)' }}
                 >
                   <div className="flex items-center gap-3">
                     <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getCategoryIcon(recipe.category)}</span>
-                    <p className="font-medium text-sm" style={{ color: '#1A1918' }}>{name}</p>
+                    <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{name}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -580,7 +580,7 @@ export default function MealPrepWizardPage() {
                       className="w-8 h-8 rounded-full border flex items-center justify-center font-bold"
                       style={{ borderColor: '#E0D9CE', color: '#6B6560' }}
                     >−</button>
-                    <span className="w-10 text-center font-semibold" style={{ color: '#1A1918' }}>{p}</span>
+                    <span className="w-10 text-center font-semibold" style={{ color: 'var(--text-primary)' }}>{p}</span>
                     <button
                       onClick={() => adjustPortion(recipe.id, 1)}
                       className="w-8 h-8 rounded-full border flex items-center justify-center font-bold"
@@ -594,9 +594,9 @@ export default function MealPrepWizardPage() {
           </div>
 
           {/* Shopping list preview */}
-          <div className="rounded-2xl border mb-6 overflow-hidden" style={{ borderColor: '#E0D9CE', background: '#fff' }}>
+          <div className="rounded-2xl border mb-6 overflow-hidden" style={{ borderColor: '#E0D9CE', background: 'var(--bg-surface)' }}>
             <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: '#E0D9CE' }}>
-              <h3 className="font-bold text-sm" style={{ color: '#1A1918' }}>{t('wizard.step3.shoppingTitle')}</h3>
+              <h3 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{t('wizard.step3.shoppingTitle')}</h3>
               <button
                 onClick={() => window.print()}
                 className="text-xs font-medium border rounded-lg px-3 py-1 print:hidden"
@@ -661,7 +661,7 @@ export default function MealPrepWizardPage() {
       {step === 3 && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-            <h2 className="text-lg font-bold" style={{ color: '#1A1918', margin: 0 }}>
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)', margin: 0 }}>
               {t('wizard.step3.guideTitle')}
             </h2>
             <span style={{ fontSize: 12, color: 'rgba(26,25,24,0.4)' }}>

@@ -144,7 +144,7 @@ export default function Sidebar() {
         {isSignedIn && user ? (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {user.imageUrl ? (
+              {user.hasImage ? (
                 <Image
                   src={user.imageUrl} alt={user.firstName ?? ''}
                   width={38} height={38}
@@ -157,6 +157,7 @@ export default function Sidebar() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 13, fontWeight: 700, flexShrink: 0,
                   border: `1.5px solid ${c.border}`,
+                  letterSpacing: '-0.02em',
                 }}>
                   {initials}
                 </div>

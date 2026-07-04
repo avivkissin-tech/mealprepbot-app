@@ -298,13 +298,13 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-            <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1A1918', margin: 0 }}>
+            <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
               מילפרפ פעיל
             </h2>
             <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               <button
                 onClick={() => setShowOverview(true)}
-                style={{ background: '#F0EBE3', border: 'none', cursor: 'pointer', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#1A1918' }}
+                style={{ background: '#F0EBE3', border: 'none', cursor: 'pointer', padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}
                 title="כל השלבים"
               >
                 ≡ שלבים
@@ -351,7 +351,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               style={{
-                background: '#fff',
+                background: 'var(--bg-surface)',
                 borderBottom: '1px solid #E0D9CE',
                 flexShrink: 0,
                 overflow: 'hidden',
@@ -427,7 +427,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
               style={{ textAlign: 'center', padding: '24px 16px' }}
             >
               <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1A1918', marginBottom: 8 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
                 כל הכבוד! סיימת
               </h2>
               <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.55)', marginBottom: 24 }}>
@@ -440,13 +440,13 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                   <div
                     key={r.id}
                     style={{
-                      background: '#fff',
+                      background: 'var(--bg-surface)',
                       borderRadius: 12,
                       padding: '12px 16px',
                       borderRight: `3px solid ${RECIPE_COLORS[i % RECIPE_COLORS.length]}`,
                     }}
                   >
-                    <p style={{ fontWeight: 600, fontSize: 14, color: '#1A1918', margin: '0 0 4px' }}>
+                    <p style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)', margin: '0 0 4px' }}>
                       {r.nameHe}
                     </p>
                     <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.55)', margin: 0 }}>
@@ -499,7 +499,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
                   style={{
-                    background: '#fff',
+                    background: 'var(--bg-surface)',
                     borderRadius: 16,
                     padding: 20,
                     boxShadow: '0 4px 16px rgba(26,25,24,0.08)',
@@ -530,7 +530,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                   </div>
 
                   {/* Step text */}
-                  <p style={{ fontSize: 17, lineHeight: 1.6, color: '#1A1918', margin: '0 0 16px', fontWeight: 500 }}>
+                  <p style={{ fontSize: 17, lineHeight: 1.6, color: 'var(--text-primary)', margin: '0 0 16px', fontWeight: 500 }}>
                     {currentStep.step.he}
                   </p>
 
@@ -608,7 +608,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                           background: recipeColorMap.get(s.recipeId) ?? '#2A4F3A',
                         }} />
                         <p style={{
-                          fontSize: 13, color: '#1A1918', margin: 0,
+                          fontSize: 13, color: 'var(--text-primary)', margin: 0,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>
                           {s.step.he}
@@ -648,7 +648,7 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                 }}
               >
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🍳</div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: '#1A1918', margin: '0 0 8px' }}>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>
                   לצאת מהמילפרפ?
                 </h3>
                 <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.55)', margin: '0 0 24px', lineHeight: 1.5 }}>
@@ -701,8 +701,8 @@ export default function MealPrepSession({ selectedRecipes, onClose }: Props) {
                 }}
               >
                 <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #E0D9CE', flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1A1918', margin: 0 }}>כל השלבים</h3>
-                  <button onClick={() => setShowOverview(false)} style={{ background: '#E0D9CE', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', fontSize: 14, color: '#1A1918', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>כל השלבים</h3>
+                  <button onClick={() => setShowOverview(false)} style={{ background: '#E0D9CE', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
                 </div>
                 <div style={{ overflowY: 'auto', flex: 1 }}>
                   {steps.map((s, i) => {

@@ -114,7 +114,7 @@ export default function ProfilePage() {
   if (!isSignedIn) {
     return (
       <div dir={isHe ? 'rtl' : 'ltr'} style={{ minHeight: '100vh', background: 'var(--bg-page)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-        <p style={{ fontSize: 16, color: '#1a1c1b', fontWeight: 600 }}>{isHe ? 'יש להתחבר כדי לצפות בפרופיל' : 'Sign in to view your profile'}</p>
+        <p style={{ fontSize: 16, color: 'var(--text-primary)', fontWeight: 600 }}>{isHe ? 'יש להתחבר כדי לצפות בפרופיל' : 'Sign in to view your profile'}</p>
         <Link href="/" style={{ color: '#14422d', fontWeight: 600, fontSize: 14 }}>{isHe ? '→ חזרה לבית' : '→ Back home'}</Link>
       </div>
     );
@@ -138,7 +138,7 @@ export default function ProfilePage() {
             />
           )}
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1a1c1b', margin: '0 0 2px' }}>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 2px' }}>
               {user?.firstName} {user?.lastName}
             </h1>
             <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', margin: 0 }}>{user?.emailAddresses[0]?.emailAddress}</p>
@@ -146,9 +146,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Preferences card */}
-        <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E0D9CE', padding: '20px', marginBottom: 20 }}>
+        <div style={{ background: 'var(--bg-surface)', borderRadius: 16, border: '1px solid var(--border)', padding: '20px', marginBottom: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
               {isHe ? '⚙️ העדפות שלי' : '⚙️ My Preferences'}
             </h2>
             {!editMode ? (
@@ -179,13 +179,13 @@ export default function ProfilePage() {
             {editMode ? (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 {GOAL_OPTIONS.map(o => (
-                  <button key={o.value} onClick={() => setDraft(d => ({ ...d, goal: o.value }))} style={{ padding: '10px', borderRadius: 10, border: `1.5px solid ${draft.goal === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.goal === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: '#1a1c1b', cursor: 'pointer', textAlign: 'center' }}>
+                  <button key={o.value} onClick={() => setDraft(d => ({ ...d, goal: o.value }))} style={{ padding: '10px', borderRadius: 10, border: `1.5px solid ${draft.goal === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.goal === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer', textAlign: 'center' }}>
                     {isHe ? o.he : o.en}
                   </button>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: 14, color: '#1a1c1b', margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
                 {current.goal ? (GOAL_OPTIONS.find(o => o.value === current.goal)?.[isHe ? 'he' : 'en'] ?? '—') : '—'}
               </p>
             )}
@@ -203,7 +203,7 @@ export default function ProfilePage() {
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: 14, color: '#1a1c1b', margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
                 {current.householdSize ? `${current.householdSize === 5 ? '5+' : current.householdSize} ${isHe ? 'אנשים' : 'people'}` : '—'}
               </p>
             )}
@@ -215,13 +215,13 @@ export default function ProfilePage() {
             {editMode ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {FREQ_OPTIONS.map(o => (
-                  <button key={o.value} onClick={() => setDraft(d => ({ ...d, prepFrequency: o.value }))} style={{ padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${draft.prepFrequency === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.prepFrequency === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: '#1a1c1b', cursor: 'pointer', textAlign: isHe ? 'right' : 'left' }}>
+                  <button key={o.value} onClick={() => setDraft(d => ({ ...d, prepFrequency: o.value }))} style={{ padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${draft.prepFrequency === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.prepFrequency === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer', textAlign: isHe ? 'right' : 'left' }}>
                     {isHe ? o.he : o.en}
                   </button>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: 14, color: '#1a1c1b', margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
                 {current.prepFrequency ? (FREQ_OPTIONS.find(o => o.value === current.prepFrequency)?.[isHe ? 'he' : 'en'] ?? '—') : '—'}
               </p>
             )}
@@ -233,13 +233,13 @@ export default function ProfilePage() {
             {editMode ? (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 {BUDGET_OPTIONS.map(o => (
-                  <button key={o.value} onClick={() => setDraft(d => ({ ...d, monthlyBudget: o.value }))} style={{ padding: '10px', borderRadius: 10, border: `1.5px solid ${draft.monthlyBudget === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.monthlyBudget === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: '#1a1c1b', cursor: 'pointer', textAlign: 'center' }}>
+                  <button key={o.value} onClick={() => setDraft(d => ({ ...d, monthlyBudget: o.value }))} style={{ padding: '10px', borderRadius: 10, border: `1.5px solid ${draft.monthlyBudget === o.value ? '#14422d' : '#E0D9CE'}`, background: draft.monthlyBudget === o.value ? '#EBF2ED' : '#fff', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer', textAlign: 'center' }}>
                     {isHe ? o.he : o.en}
                   </button>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: 14, color: '#1a1c1b', margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
                 {current.monthlyBudget ? (BUDGET_OPTIONS.find(o => o.value === current.monthlyBudget)?.[isHe ? 'he' : 'en'] ?? '—') : '—'}
               </p>
             )}
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                 })}
               </div>
             ) : (
-              <p style={{ fontSize: 14, color: '#1a1c1b', margin: 0 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
                 {current.dietaryPrefs?.length
                   ? current.dietaryPrefs.map(p => DIETARY_OPTIONS.find(o => o.value === p)?.[isHe ? 'he' : 'en']).filter(Boolean).join(' · ')
                   : '—'}
@@ -273,10 +273,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Notifications card */}
-        <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E0D9CE', padding: '20px', marginBottom: 20 }}>
+        <div style={{ background: 'var(--bg-surface)', borderRadius: 16, border: '1px solid var(--border)', padding: '20px', marginBottom: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b', margin: '0 0 4px' }}>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px' }}>
                 🔔 {isHe ? 'התראות' : 'Notifications'}
               </h2>
               <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
@@ -302,8 +302,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Saved recipes */}
-        <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E0D9CE', padding: '20px' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1a1c1b', margin: '0 0 14px' }}>
+        <div style={{ background: 'var(--bg-surface)', borderRadius: 16, border: '1px solid var(--border)', padding: '20px' }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 14px' }}>
             🔖 {isHe ? `מתכונים שמורים (${savedRecipes.length})` : `Saved Recipes (${savedRecipes.length})`}
           </h2>
           {savedRecipes.length === 0 ? (
@@ -319,7 +319,7 @@ export default function ProfilePage() {
                       <Image src={r.image} alt="" fill sizes="44px" style={{ objectFit: 'cover' }} />
                     </div>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', margin: '0 0 2px' }}>{isHe ? r.nameHe : r.nameEn}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 2px' }}>{isHe ? r.nameHe : r.nameEn}</p>
                       <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.4)', margin: 0 }}>{r.prepTimeMin + r.cookTimeMin} {isHe ? 'דק׳' : 'min'}</p>
                     </div>
                   </Link>

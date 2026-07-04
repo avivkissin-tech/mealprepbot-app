@@ -98,9 +98,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, c
         )}
       </div>
       <div style={{ padding: '14px 16px 16px' }}>
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: '#1A1918', marginBottom: 6, lineHeight: 1.3 }}>{title}</h3>
+        <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6, lineHeight: 1.3 }}>{title}</h3>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'rgba(26,25,24,0.5)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--text-muted)' }}>
             <Clock size={12} strokeWidth={2} />
             {time} דק׳
           </div>
@@ -109,7 +109,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, c
               <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#14422d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff' }}>
                 {chef.charAt(0)}
               </div>
-              <span style={{ fontSize: 11, color: 'rgba(26,25,24,0.5)' }}>{chef}</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{chef}</span>
             </div>
           )}
         </div>

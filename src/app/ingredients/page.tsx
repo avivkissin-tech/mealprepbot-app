@@ -98,7 +98,7 @@ function ResultCard({ result }: { result: MatchResult }) {
     <Link href={`/recipes/${recipe.id}`} style={{ textDecoration: 'none' }}>
       <div style={{
         display: 'flex', gap: 14, padding: 16,
-        background: '#fff', border: '1px solid #E0D9CE', borderRadius: 16,
+        background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 16,
         transition: 'box-shadow 0.15s',
         cursor: 'pointer',
       }}
@@ -113,7 +113,7 @@ function ResultCard({ result }: { result: MatchResult }) {
         {/* Content */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1A1918', margin: 0, lineHeight: 1.3 }}>{name}</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.3 }}>{name}</h3>
             <ScoreBadge score={score} />
           </div>
 
@@ -206,7 +206,7 @@ export default function IngredientsPage() {
               <circle cx="19" cy="21" r="1" fill="#2A4F3A" stroke="none"/>
             </svg>
           </div>
-          <h1 id="tour-fridge-title" style={{ fontSize: 26, fontWeight: 800, color: '#1A1918', margin: '0 0 8px' }}>
+          <h1 id="tour-fridge-title" style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 8px' }}>
             מה יש לי במקרר?
           </h1>
           <p style={{ fontSize: 14, color: 'rgba(26,25,24,0.5)', margin: 0, lineHeight: 1.5 }}>
@@ -218,7 +218,7 @@ export default function IngredientsPage() {
         <div
           id="tour-fridge-input"
           style={{
-            background: '#fff', border: '2px solid #E0D9CE', borderRadius: 16,
+            background: 'var(--bg-surface)', border: '2px solid #E0D9CE', borderRadius: 16,
             padding: '12px 14px', marginBottom: 16, cursor: 'text',
             transition: 'border-color 0.15s',
           }}
@@ -255,7 +255,7 @@ export default function IngredientsPage() {
               placeholder={chips.length === 0 ? 'למשל: עוף, בצל, שום... (Enter או פסיק להוסיף)' : ''}
               style={{
                 flex: 1, minWidth: 180, border: 'none', outline: 'none',
-                fontSize: 14, color: '#1A1918', background: 'transparent',
+                fontSize: 14, color: 'var(--text-primary)', background: 'transparent',
                 direction: 'rtl', padding: '2px 0',
               }}
             />
@@ -275,7 +275,7 @@ export default function IngredientsPage() {
                   onClick={() => { setChips(prev => [...prev, s]); inputRef.current?.focus(); }}
                   style={{
                     padding: '5px 12px', borderRadius: 9999,
-                    border: '1px solid #E0D9CE', background: '#F7F3EE',
+                    border: '1px solid var(--border)', background: '#F7F3EE',
                     fontSize: 12, color: '#6B6560', cursor: 'pointer',
                     transition: 'all 0.12s',
                   }}

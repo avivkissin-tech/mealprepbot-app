@@ -289,11 +289,11 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
               exit={{ opacity: 0, scale: 0.93, y: 16 }}
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
               dir={isHe ? 'rtl' : 'ltr'}
-              style={{ background: '#fff', borderRadius: 20, width: '100%', maxWidth: 400, padding: '28px 24px', boxShadow: '0 20px 60px rgba(26,25,24,0.18)' }}
+              style={{ background: 'var(--bg-surface)', borderRadius: 20, width: '100%', maxWidth: 400, padding: '28px 24px', boxShadow: '0 20px 60px rgba(26,25,24,0.18)' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
                 <div>
-                  <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1a1c1b', margin: '0 0 4px' }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 4px' }}>
                     {isHe ? 'בחר סיור' : 'Choose a Tour'}
                   </h2>
                   <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
@@ -308,13 +308,13 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
                   <button
                     key={opt.type}
                     onClick={() => startTour(opt.type)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 12, border: '1.5px solid #E0D9CE', background: '#faf9f7', cursor: 'pointer', textAlign: isHe ? 'right' : 'left', transition: 'border-color 0.15s, background 0.15s' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 12, border: '1.5px solid #E0D9CE', background: 'var(--bg-page)', cursor: 'pointer', textAlign: isHe ? 'right' : 'left', transition: 'border-color 0.15s, background 0.15s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = '#14422d'; e.currentTarget.style.background = '#EBF2ED'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = '#E0D9CE'; e.currentTarget.style.background = '#faf9f7'; }}
                   >
                     <span style={{ flexShrink: 0, color: '#14422d', display: 'flex', alignItems: 'center' }}>{opt.icon}</span>
                     <div>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1b', margin: '0 0 2px' }}>{isHe ? opt.labelHe : opt.labelEn}</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px' }}>{isHe ? opt.labelHe : opt.labelEn}</p>
                       <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.5)', margin: 0 }}>{isHe ? opt.descHe : opt.descEn}</p>
                     </div>
                     <span style={{ marginInlineStart: 'auto', color: '#14422d', display: 'flex', alignItems: 'center' }}>
@@ -403,11 +403,11 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
                   left: Math.max(8, Math.min(pos.left, window.innerWidth - 316)),
                   zIndex: 8002,
                   width: 'min(308px, calc(100vw - 32px))',
-                  background: '#fff',
+                  background: 'var(--bg-surface)',
                   borderRadius: 16,
                   boxShadow: '0 12px 40px rgba(26,25,24,0.22)',
                   padding: '16px 18px',
-                  border: '1px solid #E0D9CE',
+                  border: '1px solid var(--border)',
                 }}
               >
                 {/* Header row: type label + exit button */}
@@ -435,7 +435,7 @@ export default function SiteTour({ forceShow = false, initialTourType, onDone }:
                   </div>
                 </div>
 
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1a1c1b', margin: '0 0 6px' }}>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 6px' }}>
                   {isHe ? current.titleHe : current.titleEn}
                 </h3>
                 <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.6)', margin: '0 0 14px', lineHeight: 1.65 }}>

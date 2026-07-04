@@ -116,6 +116,12 @@ button, a, [role="button"] {
   border-radius: 9999px;
 }
 
+/* ── Dark mode: modal/panel overrides for hardcoded backgrounds ── */
+/* Targets elements that use Tailwind bg-white utility class */
+[data-theme="dark"] .bg-white {
+  background-color: var(--bg-surface) !important;
+}
+
 /* ── Skeleton shimmer animation ── */
 @keyframes skeleton-shimmer {
   0%   { background-position: 200% 0; }

@@ -132,15 +132,15 @@ export default function RecipeCard({ recipe }: Props) {
           {/* Time badge */}
           <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
-              fontSize: 11, fontWeight: 600, color: '#717973',
-              background: '#efeeec', padding: '2px 8px', borderRadius: 9999,
+              fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)',
+              background: 'var(--bg-muted)', padding: '2px 8px', borderRadius: 9999,
             }}>
               {totalMin} {t('recipe.minutes')}
             </span>
             {recipe.storageDays && (
               <span style={{
-                fontSize: 11, fontWeight: 600, color: '#717973',
-                background: '#efeeec', padding: '2px 8px', borderRadius: 9999,
+                fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)',
+                background: 'var(--bg-muted)', padding: '2px 8px', borderRadius: 9999,
               }}>
                 {recipe.storageDays}d {locale === 'he' ? 'מקרר' : 'fridge'}
               </span>
@@ -149,7 +149,7 @@ export default function RecipeCard({ recipe }: Props) {
 
           {/* Name */}
           <h3 style={{
-            fontSize: 14, fontWeight: 700, color: '#1a1c1b',
+            fontSize: 14, fontWeight: 700, color: 'var(--text-primary)',
             lineHeight: 1.4, marginBottom: nutrition ? 10 : 0,
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -164,7 +164,7 @@ export default function RecipeCard({ recipe }: Props) {
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
               gap: 4, marginTop: 10,
-              paddingTop: 10, borderTop: '1px solid #efeeec',
+              paddingTop: 10, borderTop: '1px solid var(--border-2)',
             }}>
               {[
                 { label: locale === 'he' ? 'קל׳' : 'kcal', value: nutrition.calories },
@@ -173,7 +173,7 @@ export default function RecipeCard({ recipe }: Props) {
               ].map(item => (
                 <div key={item.label} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#14422d' }}>{item.value}</div>
-                  <div style={{ fontSize: 10, color: '#717973', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.label}</div>
                 </div>
               ))}
             </div>

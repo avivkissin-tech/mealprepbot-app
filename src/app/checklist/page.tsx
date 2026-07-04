@@ -297,7 +297,7 @@ function WizardRecipeCard({ recipe, isSelected, isRecommended, isHe, onToggle }:
       </div>
       <div style={{ padding: '8px 10px' }}>
         <p style={{
-          fontSize: 11, fontWeight: 600, color: '#1a1c1b',
+          fontSize: 11, fontWeight: 600, color: 'var(--text-primary)',
           lineHeight: 1.3, margin: '0 0 4px',
           display: '-webkit-box', WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical', overflow: 'hidden',
@@ -337,12 +337,12 @@ function CountStepper({
   max?: number;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 0, border: '1px solid #E0D9CE', borderRadius: 10, overflow: 'hidden', background: '#fff' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0, border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', background: 'var(--bg-surface)' }}>
       <button
         onClick={() => onChange(Math.max(min, value - 1))}
         style={{ padding: '8px 14px', border: 'none', background: 'none', fontSize: 18, cursor: 'pointer', color: '#14422d', fontWeight: 700 }}
       >−</button>
-      <span style={{ fontSize: 16, fontWeight: 700, minWidth: 28, textAlign: 'center', color: '#1a1c1b' }}>{value}</span>
+      <span style={{ fontSize: 16, fontWeight: 700, minWidth: 28, textAlign: 'center', color: 'var(--text-primary)' }}>{value}</span>
       <button
         onClick={() => onChange(Math.min(max, value + 1))}
         style={{ padding: '8px 14px', border: 'none', background: 'none', fontSize: 18, cursor: 'pointer', color: '#14422d', fontWeight: 700 }}
@@ -506,7 +506,7 @@ export default function MealPrepPlannerPage() {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <h1 id="tour-checklist-title" style={{ fontSize: 26, fontWeight: 800, color: '#1a1c1b', margin: '0 0 4px' }}>
+          <h1 id="tour-checklist-title" style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 4px' }}>
             {isHe ? 'תכנון מילפרפ שבועי' : 'Weekly Meal Prep Planner'}
           </h1>
           <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
@@ -530,7 +530,7 @@ export default function MealPrepPlannerPage() {
             {/* ── Step 1: Recipe Selection ── */}
             {currentStep === 1 && (
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1c1b', marginBottom: 4 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
                   {t('wizard.checklist.step1.title')}
                 </h2>
                 <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 14 }}>
@@ -621,7 +621,7 @@ export default function MealPrepPlannerPage() {
             {/* ── Step 2: Shopping Planning ── */}
             {currentStep === 2 && (
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1c1b', marginBottom: 4 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
                   {t('wizard.checklist.step2.title')}
                 </h2>
                 <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 16 }}>
@@ -630,7 +630,7 @@ export default function MealPrepPlannerPage() {
 
                 {/* People + Days selectors */}
                 <div style={{
-                  background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE',
+                  background: 'var(--bg-surface)', borderRadius: 14, border: '1px solid var(--border)',
                   padding: '16px', marginBottom: 16,
                   display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16,
                 }}>
@@ -673,7 +673,7 @@ export default function MealPrepPlannerPage() {
 
                 {/* Shopping list with "יש בבית" checkboxes */}
                 <div style={{
-                  background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE',
+                  background: 'var(--bg-surface)', borderRadius: 14, border: '1px solid var(--border)',
                   padding: '12px 16px', marginBottom: 20,
                   maxHeight: 280, overflowY: 'auto',
                 }}>
@@ -710,7 +710,7 @@ export default function MealPrepPlannerPage() {
                               style={{ accentColor: '#14422d', width: 15, height: 15, flexShrink: 0 }}
                             />
                             <span style={{
-                              fontSize: 12, color: '#1a1c1b', flex: 1,
+                              fontSize: 12, color: 'var(--text-primary)', flex: 1,
                               textDecoration: atHome ? 'line-through' : 'none',
                             }}>
                               {isHe ? item.nameHe : item.nameEn}
@@ -742,8 +742,8 @@ export default function MealPrepPlannerPage() {
                 )}
 
                 {/* Date/time picker */}
-                <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE', padding: '16px', marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', margin: '0 0 10px' }}>
+                <div style={{ background: 'var(--bg-surface)', borderRadius: 14, border: '1px solid var(--border)', padding: '16px', marginBottom: 16 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 10px' }}>
                     {t('wizard.checklist.step2.shoppingDate')}
                   </p>
                   <div dir="ltr" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -754,7 +754,7 @@ export default function MealPrepPlannerPage() {
                       onChange={e => setShoppingDate(e.target.value)}
                       style={{
                         flex: 1, padding: '9px 12px', borderRadius: 10,
-                        border: '1px solid #c0c9c1', fontSize: 14, background: '#faf9f7',
+                        border: '1px solid var(--border)', fontSize: 14, background: 'var(--bg-page)',
                         minWidth: 140,
                       }}
                     />
@@ -764,7 +764,7 @@ export default function MealPrepPlannerPage() {
                       onChange={e => setShoppingTime(e.target.value)}
                       style={{
                         width: 110, padding: '9px 12px', borderRadius: 10,
-                        border: '1px solid #c0c9c1', fontSize: 14, background: '#faf9f7',
+                        border: '1px solid var(--border)', fontSize: 14, background: 'var(--bg-page)',
                       }}
                     />
                   </div>
@@ -818,7 +818,7 @@ export default function MealPrepPlannerPage() {
             {/* ── Step 3: Cooking Planning ── */}
             {currentStep === 3 && (
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1c1b', marginBottom: 4 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
                   {t('wizard.checklist.step3.title')}
                 </h2>
                 <p style={{ fontSize: 13, color: 'rgba(26,25,24,0.5)', marginBottom: 16 }}>
@@ -859,7 +859,7 @@ export default function MealPrepPlannerPage() {
 
                 {/* Selected recipes list */}
                 <div style={{
-                  background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE',
+                  background: 'var(--bg-surface)', borderRadius: 14, border: '1px solid var(--border)',
                   padding: '12px 16px', marginBottom: 20,
                 }}>
                   {selectedRecipes.map((r, i) => (
@@ -872,7 +872,7 @@ export default function MealPrepPlannerPage() {
                         <Image src={r.image} alt="" fill sizes="36px" style={{ objectFit: 'cover' }} />
                       </div>
                       <div style={{ flex: 1 }}>
-                        <p style={{ fontSize: 12, fontWeight: 600, color: '#1a1c1b', margin: 0 }}>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
                           {isHe ? r.nameHe : r.nameEn}
                         </p>
                         <p style={{ fontSize: 11, color: 'rgba(26,25,24,0.45)', margin: 0 }}>
@@ -884,8 +884,8 @@ export default function MealPrepPlannerPage() {
                 </div>
 
                 {/* Date/time picker */}
-                <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #E0D9CE', padding: '16px', marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1c1b', margin: '0 0 10px' }}>
+                <div style={{ background: 'var(--bg-surface)', borderRadius: 14, border: '1px solid var(--border)', padding: '16px', marginBottom: 16 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 10px' }}>
                     {t('wizard.checklist.step3.cookingDate')}
                   </p>
                   <div dir="ltr" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -896,7 +896,7 @@ export default function MealPrepPlannerPage() {
                       onChange={e => setCookingDate(e.target.value)}
                       style={{
                         flex: 1, padding: '9px 12px', borderRadius: 10,
-                        border: '1px solid #c0c9c1', fontSize: 14, background: '#faf9f7',
+                        border: '1px solid var(--border)', fontSize: 14, background: 'var(--bg-page)',
                         minWidth: 140,
                       }}
                     />
@@ -906,7 +906,7 @@ export default function MealPrepPlannerPage() {
                       onChange={e => setCookingTime(e.target.value)}
                       style={{
                         width: 110, padding: '9px 12px', borderRadius: 10,
-                        border: '1px solid #c0c9c1', fontSize: 14, background: '#faf9f7',
+                        border: '1px solid var(--border)', fontSize: 14, background: 'var(--bg-page)',
                       }}
                     />
                   </div>
@@ -939,7 +939,7 @@ export default function MealPrepPlannerPage() {
               <div style={{ textAlign: 'center' }}>
                 <ConfettiBurst />
 
-                <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1a1c1b', marginBottom: 8 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
                   {t('wizard.checklist.step4.title')}
                 </h2>
 
@@ -969,7 +969,7 @@ export default function MealPrepPlannerPage() {
 
                 {/* Summary card */}
                 <div style={{
-                  background: '#fff', borderRadius: 16, border: '1px solid #E0D9CE',
+                  background: 'var(--bg-surface)', borderRadius: 16, border: '1px solid var(--border)',
                   padding: '20px', marginBottom: 24, textAlign: isHe ? 'right' : 'left',
                 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: '#A09893', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -992,7 +992,7 @@ export default function MealPrepPlannerPage() {
                         <div style={{ position: 'relative', width: 28, height: 28, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
                           <Image src={r.image} alt="" fill sizes="28px" style={{ objectFit: 'cover' }} />
                         </div>
-                        <span style={{ fontSize: 13, color: '#1a1c1b' }}>{isHe ? r.nameHe : r.nameEn}</span>
+                        <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{isHe ? r.nameHe : r.nameEn}</span>
                       </div>
                     ))}
                   </div>

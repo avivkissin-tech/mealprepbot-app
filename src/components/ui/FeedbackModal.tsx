@@ -52,7 +52,7 @@ export default function FeedbackModal({ onClose }: Props) {
         onClick={e => e.stopPropagation()}
         dir={isHe ? 'rtl' : 'ltr'}
         style={{
-          background: '#fff', borderRadius: 20,
+          background: 'var(--bg-surface)', borderRadius: 20,
           width: '100%', maxWidth: 480,
           padding: '28px 28px 24px',
           boxShadow: '0 20px 60px rgba(26,25,24,0.18)',
@@ -61,7 +61,7 @@ export default function FeedbackModal({ onClose }: Props) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1a1c1b', margin: '0 0 4px' }}>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 4px' }}>
               {isHe ? 'עזרו לנו להשתפר' : 'Help us improve'}
             </h2>
             <p style={{ fontSize: 12, color: 'rgba(26,25,24,0.5)', margin: 0 }}>
@@ -88,7 +88,7 @@ export default function FeedbackModal({ onClose }: Props) {
           <>
             {/* Type toggle */}
             <div style={{ marginBottom: 18 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b', margin: '0 0 8px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>
                 {isHe ? 'סוג הדיווח' : 'Type'}
               </p>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -113,7 +113,7 @@ export default function FeedbackModal({ onClose }: Props) {
             {/* Title */}
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b' }}>{isHe ? 'כותרת' : 'Title'}</label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{isHe ? 'כותרת' : 'Title'}</label>
                 <span style={{ fontSize: 11, color: '#A09893' }}>{title.length}/100</span>
               </div>
               <input
@@ -122,7 +122,7 @@ export default function FeedbackModal({ onClose }: Props) {
                 placeholder={isHe ? 'במשפט אחד' : 'In one sentence'}
                 style={{
                   width: '100%', padding: '10px 12px', borderRadius: 10,
-                  border: '1.5px solid #E0D9CE', fontSize: 14, background: '#faf9f7',
+                  border: '1.5px solid #E0D9CE', fontSize: 14, background: 'var(--bg-page)',
                   outline: 'none', boxSizing: 'border-box',
                 }}
               />
@@ -131,7 +131,7 @@ export default function FeedbackModal({ onClose }: Props) {
             {/* Description */}
             <div style={{ marginBottom: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b' }}>{isHe ? 'תיאור' : 'Description'}</label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{isHe ? 'תיאור' : 'Description'}</label>
                 <span style={{ fontSize: 11, color: '#A09893' }}>{description.length}/2000</span>
               </div>
               <textarea
@@ -141,7 +141,7 @@ export default function FeedbackModal({ onClose }: Props) {
                 rows={5}
                 style={{
                   width: '100%', padding: '10px 12px', borderRadius: 10,
-                  border: '1.5px solid #E0D9CE', fontSize: 13, background: '#faf9f7',
+                  border: '1.5px solid #E0D9CE', fontSize: 13, background: 'var(--bg-page)',
                   outline: 'none', resize: 'vertical', boxSizing: 'border-box',
                   fontFamily: 'inherit',
                 }}

@@ -39,7 +39,7 @@ export default function ShoppingList({ entries, recipeName, portions }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 4 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#1a1c1b', margin: 0 }}>{t('shopping.title')}</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{t('shopping.title')}</h1>
           <p style={{ fontSize: 13, color: '#717973', marginTop: 4 }}>
             {recipeName} — {portions} {t('shopping.portions')}
           </p>
@@ -63,7 +63,7 @@ export default function ShoppingList({ entries, recipeName, portions }: Props) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {SHOPPING_CATEGORY_ORDER.filter(cat => grouped[cat]?.length).map(cat => (
           <div key={cat} style={{
-            background: '#ffffff',
+            background: 'var(--bg-surface)',
             borderRadius: 16,
             padding: '16px',
             boxShadow: '0 2px 12px rgba(45,90,67,0.06)',
@@ -73,7 +73,7 @@ export default function ShoppingList({ entries, recipeName, portions }: Props) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', color: '#6B6560' }}>{getCategoryIcon(cat)}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#1a1c1b' }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>
                   {CATEGORY_LABEL[cat]}
                 </span>
               </div>
@@ -88,7 +88,7 @@ export default function ShoppingList({ entries, recipeName, portions }: Props) {
             {/* Items */}
             {grouped[cat].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '4px 0', borderBottom: i < grouped[cat].length - 1 ? '1px solid #f0ede9' : 'none' }}>
-                <span style={{ fontSize: 13, color: '#1a1c1b' }}>
+                <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>
                   {isHe ? item.nameHe : item.nameEn}
                   {item.optional && <span style={{ fontSize: 11, color: '#b0b8b2', marginInlineStart: 4 }}>(אופציונלי)</span>}
                 </span>

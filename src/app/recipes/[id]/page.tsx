@@ -149,7 +149,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
           {/* Side panel */}
           <div style={{ gridColumn: '1' }}>
             <div style={{
-              background: '#ffffff', borderRadius: 24,
+              background: 'var(--bg-surface)', borderRadius: 24,
               padding: 28, boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
               position: 'sticky', top: 80,
             }}>
@@ -167,7 +167,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                 ].map(item => (
                   <div key={item.label} style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 18, marginBottom: 4 }}>{item.icon}</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1c1b' }}>{item.value}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{item.value}</div>
                     <div style={{ fontSize: 11, color: '#717973', marginTop: 2 }}>{item.label}</div>
                   </div>
                 ))}
@@ -212,7 +212,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                   </div>
                   <div>
                     <div style={{ fontSize: 12, color: '#717973' }}>שף מארגן</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: '#1a1c1b' }}>{recipe.chefName}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{recipe.chefName}</div>
                   </div>
                 </div>
               )}
@@ -260,7 +260,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
               {t('recipe.ingredients')}
             </h2>
             <div style={{
-              background: '#ffffff', borderRadius: 20, padding: 24,
+              background: 'var(--bg-surface)', borderRadius: 20, padding: 24,
               boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
             }}>
               <IngredientList
@@ -280,7 +280,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
               {t('recipe.steps')}
             </h2>
             <div style={{
-              background: '#ffffff', borderRadius: 20, padding: 24,
+              background: 'var(--bg-surface)', borderRadius: 20, padding: 24,
               boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
             }}>
               <StepByStep steps={recipe.steps} />
