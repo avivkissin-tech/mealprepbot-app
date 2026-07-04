@@ -11,7 +11,8 @@ import { calculateShoppingList, mergeShoppingLists, groupByCategory, SHOPPING_CA
 import { ShoppingCategory, Recipe } from '@/types';
 import { scheduleMealPrep, estimateTotalMinutes, formatTimerMinutes } from '@/lib/mealPrepScheduler';
 import MealPrepSession from '@/components/recipes/MealPrepSession';
-import { Beef, Leaf, Droplets, Wheat, Flame, ShoppingBag } from 'lucide-react';
+import { Beef, Leaf, Droplets, Wheat, Flame, ShoppingBag, ShoppingCart, Utensils } from 'lucide-react';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 const DAYS = ['יום 1', 'יום 2', 'יום 3', 'יום 4', 'יום 5', 'יום 6', 'יום 7'];
 
@@ -194,6 +195,24 @@ export default function PlannerPage() {
     }
   }, [pickingDay]);
 
+  if (!isLoaded) {
+    return (
+      <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--bg-page)', padding: '24px 24px 80px', maxWidth: 1400, margin: '0 auto' }}>
+        <Skeleton height={34} width={180} borderRadius={8} />
+        <div style={{ height: 12 }} />
+        <Skeleton height={18} width={240} borderRadius={6} />
+        <div style={{ height: 32 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(160px, 1fr))', gap: 12, minWidth: 1120 }}>
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} style={{ background: 'var(--bg-surface)', borderRadius: 16, overflow: 'hidden', height: 280 }}>
+              <Skeleton height={280} borderRadius={16} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div dir="rtl" style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
 
@@ -233,7 +252,7 @@ export default function PlannerPage() {
                 fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
               }}
             >
-              🍳 התחל מילפרפ
+              <Utensils size={14} strokeWidth={1.75} /> התחל מילפרפ
             </button>
           )}
           <button
@@ -878,7 +897,7 @@ export default function PlannerPage() {
               <div style={{ overflowY: 'auto', flex: 1, padding: '16px 20px' }}>
                 {shoppingList.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(26,25,24,0.35)', fontSize: 14 }}>
-                    <div style={{ fontSize: 36, marginBottom: 12 }}>🛒</div>
+                    <div style={{ marginBottom: 12, color: 'rgba(26,25,24,0.25)' }}><ShoppingCart size={36} strokeWidth={1.5} /></div>
                     הוסף ארוחות לפלאנר כדי לראות את רשימת הקניות
                   </div>
                 ) : shoppingView === 'general' ? (

@@ -40,7 +40,7 @@ export default function RecipeCard({ recipe }: Props) {
     >
       <div
         style={{
-          background: '#ffffff',
+          background: 'var(--card-bg)',
           borderRadius: 24,
           overflow: 'hidden',
           boxShadow: '0 8px 32px rgba(45,90,67,0.05)',
