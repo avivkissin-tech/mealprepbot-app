@@ -86,8 +86,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ title, image, time, tags, id, c
         {imgError ? (
           <RecipeImageFallback size="md" />
         ) : (
-          <div
-            style={{ width: '100%', height: '100%', backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          <Image
+            src={image}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 50vw, 200px"
+            style={{ objectFit: 'cover' }}
             onError={() => setImgError(true)}
           />
         )}
@@ -292,17 +296,17 @@ export default function DashboardPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           style={{ background: 'var(--bg-surface)', borderRadius: 20, padding: '24px', marginBottom: 32, boxShadow: '0 4px 20px rgba(26,25,24,0.06)' }}
         >
-          <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1a1c1b', marginBottom: 4 }}>
+          <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
             {isHe ? 'ככה עובד המילפרפ' : 'How meal prep works'}
           </h2>
-          <p style={{ fontSize: 13, color: '#A09893', margin: '0 0 20px' }}>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px' }}>
             {isHe ? '3 מתכונים. רשימת קניות אחת. תהליך הכנה מסודר.' : '3 recipes. One shopping list. One prep session.'}
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             {batchPreviewRecipes.map((r, i) => (
               <React.Fragment key={r.id}>
-                <div style={{ width: 56, height: 56, borderRadius: 12, overflow: 'hidden', flexShrink: 0 }}>
-                  <div style={{ width: '100%', height: '100%', backgroundImage: `url(${r.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                <div style={{ position: 'relative', width: 56, height: 56, borderRadius: 12, overflow: 'hidden', flexShrink: 0 }}>
+                  <Image src={r.image} alt="" fill sizes="56px" style={{ objectFit: 'cover' }} />
                 </div>
                 {i < batchPreviewRecipes.length - 1 && (
                   <span style={{ fontSize: 16, color: '#A09893' }}>+</span>
