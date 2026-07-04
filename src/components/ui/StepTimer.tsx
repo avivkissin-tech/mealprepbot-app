@@ -69,34 +69,33 @@ export default function StepTimer({ minutes }: Props) {
   };
 
   const progress = status === 'idle' ? 0 : ((totalSeconds - secondsLeft) / totalSeconds) * 100;
+  const circumference = 2 * Math.PI * 17;
 
   return (
     <div
-      className="inline-flex items-center gap-1.5 mt-1.5 select-none"
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6, userSelect: 'none' }}
       onClick={(e) => e.stopPropagation()}
     >
       {/* Progress ring + time display */}
-      <div className="relative flex items-center justify-center">
-        <svg width="42" height="42" className="-rotate-90">
-          <circle cx="21" cy="21" r="17" fill="none" stroke="#d1fae5" strokeWidth="3" />
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="42" height="42" style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx="21" cy="21" r="17" fill="none" stroke="var(--border)" strokeWidth="3" />
           <circle
-            cx="21"
-            cy="21"
-            r="17"
-            fill="none"
-            stroke={status === 'done' ? '#10b981' : '#059669'}
+            cx="21" cy="21" r="17" fill="none"
+            stroke="#14422d"
             strokeWidth="3"
-            strokeDasharray={`${2 * Math.PI * 17}`}
-            strokeDashoffset={`${2 * Math.PI * 17 * (1 - progress / 100)}`}
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference * (1 - progress / 100)}
             strokeLinecap="round"
-            className="transition-all duration-1000"
+            style={{ transition: 'stroke-dashoffset 1s linear' }}
           />
         </svg>
-        <span
-          className={`absolute text-[10px] font-bold tabular-nums ${
-            status === 'done' ? 'text-emerald-600' : 'text-gray-700'
-          }`}
-        >
+        <span style={{
+          position: 'absolute',
+          fontSize: 10, fontWeight: 700,
+          fontVariantNumeric: 'tabular-nums',
+          color: status === 'done' ? '#14422d' : 'var(--text-primary)',
+        }}>
           {status === 'done' ? t('timer.done') : formatTime(secondsLeft)}
         </span>
       </div>
@@ -105,7 +104,12 @@ export default function StepTimer({ minutes }: Props) {
       {status === 'idle' && (
         <button
           onClick={handleStart}
-          className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-emerald-500 rounded-full hover:bg-emerald-600 transition-colors"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '3px 10px', fontSize: 12, fontWeight: 600,
+            color: '#fff', background: '#14422d',
+            border: 'none', borderRadius: 9999, cursor: 'pointer',
+          }}
         >
           <span>▶</span>
           <span>{t('timer.start')}</span>
@@ -114,7 +118,12 @@ export default function StepTimer({ minutes }: Props) {
       {status === 'running' && (
         <button
           onClick={handlePause}
-          className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-amber-500 rounded-full hover:bg-amber-600 transition-colors"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '3px 10px', fontSize: 12, fontWeight: 600,
+            color: '#fff', background: '#C9572A',
+            border: 'none', borderRadius: 9999, cursor: 'pointer',
+          }}
         >
           <span>⏸</span>
           <span>{t('timer.pause')}</span>
@@ -123,7 +132,12 @@ export default function StepTimer({ minutes }: Props) {
       {status === 'paused' && (
         <button
           onClick={handleStart}
-          className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white bg-emerald-500 rounded-full hover:bg-emerald-600 transition-colors"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '3px 10px', fontSize: 12, fontWeight: 600,
+            color: '#fff', background: '#14422d',
+            border: 'none', borderRadius: 9999, cursor: 'pointer',
+          }}
         >
           <span>▶</span>
           <span>{t('timer.resume')}</span>
@@ -132,7 +146,12 @@ export default function StepTimer({ minutes }: Props) {
       {status !== 'idle' && (
         <button
           onClick={handleReset}
-          className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '3px 10px', fontSize: 12, fontWeight: 600,
+            color: 'var(--text-secondary)', background: 'var(--bg-muted)',
+            border: 'none', borderRadius: 9999, cursor: 'pointer',
+          }}
         >
           <span>↺</span>
           <span>{t('timer.reset')}</span>
