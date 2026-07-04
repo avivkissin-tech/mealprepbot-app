@@ -37,7 +37,7 @@ const DIETARY_BADGE: Record<DietaryTag, { he: string; en: string; bg: string; co
   'gluten-free':  { he: 'ללא גלוטן',   en: 'Gluten-Free',  bg: 'rgba(201,87,42,0.10)',  color: '#c9572a' },
   'dairy-free':   { he: 'ללא חלב',     en: 'Dairy-Free',   color: '#3d6b8a',            bg: 'rgba(91,127,166,0.12)' },
   'high-protein': { he: 'עשיר בחלבון', en: 'High-Protein', bg: 'rgba(201,87,42,0.10)',  color: '#c9572a' },
-  'low-carb':     { he: 'דל פחמימות',  en: 'Low-Carb',     bg: 'rgba(113,121,115,0.12)', color: '#414943' },
+  'low-carb':     { he: 'דל פחמימות',  en: 'Low-Carb',     bg: 'rgba(113,121,115,0.12)', color: 'var(--text-secondary)' },
 };
 
 export default function RecipePage({ params }: { params: Promise<{ id: string }> }) {
@@ -76,7 +76,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
           href="/"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 13, color: '#717973', textDecoration: 'none',
+            fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none',
             marginBottom: 28, fontWeight: 500,
           }}
         >
@@ -141,7 +141,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
             </div>
 
             {/* Description below image */}
-            <p style={{ fontSize: 15, color: '#414943', lineHeight: 1.7, margin: '20px 4px 0' }}>
+            <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, margin: '20px 4px 0' }}>
               {description}
             </p>
           </div>
@@ -158,7 +158,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
               <div style={{
                 display: 'flex', justifyContent: 'space-around',
                 paddingBottom: 20, marginBottom: 20,
-                borderBottom: '1px solid #efeeec',
+                borderBottom: '1px solid var(--border-2)',
               }}>
                 {[
                   { icon: '⏱', label: t('recipe.prepTime'), value: `${totalMin} ${t('recipe.minutes')}` },
@@ -168,7 +168,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                   <div key={item.label} style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 18, marginBottom: 4 }}>{item.icon}</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{item.value}</div>
-                    <div style={{ fontSize: 11, color: '#717973', marginTop: 2 }}>{item.label}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{item.label}</div>
                   </div>
                 ))}
               </div>
@@ -191,7 +191,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                       border: '1px solid rgba(20,66,45,0.08)',
                     }}>
                       <div style={{ fontSize: 15, fontWeight: 700, color: '#14422d' }}>{item.value}</div>
-                      <div style={{ fontSize: 10, color: '#717973', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</div>
+                      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{item.label}</div>
                     </div>
                   ))}
                 </div>
@@ -201,7 +201,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
               {recipe.chefName && (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid #efeeec',
+                  marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid var(--border-2)',
                 }}>
                   <div style={{
                     width: 36, height: 36, borderRadius: '50%',
@@ -211,7 +211,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                     {recipe.chefName.charAt(0)}
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, color: '#717973' }}>שף מארגן</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>שף מארגן</div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{recipe.chefName}</div>
                   </div>
                 </div>
@@ -223,8 +223,8 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                 disabled={cookedToday}
                 style={{
                   width: '100%', padding: '14px 0', borderRadius: 16,
-                  background: cookedToday ? '#efeeec' : '#14422d',
-                  color: cookedToday ? '#717973' : '#ffffff',
+                  background: cookedToday ? 'var(--bg-muted)' : '#14422d',
+                  color: cookedToday ? 'var(--text-muted)' : '#ffffff',
                   fontSize: 15, fontWeight: 700, border: 'none',
                   cursor: cookedToday ? 'default' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -239,7 +239,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
               {/* Storage */}
               <p style={{
                 textAlign: 'center', marginTop: 12,
-                fontSize: 12, color: '#717973',
+                fontSize: 12, color: 'var(--text-muted)',
               }}>
                 📦 שמור עד {recipe.storageDays} {t('recipe.days')} בקירור
               </p>

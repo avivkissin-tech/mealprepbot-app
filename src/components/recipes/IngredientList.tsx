@@ -56,7 +56,7 @@ export default function IngredientList({ ingredients, portions, baseServings }: 
             style={{
               display: 'flex', alignItems: 'center', gap: 12,
               padding: '10px 0',
-              borderBottom: '1px solid #f0ebe3',
+              borderBottom: '1px solid var(--border-2)',
               cursor: 'pointer',
               opacity: ing.optional ? 0.65 : 1,
             }}
@@ -77,13 +77,13 @@ export default function IngredientList({ ingredients, portions, baseServings }: 
             </span>
             {/* Name */}
             <span style={{
-              flex: 1, fontSize: 14, color: isDone ? '#b0b8b2' : '#1a1c1b',
+              flex: 1, fontSize: 14, color: isDone ? 'var(--text-muted)' : 'var(--text-primary)',
               textDecoration: isDone ? 'line-through' : 'none',
               transition: 'all 0.15s',
             }}>
               {name}
               {ing.optional && (
-                <span style={{ fontSize: 11, color: '#b0b8b2', marginInlineStart: 4 }}>({t('recipe.optional')})</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', marginInlineStart: 4 }}>({t('recipe.optional')})</span>
               )}
             </span>
             {/* Quantity */}

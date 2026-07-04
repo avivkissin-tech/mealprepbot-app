@@ -30,24 +30,26 @@ export default function StepByStep({ steps }: Props) {
         return (
           <li
             key={i}
-            className={`flex gap-3 cursor-pointer group transition-opacity ${isDone ? 'opacity-50' : ''}`}
+            style={{ display: 'flex', gap: 12, cursor: 'pointer', opacity: isDone ? 0.5 : 1, transition: 'opacity 0.15s' }}
             onClick={() => toggle(i)}
           >
-            <span
-              className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-colors ${
-                isDone
-                  ? 'bg-emerald-500 border-emerald-500 text-white'
-                  : 'border-emerald-300 text-emerald-600 group-hover:border-emerald-500'
-              }`}
-            >
+            <span style={{
+              flexShrink: 0, width: 28, height: 28, borderRadius: '50%',
+              border: `2px solid ${isDone ? '#14422d' : '#6db88a'}`,
+              background: isDone ? '#14422d' : 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 700,
+              color: isDone ? '#fff' : '#14422d',
+              transition: 'all 0.15s',
+            }}>
               {isDone ? '✓' : i + 1}
             </span>
-            <div className="flex-1 pt-0.5">
-              <p
-                className={`text-sm text-gray-700 leading-relaxed transition-all ${
-                  isDone ? 'line-through text-gray-400' : ''
-                }`}
-              >
+            <div style={{ flex: 1, paddingTop: 2 }}>
+              <p style={{
+                fontSize: 14, color: isDone ? 'var(--text-muted)' : 'var(--text-primary)',
+                lineHeight: 1.65, margin: 0, transition: 'color 0.15s',
+                textDecoration: isDone ? 'line-through' : 'none',
+              }}>
                 {text}
               </p>
               {step.timerMinutes && !isDone && (
@@ -55,6 +57,7 @@ export default function StepByStep({ steps }: Props) {
               )}
             </div>
           </li>
+
         );
       })}
     </ol>
